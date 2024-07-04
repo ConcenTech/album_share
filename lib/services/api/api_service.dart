@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -6,11 +7,11 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 
-import '../models/album.dart';
-import '../models/asset.dart';
-import '../models/endpoint.dart';
-import '../models/json_map.dart';
-import '../models/user.dart';
+import '../../models/album.dart';
+import '../../models/asset.dart';
+import '../../models/endpoint.dart';
+import '../../models/json_map.dart';
+import '../../models/user.dart';
 
 const _applicationJson = 'application/json';
 
@@ -20,19 +21,51 @@ class ApiService {
   final Dio _dio;
   final CookieJar _cookieJar;
 
-  Future<Endpoint?> checkAndSetEndpoint(String serverUrl) async {
-    if (serverUrl == _dio.options.baseUrl) {
-      return Endpoint(serverUrl);
+  Future<Endpoint> checkAndSetEndpoint(String serverUrl) async {
+    final available = await _isEndpointAvailable(serverUrl);
+
+    if (!available) {
+      //TODO: Log
+      throw const ApiException(
+          ApiExceptionType.timeout, 'Enpoint unavailable or does not exist.');
     }
 
-    // verify endpoint
+    //TODO: Log, endpoint set.
+
     _dio.options.baseUrl = serverUrl;
     _dio.options.headers = {'Accept': _applicationJson};
 
     _dio.interceptors.clear();
     _dio.interceptors.add(CookieManager(_cookieJar));
 
-    return Endpoint(serverUrl);
+    final isOAuth = await _checkIsOAuth();
+
+    return Endpoint(serverUrl, isOAuth);
+  }
+
+  /// Check to see if oauth has been enabled on the server.
+  Future<bool> _checkIsOAuth() {
+    return Future.value(false);
+    //TODO:
+  }
+
+  /// Attempts to ping the server.
+  ///
+  /// Returns true if a successful response is recieved, otherwise returns false.
+  Future<bool> _isEndpointAvailable(String serverUrl) async {
+    try {
+      await _dio.get(
+        '$serverUrl/api/server-info/ping',
+        options: Options(
+          headers: {'Accepts': _applicationJson},
+          sendTimeout: const Duration(seconds: 5),
+        ),
+      );
+
+      return true;
+    } on DioException {
+      return false;
+    }
   }
 
   /// Attempts to login with the supplied credentials.
@@ -42,7 +75,7 @@ class ApiService {
     _expectEndpointSet();
 
     final body = await _post(
-      'api/auth/login',
+      '/api/auth/login',
       data: {
         'email': email,
         'password': password,
@@ -65,19 +98,24 @@ class ApiService {
   Future<bool> validateAuthToken() async {
     _expectEndpointSet();
 
-    final body = await _post(
-      'api/auth/validateToken',
-      expected: JSON_MAP,
-    );
+    try {
+      final body = await _post(
+        '/api/auth/validateToken',
+        expected: JSON_MAP,
+      );
 
-    return body['authStatus'];
+      return body['authStatus'];
+    } on ApiException catch (e) {
+      print('${e.message}: ${e.debugMessage}');
+      return false;
+    }
   }
 
   Future<User> currentUser() async {
     _expectEndpointSet();
 
     final body = await _post(
-      'api/users/me',
+      '/api/users/me',
       expected: JSON_MAP,
     );
 
@@ -93,11 +131,27 @@ class ApiService {
     _expectEndpointSet();
 
     final body = await _post(
-      'api/auth/logout',
+      '/api/auth/logout',
       expected: JSON_MAP,
     );
 
-    return body['successful'];
+    final success = body['successful'] as bool;
+
+    //TODO: Remove test code below once behaviour of cokies verified.
+    if (success) {
+      final cookies =
+          await _cookieJar.loadForRequest(Uri.parse(_dio.options.baseUrl));
+      print('User logged out. Remaining cookies:');
+      if (cookies.isEmpty) {
+        print('EMPTY');
+      } else {
+        for (var cookie in cookies) {
+          print(cookie);
+        }
+      }
+    }
+
+    return success;
   }
 
   /// Changes the password of the current user.
@@ -107,7 +161,7 @@ class ApiService {
     _expectEndpointSet();
 
     await _post(
-      'api/auth/change-password',
+      '/api/auth/change-password',
       data: {
         "password": password,
         "newPassword": newPassword,
@@ -126,7 +180,7 @@ class ApiService {
     _expectEndpointSet();
 
     final body = await _get(
-      'api/albums',
+      '/api/albums',
       queryParameters: {'shared': 'true'},
       expected: JSON_LIST,
     );
@@ -140,7 +194,10 @@ class ApiService {
   Future<List<Asset>> getAlbumAssets(String albumId) async {
     _expectEndpointSet();
 
-    final body = await _get('api/albums/$albumId', expected: JSON_MAP);
+    final body = await _get(
+      '/api/albums/$albumId',
+      expected: JSON_MAP,
+    );
 
     final assets = List.from(body['assets']);
 
@@ -155,7 +212,8 @@ class ApiService {
   /// Ensures the server url has been set via a call to [checkAndSetEndpoint]
   void _expectEndpointSet() {
     if (_dio.options.baseUrl.isEmpty) {
-      throw ApiException(0, 'Server url has not been set');
+      throw const ApiException(
+          ApiExceptionType.client, 'Server url has not been set');
     }
   }
 
@@ -164,7 +222,8 @@ class ApiService {
   /// Throws [ApiException] if the request was not valid or extraction failed.
   Future<JsonMap> _extractObjectFromResponse(Response response) async {
     if (response.statusCode == null || response.statusCode! > 201) {
-      throw ApiException.fromResponse(response);
+      throw ApiException(ApiExceptionType.server,
+          response.statusMessage ?? '${response.data}');
     }
 
     JsonMap? body;
@@ -181,8 +240,8 @@ class ApiService {
     if (body == null ||
         body.isEmpty ||
         response.statusCode == HttpStatus.noContent) {
-      throw ApiException(
-          HttpStatus.noContent, 'No content included with response');
+      throw const ApiException(
+          ApiExceptionType.server, 'No content included with response');
     }
 
     return body;
@@ -194,7 +253,8 @@ class ApiService {
   Future<List<JsonMap>> _extractObjectListFromResponse(
       Response response) async {
     if (response.statusCode == null || response.statusCode! > 201) {
-      throw ApiException.fromResponse(response);
+      throw ApiException(ApiExceptionType.server,
+          response.statusMessage ?? '${response.data}');
     }
 
     List<JsonMap>? body;
@@ -213,6 +273,7 @@ class ApiService {
     if (body == null ||
         body.isEmpty ||
         response.statusCode == HttpStatus.noContent) {
+      //TODO: Should 204 return null to signal data hasn't changed?
       return [];
     }
 
@@ -243,11 +304,8 @@ class ApiService {
           ? await _extractObjectFromResponse(response) as T
           : await _extractObjectListFromResponse(response) as T;
     } on DioException catch (e) {
-      // Unable to reach endpoint.
-      print(e.stackTrace);
-      print(e.requestOptions);
-      throw ApiException(
-          0, e.message ?? 'Internal error, request unsuccessful');
+      // TODO: log
+      throw ApiException.fromDioException(e);
     }
   }
 
@@ -276,22 +334,79 @@ class ApiService {
           : await _extractObjectListFromResponse(response) as T;
     } on DioException catch (e) {
       // Unable to reach endpoint.
-      throw ApiException(
-          0, e.message ?? 'Internal error, request unsuccessful');
+      throw ApiException.fromDioException(e);
     }
   }
 }
 
 class ApiException implements Exception {
-  ApiException(this.code, this.message);
+  const ApiException(this.type, this.debugMessage);
 
-  ApiException.fromResponse(Response response)
-      : code = response.statusCode ?? HttpStatus.badRequest,
-        message = response.statusMessage ?? '${response.data}';
+  ApiException.fromDioException(DioException e)
+      : type = ApiExceptionType.fromDioException(e),
+        debugMessage = e.message ?? 'An unknown error occurred.';
 
-  final int code;
-  final String message;
+  final ApiExceptionType type;
+  final String debugMessage;
 
-  /// Error on client.
-  bool get isInternal => code == 0;
+  String get message {
+    return switch (type) {
+      ApiExceptionType.client => 'There was an error processing the request.',
+      ApiExceptionType.server => 'There was an error processing the response.',
+      ApiExceptionType.timeout =>
+        'Failed to connect to the server or the request timed out.',
+      ApiExceptionType.unauthenticated => 'Authentication error.',
+    };
+  }
+}
+
+enum ApiExceptionType {
+  server,
+  client,
+  timeout,
+  unauthenticated,
+  ;
+
+  factory ApiExceptionType.fromCode(int code) {
+    switch (code) {
+      /// Information and success codes.
+      case < 300:
+        throw const FormatException('Success code thrown as an error');
+
+      /// Redirects
+      case < 400:
+        return ApiExceptionType.server;
+
+      /// Unauthorised, forbidden, proxy auth required and network auth required.
+      case 401 || 403 || 407 || 511:
+        return ApiExceptionType.unauthenticated;
+
+      /// Client error responses.
+      case < 500:
+        return ApiExceptionType.client;
+
+      /// Server error responses.
+      default:
+        return ApiExceptionType.server;
+    }
+  }
+
+  factory ApiExceptionType.fromDioException(DioException e) {
+    if (e.response?.statusCode != null) {
+      return ApiExceptionType.fromCode(e.response!.statusCode!);
+    }
+
+    print(e.type);
+
+    return switch (e.type) {
+      DioExceptionType.sendTimeout => ApiExceptionType.timeout,
+      DioExceptionType.receiveTimeout => ApiExceptionType.timeout,
+      DioExceptionType.connectionTimeout => ApiExceptionType.timeout,
+      DioExceptionType.badCertificate => ApiExceptionType.unauthenticated,
+      DioExceptionType.badResponse => ApiExceptionType.server,
+      DioExceptionType.cancel => ApiExceptionType.client,
+      DioExceptionType.unknown => ApiExceptionType.client,
+      DioExceptionType.connectionError => ApiExceptionType.timeout,
+    };
+  }
 }

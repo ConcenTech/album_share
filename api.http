@@ -2,6 +2,10 @@
 @accessToken = TeOxz5zRFbgoVazZ8GM5vVFvDL5qA7DDCeBjoj6yY
 @userId = 67914a2e-f084-4062-abf0-a8e9859d9dcb
 
+### Ping the server
+GET {{baseUrl}}/server-info/ping
+Accept: application/json
+
 ### Login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json

@@ -17,8 +17,13 @@ const EndpointSchema = CollectionSchema(
   name: r'Endpoint',
   id: -8981241579768495374,
   properties: {
-    r'serverUrl': PropertySchema(
+    r'isOAuth': PropertySchema(
       id: 0,
+      name: r'isOAuth',
+      type: IsarType.bool,
+    ),
+    r'serverUrl': PropertySchema(
+      id: 1,
       name: r'serverUrl',
       type: IsarType.string,
     )
@@ -53,7 +58,8 @@ void _endpointSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.serverUrl);
+  writer.writeBool(offsets[0], object.isOAuth);
+  writer.writeString(offsets[1], object.serverUrl);
 }
 
 Endpoint _endpointDeserialize(
@@ -63,7 +69,8 @@ Endpoint _endpointDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Endpoint(
-    reader.readString(offsets[0]),
+    reader.readString(offsets[1]),
+    reader.readBool(offsets[0]),
   );
   return object;
 }
@@ -76,6 +83,8 @@ P _endpointDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readBool(offset)) as P;
+    case 1:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -171,6 +180,16 @@ extension EndpointQueryWhere on QueryBuilder<Endpoint, Endpoint, QWhereClause> {
 
 extension EndpointQueryFilter
     on QueryBuilder<Endpoint, Endpoint, QFilterCondition> {
+  QueryBuilder<Endpoint, Endpoint, QAfterFilterCondition> isOAuthEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isOAuth',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Endpoint, Endpoint, QAfterFilterCondition> isarIdEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -363,6 +382,18 @@ extension EndpointQueryLinks
     on QueryBuilder<Endpoint, Endpoint, QFilterCondition> {}
 
 extension EndpointQuerySortBy on QueryBuilder<Endpoint, Endpoint, QSortBy> {
+  QueryBuilder<Endpoint, Endpoint, QAfterSortBy> sortByIsOAuth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isOAuth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Endpoint, Endpoint, QAfterSortBy> sortByIsOAuthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isOAuth', Sort.desc);
+    });
+  }
+
   QueryBuilder<Endpoint, Endpoint, QAfterSortBy> sortByServerUrl() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'serverUrl', Sort.asc);
@@ -378,6 +409,18 @@ extension EndpointQuerySortBy on QueryBuilder<Endpoint, Endpoint, QSortBy> {
 
 extension EndpointQuerySortThenBy
     on QueryBuilder<Endpoint, Endpoint, QSortThenBy> {
+  QueryBuilder<Endpoint, Endpoint, QAfterSortBy> thenByIsOAuth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isOAuth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Endpoint, Endpoint, QAfterSortBy> thenByIsOAuthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isOAuth', Sort.desc);
+    });
+  }
+
   QueryBuilder<Endpoint, Endpoint, QAfterSortBy> thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
@@ -405,6 +448,12 @@ extension EndpointQuerySortThenBy
 
 extension EndpointQueryWhereDistinct
     on QueryBuilder<Endpoint, Endpoint, QDistinct> {
+  QueryBuilder<Endpoint, Endpoint, QDistinct> distinctByIsOAuth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isOAuth');
+    });
+  }
+
   QueryBuilder<Endpoint, Endpoint, QDistinct> distinctByServerUrl(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -418,6 +467,12 @@ extension EndpointQueryProperty
   QueryBuilder<Endpoint, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
+    });
+  }
+
+  QueryBuilder<Endpoint, bool, QQueryOperations> isOAuthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isOAuth');
     });
   }
 

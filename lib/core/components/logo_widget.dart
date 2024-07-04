@@ -38,3 +38,22 @@ class LogoText extends StatelessWidget {
     );
   }
 }
+
+class LogoImageText extends StatelessWidget {
+  const LogoImageText({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 45,
+          child: LogoImage(),
+        ),
+        LogoText(),
+      ],
+    );
+  }
+}

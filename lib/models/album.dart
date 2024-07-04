@@ -13,6 +13,7 @@ class Album {
     required this.description,
     required this.thumbnailId,
     required this.isActivityEnabled,
+    required this.lastUpdated,
   });
 
   /// Used only for offline storage
@@ -21,6 +22,7 @@ class Album {
   final String id;
   final String name;
   final String description;
+  final DateTime lastUpdated;
 
   /// The id of the thumbnail asset for this album
   final String thumbnailId;
@@ -35,6 +37,7 @@ class Album {
       description: json['description'],
       thumbnailId: json['albumThumbnailAssetId'],
       isActivityEnabled: json['isActivityEnabled'],
+      lastUpdated: DateTime.parse(json['updatedAt']),
     );
   }
 
@@ -44,7 +47,8 @@ class Album {
         '\n$name'
         '\n$description'
         '\nThumbnail: $thumbnailId'
-        '\n${isActivityEnabled ? "Activity enabled." : "Activity disabled."}';
+        '\n${isActivityEnabled ? "Activity enabled." : "Activity disabled."}'
+        '\nLast updated: $lastUpdated';
   }
 
   @override

@@ -1,29 +1,10 @@
-import 'package:album_share/core/components/window_titlebar.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/components/app_scaffold.dart';
 import '../../core/components/logo_widget.dart';
+import '../../routes/app_router.dart';
 import 'endpoint_widget.dart';
-
-class TestScreen extends StatelessWidget {
-  const TestScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppScaffold(
-      showTitleBar: true,
-      body: Center(
-        child: FilledButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Back'),
-        ),
-      ),
-    );
-  }
-}
+import 'login_widget.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -37,16 +18,12 @@ class AuthScreen extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 300),
           child: const Card(
             child: SingleChildScrollView(
-                   padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    height: 45,
-                    child: LogoImage(),
-                  ),
-                  LogoText(),
+                  LogoImageText(),
                   SizedBox(height: 10),
                   AuthScreenContent(),
                 ],
@@ -71,21 +48,28 @@ class _AuthScreenContentState extends State<AuthScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    return switch (_state) {
-      _State.endpoint => EndpointWidget(
-          onEndpointSaved: () {
-            // setState(() {
-            //   _state = _State.login;
-            // });
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const TestScreen(),
-              ),
-            );
-          },
-        ),
-      _State _ => const Placeholder(),
-    };
+    return AnimatedSize(
+      duration: kThemeAnimationDuration,
+      child: switch (_state) {
+        _State.endpoint => EndpointWidget(
+            onEndpointSaved: (isOAuth) {
+              setState(() {
+                _state = isOAuth ? _State.oauth : _State.login;
+              });
+            },
+          ),
+        _State _ => LoginWidget(
+            onBack: () {
+              setState(() {
+                _state = _State.endpoint;
+              });
+            },
+            onLoginComplete: () {
+              AppRouter.toLibrary(context);
+            },
+          ),
+      },
+    );
   }
 }
 
@@ -93,5 +77,4 @@ enum _State {
   endpoint,
   login,
   oauth,
-  resetPassworrd,
 }

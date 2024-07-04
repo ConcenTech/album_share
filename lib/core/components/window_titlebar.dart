@@ -13,12 +13,21 @@ const _desktopPlatforms = [
 class DesktopWindowTitlebar extends StatelessWidget {
   const DesktopWindowTitlebar({
     this.showTitle = true,
+    this.leading,
+    this.titleBarIcons = const [],
     super.key,
   });
+
+  final Widget? leading;
+
+  final List<Widget> titleBarIcons;
 
   static void openWindow() {
     if (_desktopPlatforms.contains(defaultTargetPlatform)) {
       doWhenWindowReady(() {
+        appWindow.title = 'Album share';
+        appWindow.minSize = const Size(300, 500);
+        appWindow.size = const Size(600, 500);
         appWindow.show();
       });
     }
@@ -37,23 +46,24 @@ class DesktopWindowTitlebar extends StatelessWidget {
           Expanded(
             child: MoveWindow(
               child: showTitle
-                  ? Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 40),
-                        child: const Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            LogoImage(),
-                            SizedBox(width: 5),
-                            LogoText(tagline: false),
-                          ],
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: SizedBox(
+                            height: 16,
+                            child: LogoImage(),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 1),
+                        if (leading != null) leading!,
+                      ],
                     )
                   : null,
             ),
           ),
+          ...titleBarIcons,
           MinimizeWindowButton(),
           MaximizeWindowButton(),
           CloseWindowButton(),

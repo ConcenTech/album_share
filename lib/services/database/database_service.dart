@@ -1,10 +1,11 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../models/album.dart';
-import '../models/asset.dart';
-import '../models/endpoint.dart';
-import '../models/user.dart';
+import '../../models/album.dart';
+import '../../models/asset.dart';
+import '../../models/endpoint.dart';
+import '../../models/preferences.dart';
+import '../../models/user.dart';
 
 class DatabaseService {
   Isar? _isar;
@@ -37,7 +38,13 @@ class DatabaseService {
   Future<void> init() async {
     try {
       final dir = await getApplicationDocumentsDirectory();
-      _isar = await Isar.open([], directory: dir.path);
+      _isar = await Isar.open([
+        EndpointSchema,
+        UserSchema,
+        AlbumSchema,
+        AssetSchema,
+        PreferencesSchema,
+      ], directory: dir.path);
     } catch (e) {
       throw DatabaseException('Failed to open the database.', 'init', '$e');
     }
@@ -52,6 +59,7 @@ class DatabaseService {
         await _db.users.clear();
         await _db.albums.clear();
         await _db.assets.clear();
+        await _db.preferences.clear();
         if (endpoint) {
           await _db.endpoints.clear();
         }
@@ -106,6 +114,16 @@ class DatabaseService {
     );
   }
 
+  Future<void> setAlbums(List<Album> albums) {
+    return _writeTxn(
+      () async {
+        await _db.albums.clear();
+        await _db.albums.putAll(albums);
+      },
+      'setAlbums',
+    );
+  }
+
   /// Retrieves assets for the selected album.
   ///
   /// If album is null, all assets are retrieved.
@@ -115,6 +133,37 @@ class DatabaseService {
           ? _db.assets.where().anyIsarId().findAll()
           : _db.assets.where().filter().albumIdEqualTo(album.id).findAll(),
       'getAssets',
+    );
+  }
+
+  Future<void> setAssets(List<Asset> assets) {
+    return _writeTxn(
+      () async {
+        await _db.assets.clear();
+        await _db.assets.putAll(assets);
+      },
+      'setAssets',
+    );
+  }
+
+  /// Returns the preferences for the current user,
+  /// or null if no preferences have been saved.
+  ///
+  /// Throws [DatabaseException] if the operation fails.
+  Future<Preferences?> getPreferences() {
+    return _readTxn(
+      () => _db.preferences.get(Preferences.id),
+      'getPreferences',
+    );
+  }
+
+  /// Stores the preferences for the current user.
+  ///
+  /// Throws [DatabaseException] if the operation fails.
+  Future<void> setPreferences(Preferences preferences) {
+    return _writeTxn(
+      () => _db.preferences.put(preferences),
+      'setPreferences',
     );
   }
 }
