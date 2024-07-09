@@ -13,6 +13,11 @@ class Asset {
     required this.type,
     required this.createdAt,
     required this.fileName,
+    this.width,
+    this.height,
+    this.duration = Duration.zero,
+    this.stackCount = 0,
+    this.thumbHash,
   });
 
   Id get isarId => fastHash(id);
@@ -24,6 +29,13 @@ class Asset {
   final DateTime createdAt;
   final String fileName;
 
+  //TODO:
+  final int? width;
+  final int? height;
+  final Duration duration;
+  final int? stackCount;
+  final String? thumbHash;
+
   factory Asset.fromJson(String albumId, JsonMap json) {
     return Asset(
       id: json['id'],
@@ -34,9 +46,15 @@ class Asset {
     );
   }
 
+  @ignore
+  bool get isImage => type == AssetType.image;
+
+  @ignore
+  int get stackChildrenCount => stackCount ?? 0;
+
   @override
   int get hashCode => id.hashCode ^ type.hashCode;
-  
+
   @override
   bool operator ==(Object other) {
     return other is Asset && other.id == id && other.type == type;

@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:album_share/models/asset_group.dart';
+import 'package:album_share/services/files/file_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/album.dart';
@@ -22,5 +26,19 @@ abstract class LibraryProviders {
   static final assetsFor = Provider.autoDispose.family<List<Asset>, Album>(
     (ref, album) =>
         ref.watch(assets).where((a) => a.albumId == album.id).toList(),
+  );
+
+  static final groupedAssets =
+      FutureProvider.autoDispose.family<List<Asset>, AssetGroup>(
+    (ref, group) => ref.watch(DatabaseProviders.service).assetsFromGroup(group),
+  );
+
+  static final asset = FutureProvider.autoDispose.family<Uint8List, Asset>(
+    (ref, asset) => ref.watch(FileService.provider).fetch(asset),
+  );
+
+  static final assetPreview =
+      FutureProvider.autoDispose.family<Uint8List, Asset>(
+    (ref, asset) => ref.watch(FileService.provider).fetch(asset, preview: true),
   );
 }

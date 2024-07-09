@@ -1,3 +1,5 @@
+import 'package:album_share/core/utils/extension_methods.dart';
+import 'package:album_share/models/asset_group.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -127,7 +129,7 @@ class DatabaseService {
   /// Retrieves assets for the selected album.
   ///
   /// If album is null, all assets are retrieved.
-  Future<List<Asset>> getAssets([Album? album]) {
+  Future<List<Asset>> assets([Album? album]) {
     return _readTxn(
       () => album == null
           ? _db.assets.where().anyIsarId().findAll()
@@ -135,6 +137,18 @@ class DatabaseService {
       'getAssets',
     );
   }
+
+  /// Retrieves assets for the passed [AssetGroup]
+  /// 
+  /// Removes any entries that could not be found in the database.
+  Future<List<Asset>> assetsFromGroup(AssetGroup group) {
+    return _readTxn(() async {
+      final assets = await _db.assets.getAll(group.isarIds);
+      return assets.listWhereType<Asset>();
+    }, 'assetsFromGroup');
+  }
+
+
 
   Future<void> setAssets(List<Asset> assets) {
     return _writeTxn(

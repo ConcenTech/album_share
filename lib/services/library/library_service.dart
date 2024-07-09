@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:album_share/models/asset_group.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/extension_methods.dart';
@@ -43,7 +44,7 @@ class LibraryService extends StateNotifier<List<Asset>> {
 
     /// Offline, use local
     if (albumFetchFailed) {
-      state = await _db.getAssets();
+      state = await _db.assets();
       return;
     }
 
@@ -77,10 +78,10 @@ class LibraryService extends StateNotifier<List<Asset>> {
           assetsUpdated = true;
         } on ApiException catch (_) {
           print('Failed to reach endpoint, falling back to offline db');
-          assets.addAll(await _db.getAssets(album));
+          assets.addAll(await _db.assets(album));
         }
       } else {
-        assets.addAll(await _db.getAssets(album));
+        assets.addAll(await _db.assets(album));
       }
     }
 

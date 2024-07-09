@@ -55,7 +55,7 @@ class AuthService {
 
     try {
       await _api.checkAndSetEndpoint(endpoint.serverUrl);
-    } on ApiException catch (e) {
+    } on ApiException catch (_) {
       final user = await _db.getUser();
       print('Working offline');
       return user == null;

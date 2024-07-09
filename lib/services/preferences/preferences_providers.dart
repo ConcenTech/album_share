@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../immich/asset_grid/asset_grid_data_structure.dart';
 import '../../models/preferences.dart';
 import '../database/database_providers.dart';
 import 'preferences_notifier.dart';
@@ -13,5 +14,9 @@ abstract class PreferencesProviders {
 
   static final theme = Provider.autoDispose<ThemeMode>(
     (ref) => ref.watch(service.select((p) => p.theme)),
+  );
+
+  static final groupBy = Provider.autoDispose<GroupAssetsBy>(
+    (ref) => ref.watch(service.select((p) => p.groupBy)),
   );
 }
