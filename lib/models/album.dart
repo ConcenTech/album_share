@@ -51,11 +51,15 @@ class Album {
         '\nLast updated: $lastUpdated';
   }
 
+  @ignore
+  int get lastUpdatedMillis => lastUpdated.millisecondsSinceEpoch;
+
   @override
   int get hashCode => id.hashCode;
-  
+
   @override
   bool operator ==(Object other) {
     return other is Album && other.id == id;
   }
 }
+

@@ -11,7 +11,9 @@ class Preferences {
     this.theme = ThemeMode.system,
     this.groupBy = GroupAssetsBy.day,
     this.enableHapticFeedback = true,
-    this.syncFrequency = 300,
+    this.syncFrequency = 1800,
+    this.loadPreview = true,
+    this.loadOriginal = false,
   });
 
   static const id = 0;
@@ -24,6 +26,18 @@ class Preferences {
   /// How often in seconds to check for updates.
   final int syncFrequency;
 
+  /// If true, loads a medium-resolution image instead of the original
+  /// or thumbnail.
+  ///
+  /// Defaults to `true`
+  final bool loadPreview;
+
+  /// If true, loads the full-size original image.
+  ///
+  /// Will increase data usage.
+  /// Defaults to `false`
+  final bool loadOriginal;
+
   @enumerated
   final GroupAssetsBy groupBy;
 
@@ -34,12 +48,16 @@ class Preferences {
     int? syncFrequency,
     GroupAssetsBy? groupBy,
     bool? enableHapticFeedback,
+    bool? loadPreview,
+    bool? loadOriginal,
   }) {
     return Preferences(
       theme: theme ?? this.theme,
       syncFrequency: syncFrequency ?? this.syncFrequency,
       groupBy: groupBy ?? this.groupBy,
-      enableHapticFeedback: enableHapticFeedback??this.enableHapticFeedback,
+      enableHapticFeedback: enableHapticFeedback ?? this.enableHapticFeedback,
+      loadPreview: loadPreview ?? this.loadPreview,
+      loadOriginal: loadOriginal ?? this.loadOriginal,
     );
   }
 }

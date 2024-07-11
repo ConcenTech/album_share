@@ -34,12 +34,9 @@ class ImmichAssetGridView extends ConsumerStatefulWidget {
   final double margin;
   final ImmichAssetGridSelectionListener? listener;
   final Future<void> Function()? onRefresh;
-  final Set<Asset>? preselectedAssets;
-  final bool canDeselect;
   final bool dynamicLayout;
   final void Function(Iterable<ItemPosition> itemPositions)?
       visibleItemsListener;
-  final Widget? topWidget;
   final int heroOffset;
   final bool shrinkWrap;
   final bool showDragScroll;
@@ -52,11 +49,8 @@ class ImmichAssetGridView extends ConsumerStatefulWidget {
     this.listener,
     this.margin = 5.0,
     this.onRefresh,
-    this.preselectedAssets,
-    this.canDeselect = true,
     this.dynamicLayout = true,
     this.visibleItemsListener,
-    this.topWidget,
     this.heroOffset = 0,
     this.shrinkWrap = false,
     this.showDragScroll = true,
@@ -99,15 +93,7 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
     );
   }
 
-  Widget _itemBuilder(BuildContext c, int position) {
-    int index = position;
-    if (widget.topWidget != null) {
-      if (index == 0) {
-        return widget.topWidget!;
-      }
-      index--;
-    }
-
+  Widget _itemBuilder(BuildContext c, int index) {
     final section = widget.renderList.elements[index];
     return _Section(
       sectionIndex: index,
@@ -272,8 +258,7 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
       itemPositionsListener: _itemPositionsListener,
       itemScrollController: _itemScrollController,
       scrollOffsetController: _scrollOffsetController,
-      itemCount: widget.renderList.elements.length +
-          (widget.topWidget != null ? 1 : 0),
+      itemCount: widget.renderList.elements.length,
       addRepaintBoundaries: true,
       shrinkWrap: widget.shrinkWrap,
     );

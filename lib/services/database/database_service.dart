@@ -10,6 +10,12 @@ import '../../models/preferences.dart';
 import '../../models/user.dart';
 
 class DatabaseService {
+  static final DatabaseService _instance = DatabaseService._();
+  DatabaseService._();
+  static DatabaseService get instance {
+    return _instance;
+  }
+
   Isar? _isar;
 
   Isar get _db {
@@ -22,6 +28,14 @@ class DatabaseService {
   Future<T> _readTxn<T>(Future<T> Function() callback, String origin) async {
     try {
       return await _db.txn(callback);
+    } on IsarError catch (e) {
+      throw DatabaseException(e.message, origin);
+    }
+  }
+
+  T _readTxnSync<T>(T Function() callback, String origin) {
+    try {
+      return _db.txnSync(callback);
     } on IsarError catch (e) {
       throw DatabaseException(e.message, origin);
     }
@@ -54,7 +68,7 @@ class DatabaseService {
 
   /// Removes all data from the offline database.
   ///
-  /// Enpoint retained unless [endpoint] set to true.
+  /// Endpoint retained unless [endpoint] set to true.
   Future<void> clear([bool endpoint = false]) async {
     try {
       await _db.writeTxn(() async {
@@ -80,6 +94,20 @@ class DatabaseService {
       () => _db.endpoints.get(Endpoint.id),
       'getEndpoint',
     );
+  }
+
+  /// Synchronously retrieves the server url endpoint.
+  ///
+  /// Throws [DatabaseException] if endpoint not set.
+  Endpoint getEndpointSync() {
+    final endpoint = _readTxnSync(
+      () => _db.endpoints.getSync(Endpoint.id),
+      'getEndpointSync',
+    );
+    if (endpoint == null) {
+      throw DatabaseException('Endpoint not set', 'getEndpointSync');
+    }
+    return endpoint;
   }
 
   /// Inserts or updates the server url endpoint.
@@ -132,14 +160,21 @@ class DatabaseService {
   Future<List<Asset>> assets([Album? album]) {
     return _readTxn(
       () => album == null
-          ? _db.assets.where().anyIsarId().findAll()
-          : _db.assets.where().filter().albumIdEqualTo(album.id).findAll(),
+          ? _db.assets.where().anyIsarId().sortByCreatedAtDesc().findAll()
+          : _db.assets.where().filter().albumIdEqualTo(album.id).sortByCreatedAtDesc().findAll(),
       'getAssets',
     );
   }
 
+  List<Asset> allAssetsSync() {
+    return _readTxnSync(
+      () => _db.assets.where().anyIsarId().sortByCreatedAtDesc().findAllSync(),
+      'allAssetsSync',
+    );
+  }
+
   /// Retrieves assets for the passed [AssetGroup]
-  /// 
+  ///
   /// Removes any entries that could not be found in the database.
   Future<List<Asset>> assetsFromGroup(AssetGroup group) {
     return _readTxn(() async {
@@ -147,8 +182,6 @@ class DatabaseService {
       return assets.listWhereType<Asset>();
     }, 'assetsFromGroup');
   }
-
-
 
   Future<void> setAssets(List<Asset> assets) {
     return _writeTxn(
@@ -179,6 +212,34 @@ class DatabaseService {
       () => _db.preferences.put(preferences),
       'setPreferences',
     );
+  }
+
+  /// Retrieves the token for the current user.
+  ///
+  /// Throws [DatabaseException] if not signed in.
+  Future<String> getAuthToken() async {
+    final user = await _readTxn(
+      () => _db.users.get(User.defaultIsarId),
+      'getAuthToken',
+    );
+    if (user == null) {
+      throw DatabaseException('Not authenticated', 'getAuthToken');
+    }
+    return user.token;
+  }
+
+  /// Synchronously retrieves the token for the current user.
+  ///
+  /// Throws [DatabaseException] if not signed in.
+  String getAuthTokenSync() {
+    final user = _readTxnSync(
+      () => _db.users.getSync(User.defaultIsarId),
+      'getAuthTokenSync',
+    );
+    if (user == null) {
+      throw DatabaseException('Not authenticated', 'getAuthTokenSync');
+    }
+    return user.token;
   }
 }
 

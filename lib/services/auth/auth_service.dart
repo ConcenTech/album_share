@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:album_share/immich/image/cache/remote_image_cache_manager.dart';
+import 'package:album_share/immich/image/cache/thumbnail_image_cache_manager.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
 import '../../models/endpoint.dart';
 import '../../models/user.dart';
 import '../api/api_service.dart';
@@ -63,7 +67,7 @@ class AuthService {
     return await _api.validateAuthToken();
   }
 
-  /// Attemps to login the user with the specified email and password
+  /// Attempts to login the user with the specified email and password
   ///
   /// Throws [ApiException] or [DatabaseException] if unsuccessful.
   /// 401 unsuccessful,
@@ -89,6 +93,8 @@ class AuthService {
     if (loggedOut) {
       // Remove user from offline db
       await _db.clear();
+      await RemoteImageCacheManager().emptyCache();
+      await ThumbnailImageCacheManager().emptyCache();
       // Emit new event to user stream.
       _currentUserStream.add(null);
     }

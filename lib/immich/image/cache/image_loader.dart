@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:album_share/services/database/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -11,12 +12,11 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 class ImageLoader {
   static Future<ui.Codec> loadImageFromCache(
     String uri, {
-      String? accessToken,
     required CacheManager cache,
     required ImageDecoderCallback decode,
     StreamController<ImageChunkEvent>? chunkEvents,
   }) async {
-    final headers = accessToken == null ? null : {'x-immich-user-token' : accessToken};
+    final headers = {'x-immich-user-token' : DatabaseService.instance.getAuthTokenSync()};
 
     final stream = cache.getFileStream(
       uri,

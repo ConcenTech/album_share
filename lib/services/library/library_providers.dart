@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:album_share/immich/asset_grid/asset_grid_data_structure.dart';
 import 'package:album_share/models/asset_group.dart';
 import 'package:album_share/services/files/file_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,10 @@ abstract class LibraryProviders {
 
     return LibraryService(prefs, api, db);
   });
+
+  static final renderList = FutureProvider.autoDispose(
+    (ref) => RenderList.fromAssets(ref.watch(assets), GroupAssetsBy.day),
+  );
 
   /// Listens to a list of assets for the specified album.
   static final assetsFor = Provider.autoDispose.family<List<Asset>, Album>(

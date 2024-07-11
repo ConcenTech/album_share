@@ -17,13 +17,34 @@ const PreferencesSchema = CollectionSchema(
   name: r'Preferences',
   id: 4252616732994050084,
   properties: {
-    r'syncFrequency': PropertySchema(
+    r'enableHapticFeedback': PropertySchema(
       id: 0,
+      name: r'enableHapticFeedback',
+      type: IsarType.bool,
+    ),
+    r'groupBy': PropertySchema(
+      id: 1,
+      name: r'groupBy',
+      type: IsarType.byte,
+      enumMap: _PreferencesgroupByEnumValueMap,
+    ),
+    r'loadOriginal': PropertySchema(
+      id: 2,
+      name: r'loadOriginal',
+      type: IsarType.bool,
+    ),
+    r'loadPreview': PropertySchema(
+      id: 3,
+      name: r'loadPreview',
+      type: IsarType.bool,
+    ),
+    r'syncFrequency': PropertySchema(
+      id: 4,
       name: r'syncFrequency',
       type: IsarType.long,
     ),
     r'theme': PropertySchema(
-      id: 1,
+      id: 5,
       name: r'theme',
       type: IsarType.byte,
       enumMap: _PreferencesthemeEnumValueMap,
@@ -58,8 +79,12 @@ void _preferencesSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.syncFrequency);
-  writer.writeByte(offsets[1], object.theme.index);
+  writer.writeBool(offsets[0], object.enableHapticFeedback);
+  writer.writeByte(offsets[1], object.groupBy.index);
+  writer.writeBool(offsets[2], object.loadOriginal);
+  writer.writeBool(offsets[3], object.loadPreview);
+  writer.writeLong(offsets[4], object.syncFrequency);
+  writer.writeByte(offsets[5], object.theme.index);
 }
 
 Preferences _preferencesDeserialize(
@@ -69,8 +94,14 @@ Preferences _preferencesDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Preferences(
-    syncFrequency: reader.readLongOrNull(offsets[0]) ?? 300,
-    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[1])] ??
+    enableHapticFeedback: reader.readBoolOrNull(offsets[0]) ?? true,
+    groupBy:
+        _PreferencesgroupByValueEnumMap[reader.readByteOrNull(offsets[1])] ??
+            GroupAssetsBy.day,
+    loadOriginal: reader.readBoolOrNull(offsets[2]) ?? false,
+    loadPreview: reader.readBoolOrNull(offsets[3]) ?? true,
+    syncFrequency: reader.readLongOrNull(offsets[4]) ?? 300,
+    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[5])] ??
         ThemeMode.system,
   );
   return object;
@@ -84,8 +115,17 @@ P _preferencesDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongOrNull(offset) ?? 300) as P;
+      return (reader.readBoolOrNull(offset) ?? true) as P;
     case 1:
+      return (_PreferencesgroupByValueEnumMap[reader.readByteOrNull(offset)] ??
+          GroupAssetsBy.day) as P;
+    case 2:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 3:
+      return (reader.readBoolOrNull(offset) ?? true) as P;
+    case 4:
+      return (reader.readLongOrNull(offset) ?? 300) as P;
+    case 5:
       return (_PreferencesthemeValueEnumMap[reader.readByteOrNull(offset)] ??
           ThemeMode.system) as P;
     default:
@@ -93,6 +133,18 @@ P _preferencesDeserializeProp<P>(
   }
 }
 
+const _PreferencesgroupByEnumValueMap = {
+  'day': 0,
+  'month': 1,
+  'auto': 2,
+  'none': 3,
+};
+const _PreferencesgroupByValueEnumMap = {
+  0: GroupAssetsBy.day,
+  1: GroupAssetsBy.month,
+  2: GroupAssetsBy.auto,
+  3: GroupAssetsBy.none,
+};
 const _PreferencesthemeEnumValueMap = {
   'system': 0,
   'light': 1,
@@ -198,6 +250,70 @@ extension PreferencesQueryWhere
 
 extension PreferencesQueryFilter
     on QueryBuilder<Preferences, Preferences, QFilterCondition> {
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      enableHapticFeedbackEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'enableHapticFeedback',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition> groupByEqualTo(
+      GroupAssetsBy value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'groupBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      groupByGreaterThan(
+    GroupAssetsBy value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'groupBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition> groupByLessThan(
+    GroupAssetsBy value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'groupBy',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition> groupByBetween(
+    GroupAssetsBy lower,
+    GroupAssetsBy upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'groupBy',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterFilterCondition> isarIdEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -248,6 +364,26 @@ extension PreferencesQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      loadOriginalEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'loadOriginal',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      loadPreviewEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'loadPreview',
+        value: value,
       ));
     });
   }
@@ -371,6 +507,57 @@ extension PreferencesQueryLinks
 
 extension PreferencesQuerySortBy
     on QueryBuilder<Preferences, Preferences, QSortBy> {
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      sortByEnableHapticFeedback() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'enableHapticFeedback', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      sortByEnableHapticFeedbackDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'enableHapticFeedback', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByGroupBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'groupBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByGroupByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'groupBy', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByLoadOriginal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadOriginal', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      sortByLoadOriginalDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadOriginal', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByLoadPreview() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadPreview', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByLoadPreviewDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadPreview', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy> sortBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'syncFrequency', Sort.asc);
@@ -399,6 +586,32 @@ extension PreferencesQuerySortBy
 
 extension PreferencesQuerySortThenBy
     on QueryBuilder<Preferences, Preferences, QSortThenBy> {
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      thenByEnableHapticFeedback() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'enableHapticFeedback', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      thenByEnableHapticFeedbackDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'enableHapticFeedback', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByGroupBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'groupBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByGroupByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'groupBy', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
@@ -408,6 +621,31 @@ extension PreferencesQuerySortThenBy
   QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByLoadOriginal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadOriginal', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      thenByLoadOriginalDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadOriginal', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByLoadPreview() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadPreview', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByLoadPreviewDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'loadPreview', Sort.desc);
     });
   }
 
@@ -439,6 +677,31 @@ extension PreferencesQuerySortThenBy
 
 extension PreferencesQueryWhereDistinct
     on QueryBuilder<Preferences, Preferences, QDistinct> {
+  QueryBuilder<Preferences, Preferences, QDistinct>
+      distinctByEnableHapticFeedback() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'enableHapticFeedback');
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QDistinct> distinctByGroupBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'groupBy');
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QDistinct> distinctByLoadOriginal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'loadOriginal');
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QDistinct> distinctByLoadPreview() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'loadPreview');
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QDistinct> distinctBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'syncFrequency');
@@ -457,6 +720,31 @@ extension PreferencesQueryProperty
   QueryBuilder<Preferences, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
+    });
+  }
+
+  QueryBuilder<Preferences, bool, QQueryOperations>
+      enableHapticFeedbackProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'enableHapticFeedback');
+    });
+  }
+
+  QueryBuilder<Preferences, GroupAssetsBy, QQueryOperations> groupByProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'groupBy');
+    });
+  }
+
+  QueryBuilder<Preferences, bool, QQueryOperations> loadOriginalProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'loadOriginal');
+    });
+  }
+
+  QueryBuilder<Preferences, bool, QQueryOperations> loadPreviewProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'loadPreview');
     });
   }
 

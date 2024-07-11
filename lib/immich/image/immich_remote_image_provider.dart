@@ -3,16 +3,14 @@ import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:immich_mobile/providers/image/cache/image_loader.dart';
-import 'package:immich_mobile/providers/image/cache/remote_image_cache_manager.dart';
-import 'package:openapi/api.dart' as api;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
-import 'package:immich_mobile/services/app_settings.service.dart';
-import 'package:immich_mobile/entities/asset.entity.dart';
-import 'package:immich_mobile/entities/store.entity.dart';
-import 'package:immich_mobile/utils/image_url_builder.dart';
+
+import '../../models/preferences.dart';
+import '../asset_media_size.dart';
+import '../utils/image_url_builder.dart';
+import 'cache/image_loader.dart';
+import 'cache/remote_image_cache_manager.dart';
 
 /// The remote image provider for full size remote images
 class ImmichRemoteImageProvider
@@ -23,10 +21,13 @@ class ImmichRemoteImageProvider
   /// The image cache manager
   final CacheManager? cacheManager;
 
+  final Preferences _preferences;
+
   ImmichRemoteImageProvider({
     required this.assetId,
+    required Preferences preferences,
     this.cacheManager,
-  });
+  }) : _preferences = preferences;
 
   /// Converts an [ImageProvider]'s settings plus an [ImageConfiguration] to a key
   /// that describes the precise image to load.
@@ -52,16 +53,10 @@ class ImmichRemoteImageProvider
   }
 
   /// Whether to show the original file or load a compressed version
-  bool get _useOriginal => Store.get(
-        AppSettingsEnum.loadOriginal.storeKey,
-        AppSettingsEnum.loadOriginal.defaultValue,
-      );
+  bool get _useOriginal => _preferences.loadOriginal;
 
   /// Whether to load the preview thumbnail first or not
-  bool get _loadPreview => Store.get(
-        AppSettingsEnum.loadPreview.storeKey,
-        AppSettingsEnum.loadPreview.defaultValue,
-      );
+  bool get _loadPreview => _preferences.loadPreview;
 
   // Streams in each stage of the image as we ask for it
   Stream<ui.Codec> _codec(
@@ -74,7 +69,7 @@ class ImmichRemoteImageProvider
     if (_loadPreview) {
       final preview = getThumbnailUrlForRemoteId(
         key.assetId,
-        type: api.AssetMediaSize.thumbnail,
+        type: AssetMediaSize.thumbnail,
       );
 
       yield await ImageLoader.loadImageFromCache(
@@ -88,7 +83,7 @@ class ImmichRemoteImageProvider
     // Load the higher resolution version of the image
     final url = getThumbnailUrlForRemoteId(
       key.assetId,
-      type: api.AssetMediaSize.preview,
+      type: AssetMediaSize.preview,
     );
     final codec = await ImageLoader.loadImageFromCache(
       url,

@@ -15,7 +15,7 @@ class Asset {
     required this.fileName,
     this.width,
     this.height,
-    this.duration = Duration.zero,
+    this.durationInSeconds,
     this.stackCount = 0,
     this.thumbHash,
   });
@@ -32,7 +32,7 @@ class Asset {
   //TODO:
   final int? width;
   final int? height;
-  final Duration duration;
+  final int? durationInSeconds;
   final int? stackCount;
   final String? thumbHash;
 
@@ -48,6 +48,11 @@ class Asset {
 
   @ignore
   bool get isImage => type == AssetType.image;
+
+  @ignore
+  Duration get duration => durationInSeconds == null
+      ? Duration.zero
+      : Duration(seconds: durationInSeconds!);
 
   @ignore
   int get stackChildrenCount => stackCount ?? 0;

@@ -1,3 +1,4 @@
+import 'package:album_share/screens/gallery_viewer/gallery_viewer_screen.dart';
 import 'package:album_share/screens/preferences/preferences_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:vrouter/vrouter.dart';
@@ -40,11 +41,12 @@ class AppRouter {
             VWidget(
               path: _kLibraryRoute,
               widget: const LibraryScreen(),
-            ),
-            VWidget(
+              stackedRoutes: [  VWidget(
               path: _kPreferencesRoute,
               widget: const PreferencesScreen(),
+            ),]
             ),
+          
           ],
         ),
         VGuard(
@@ -63,9 +65,14 @@ class AppRouter {
 
   static void back(BuildContext context) {
     final router = VRouter.of(context);
-    if (router.historyCanBack()) {
-      router.historyBack();
+    final route = router.path;
+
+    if (route == '/'){
+      Navigator.of(context).pop();
+      return;
     }
+    
+    router.pop();
   }
 
   static void toLibrary(BuildContext context) => to(_kLibraryRoute, context);
@@ -82,7 +89,7 @@ class AppRouter {
   }) =>
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) {
-          return Placeholder();
+          return const GalleryViewerScreen();
         }),
       );
 }

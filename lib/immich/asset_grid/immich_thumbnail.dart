@@ -45,6 +45,7 @@ class ImmichThumbnail extends StatelessWidget {
         assetId: asset.id,
         height: thumbnailSize,
         width: thumbnailSize,
+        
       );
   }
 
@@ -73,6 +74,7 @@ class ImmichThumbnail extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
+      
     );
   }
 }

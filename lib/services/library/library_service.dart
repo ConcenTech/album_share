@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:album_share/models/asset_group.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/extension_methods.dart';
@@ -14,7 +13,7 @@ class LibraryService extends StateNotifier<List<Asset>> {
     this._prefs,
     this._api,
     this._db,
-  ) : super(const []) {
+  ) : super(_db.allAssetsSync()) {
     _init();
   }
 
@@ -24,10 +23,15 @@ class LibraryService extends StateNotifier<List<Asset>> {
 
   late Timer timer;
 
-  void _init() {
+  void _init() async {
+    addListener((_) => _didUpdate());
+    await update();
     timer = Timer.periodic(
       _prefs.syncFrequency.seconds,
-      (timer) => update(),
+      (timer) {
+        print('Checking for updates');
+        update();
+      },
     );
   }
 
@@ -44,6 +48,7 @@ class LibraryService extends StateNotifier<List<Asset>> {
 
     /// Offline, use local
     if (albumFetchFailed) {
+      print('Album fetch failed');
       state = await _db.assets();
       return;
     }
@@ -64,8 +69,9 @@ class LibraryService extends StateNotifier<List<Asset>> {
       if (offlineIndex == -1) {
         print('Album ${album.id} not found in offline db.');
         albumUpdated = true;
-      } else if (offlineAlbums[offlineIndex].lastUpdated != album.lastUpdated) {
+      } else if (offlineAlbums[offlineIndex].lastUpdatedMillis != album.lastUpdatedMillis) {
         print('Album ${album.id} has been updated.');
+        print('Diff ${offlineAlbums[offlineIndex].lastUpdated} - ${album.lastUpdated}');
         albumUpdated = true;
       } else {
         print('No changes to album ${album.id}');
@@ -73,7 +79,7 @@ class LibraryService extends StateNotifier<List<Asset>> {
 
       if (albumUpdated) {
         try {
-          print('Fetching new assets');
+          print('Fetching new assets for album ${album.id}');
           assets.addAll(await _api.getAlbumAssets(album.id));
           assetsUpdated = true;
         } on ApiException catch (_) {
@@ -85,19 +91,28 @@ class LibraryService extends StateNotifier<List<Asset>> {
       }
     }
 
-    state = assets;
-
     // Update offline db if albums or assets have changed.
-    if (onlineAlbums != offlineAlbums || assetsUpdated) {
+    if (!onlineAlbums.equals(offlineAlbums) || assetsUpdated) {
+      print('Assets updated: $assetsUpdated');
+      print('Online matches offline: ${onlineAlbums.equals(offlineAlbums)}');
       print('Saving to db');
+      _updateAssets(assets);
       await _db.setAlbums(onlineAlbums);
       await _db.setAssets(state);
     }
+  }
+
+  void _updateAssets(List<Asset> assets){
+    state = assets.sorted();
   }
 
   @override
   void dispose() {
     timer.cancel();
     super.dispose();
+  }
+
+  void _didUpdate() {
+    print('State updated');
   }
 }

@@ -51,7 +51,7 @@ class ApiService {
 
   /// Attempts to ping the server.
   ///
-  /// Returns true if a successful response is recieved, otherwise returns false.
+  /// Returns true if a successful response is received, otherwise returns false.
   Future<bool> _isEndpointAvailable(String serverUrl) async {
     try {
       await _dio.get(
@@ -111,6 +111,9 @@ class ApiService {
     }
   }
 
+  /// Gets the profile for the current user.
+  /// 
+  /// Throws [ApiException] if unsuccessful.
   Future<User> currentUser() async {
     _expectEndpointSet();
 
@@ -119,7 +122,12 @@ class ApiService {
       expected: JSON_MAP,
     );
 
-    return User.fromJson(body);
+    // Access token is not returned in the response. 
+    // However, because the user is authenticated the access token can be found in the request cookies.
+    final cookies = await _cookieJar.loadForRequest(Uri.parse(_dio.options.baseUrl));
+    final token = cookies.firstWhere((e) => e.name == 'immich_access_token').value;
+
+    return User.fromJson(body, token);
   }
 
   /// Logs out the current user.

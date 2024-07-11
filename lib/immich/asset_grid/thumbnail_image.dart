@@ -12,15 +12,6 @@ class ThumbnailImage extends ConsumerWidget {
   /// Whether to show the show stack icon over the image or not
   final bool showStack;
 
-  /// Whether to show the checkmark indicating that this image is selected
-  final bool isSelected;
-
-  /// Can override [isSelected] and never show the selection indicator
-  final bool multiselectEnabled;
-
-  /// If we are allowed to deselect this image
-  final bool canDeselect;
-
   /// The offset index to apply to this hero tag for animation
   final int heroOffset;
 
@@ -28,10 +19,7 @@ class ThumbnailImage extends ConsumerWidget {
     super.key,
     required this.asset,
     this.showStack = false,
-    this.isSelected = false,
-    this.multiselectEnabled = false,
     this.heroOffset = 0,
-    this.canDeselect = true,
   });
 
   @override
@@ -39,26 +27,6 @@ class ThumbnailImage extends ConsumerWidget {
     final assetContainerColor = context.isDarkTheme
         ? Colors.blueGrey
         : context.themeData.primaryColorLight;
-
-    Widget buildSelectionIcon(Asset asset) {
-      if (isSelected) {
-        return Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: assetContainerColor,
-          ),
-          child: Icon(
-            Icons.check_circle_rounded,
-            color: context.primaryColor,
-          ),
-        );
-      } else {
-        return const Icon(
-          Icons.circle_outlined,
-          color: Colors.white,
-        );
-      }
-    }
 
     Widget buildVideoIcon() {
       final minutes = asset.duration.inMinutes;
@@ -123,7 +91,7 @@ class ThumbnailImage extends ConsumerWidget {
     }
 
     Widget buildImage() {
-      final image = SizedBox(
+    return SizedBox(
         width: 300,
         height: 300,
         child: Hero(
@@ -135,23 +103,6 @@ class ThumbnailImage extends ConsumerWidget {
           ),
         ),
       );
-      if (!multiselectEnabled || !isSelected) {
-        return image;
-      }
-      return Container(
-        decoration: BoxDecoration(
-          color: canDeselect ? assetContainerColor : Colors.grey,
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(15.0),
-            bottomRight: Radius.circular(15.0),
-            bottomLeft: Radius.circular(15.0),
-            topLeft: Radius.zero,
-          ),
-          child: image,
-        ),
-      );
     }
 
     return Stack(
@@ -159,25 +110,8 @@ class ThumbnailImage extends ConsumerWidget {
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.decelerate,
-          decoration: BoxDecoration(
-            border: multiselectEnabled && isSelected
-                ? Border.all(
-                    color: canDeselect ? assetContainerColor : Colors.grey,
-                    width: 8,
-                  )
-                : const Border(),
-          ),
           child: buildImage(),
         ),
-        if (multiselectEnabled)
-          Padding(
-            padding: const EdgeInsets.all(3.0),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: buildSelectionIcon(asset),
-            ),
-          ),
-      
         if (!asset.isImage) buildVideoIcon(),
         if (asset.stackChildrenCount > 0) buildStackIcon(),
       ],

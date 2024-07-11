@@ -51,3 +51,7 @@ Accept: application/json
 GET {{baseUrl}}/albums/dfab5afd-cec1-4224-8da2-fef934b3205f
 ?withoutAssets=false
 Accept: application/json
+
+### Get current user
+GET {{baseUrl}}/users/me
+Accept: application/json

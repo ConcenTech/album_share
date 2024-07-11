@@ -1,3 +1,4 @@
+import 'package:album_share/screens/preferences/sign_out_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,7 +42,7 @@ class PreferencesWidget extends ConsumerWidget {
           value: preferences.theme,
           onChanged: (v) => _service(ref).setTheme(v),
         ),
-        Text('User'),
+        Text('User', style: captionStyle),
         ListTile(
           title: const Text('Change password'),
           trailing: IconButton(
@@ -50,6 +51,7 @@ class PreferencesWidget extends ConsumerWidget {
           ),
           onTap: (){},
         ),
+        const SignOutWidget(),
       ],
     );
   }
