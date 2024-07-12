@@ -1,3 +1,4 @@
+import 'package:album_share/screens/preferences/max_extent_widget.dart';
 import 'package:album_share/screens/preferences/sign_out_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,6 +43,10 @@ class PreferencesWidget extends ConsumerWidget {
           value: preferences.theme,
           onChanged: (v) => _service(ref).setTheme(v),
         ),
+        MaxExtentWidget(
+          maxExtent: preferences.maxExtent,
+          onChanged: (v) => _service(ref).setMaxExtent(v),
+        ),
         Text('User', style: captionStyle),
         ListTile(
           title: const Text('Change password'),
@@ -49,7 +54,7 @@ class PreferencesWidget extends ConsumerWidget {
             onPressed: () {},
             icon: const Icon(Icons.chevron_right),
           ),
-          onTap: (){},
+          onTap: () {},
         ),
         const SignOutWidget(),
       ],

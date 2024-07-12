@@ -4,20 +4,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/preferences.dart';
 import '../database/database_service.dart';
 
-class PreferencesService extends StateNotifier<Preferences>{
-
+class PreferencesService extends StateNotifier<Preferences> {
   PreferencesService(this._db) : super(const Preferences());
 
   final DatabaseService _db;
 
+  void set(Preferences preferences) {
+    state = preferences;
+    _db.setPreferences(preferences);
+  }
+
   void setTheme(ThemeMode theme) {
-    state = state.copyWith(theme: theme);
-    _db.setPreferences(state);
+    set(state.copyWith(theme: theme));
   }
 
   void setSyncFrequency(int syncFrequency) {
-    state = state.copyWith(syncFrequency: syncFrequency);
-    _db.setPreferences(state);
+    set(state.copyWith(syncFrequency: syncFrequency));
   }
-  
+
+  void setMaxExtent(int maxExtent) {
+    set(state.copyWith(maxExtent: maxExtent));
+  }
 }

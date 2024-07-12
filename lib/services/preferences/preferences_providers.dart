@@ -19,4 +19,8 @@ abstract class PreferencesProviders {
   static final groupBy = Provider.autoDispose<GroupAssetsBy>(
     (ref) => ref.watch(service.select((p) => p.groupBy)),
   );
+
+  static final maxExtent = Provider.autoDispose<int>(
+    (ref) => ref.watch(service.select((p) => p.maxExtent)),
+  );
 }

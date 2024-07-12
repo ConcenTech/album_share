@@ -21,7 +21,7 @@ class LibraryService extends StateNotifier<List<Asset>> {
   final ApiService _api;
   final DatabaseService _db;
 
-  late Timer timer;
+  Timer? timer;
 
   void _init() async {
     addListener((_) => _didUpdate());
@@ -69,9 +69,11 @@ class LibraryService extends StateNotifier<List<Asset>> {
       if (offlineIndex == -1) {
         print('Album ${album.id} not found in offline db.');
         albumUpdated = true;
-      } else if (offlineAlbums[offlineIndex].lastUpdatedMillis != album.lastUpdatedMillis) {
+      } else if (offlineAlbums[offlineIndex].lastUpdatedMillis !=
+          album.lastUpdatedMillis) {
         print('Album ${album.id} has been updated.');
-        print('Diff ${offlineAlbums[offlineIndex].lastUpdated} - ${album.lastUpdated}');
+        print(
+            'Diff ${offlineAlbums[offlineIndex].lastUpdated} - ${album.lastUpdated}');
         albumUpdated = true;
       } else {
         print('No changes to album ${album.id}');
@@ -102,13 +104,13 @@ class LibraryService extends StateNotifier<List<Asset>> {
     }
   }
 
-  void _updateAssets(List<Asset> assets){
+  void _updateAssets(List<Asset> assets) {
     state = assets.sorted();
   }
 
   @override
   void dispose() {
-    timer.cancel();
+    timer?.cancel();
     super.dispose();
   }
 

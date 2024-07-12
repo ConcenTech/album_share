@@ -14,6 +14,7 @@ class Preferences {
     this.syncFrequency = 1800,
     this.loadPreview = true,
     this.loadOriginal = false,
+    this.maxExtent = 30,
   });
 
   static const id = 0;
@@ -43,6 +44,9 @@ class Preferences {
 
   final bool enableHapticFeedback;
 
+  /// The maximum size of thumbnails in the library view.
+  final int maxExtent;
+
   Preferences copyWith({
     ThemeMode? theme,
     int? syncFrequency,
@@ -50,6 +54,7 @@ class Preferences {
     bool? enableHapticFeedback,
     bool? loadPreview,
     bool? loadOriginal,
+    int? maxExtent,
   }) {
     return Preferences(
       theme: theme ?? this.theme,
@@ -58,6 +63,7 @@ class Preferences {
       enableHapticFeedback: enableHapticFeedback ?? this.enableHapticFeedback,
       loadPreview: loadPreview ?? this.loadPreview,
       loadOriginal: loadOriginal ?? this.loadOriginal,
+      maxExtent: maxExtent ?? this.maxExtent,
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/asset.dart';
-import '../extensions/build_context_extensions.dart';
 import 'immich_thumbnail.dart';
 
 class ThumbnailImage extends ConsumerWidget {
@@ -24,10 +23,6 @@ class ThumbnailImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final assetContainerColor = context.isDarkTheme
-        ? Colors.blueGrey
-        : context.themeData.primaryColorLight;
-
     Widget buildVideoIcon() {
       final minutes = asset.duration.inMinutes;
       final durationString = asset.duration.toString();
@@ -91,7 +86,7 @@ class ThumbnailImage extends ConsumerWidget {
     }
 
     Widget buildImage() {
-    return SizedBox(
+      return SizedBox(
         width: 300,
         height: 300,
         child: Hero(

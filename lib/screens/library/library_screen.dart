@@ -1,3 +1,4 @@
+import 'package:album_share/services/preferences/preferences_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,16 +15,16 @@ class LibraryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       showTitleBar: true,
-      titleBarIcons: const [RefreshButton(),PreferencesButton()],
+      titleBarIcons: const [RefreshButton(), PreferencesButton()],
       body: Center(
         child: Consumer(builder: (context, ref, child) {
+          final maxExtent = ref.watch(PreferencesProviders.maxExtent);
           final renderList = ref.watch(LibraryProviders.renderList);
           return renderList.when(
             data: (renderList) {
               if (renderList.isEmpty) {
                 return Center(
                   child: Column(
-                    
                     children: [
                       const Text('No files shared with you yet.'),
                       FilledButton(
@@ -38,7 +39,7 @@ class LibraryScreen extends StatelessWidget {
               }
               return ImmichAssetGridView(
                 renderList: renderList,
-                assetsPerRow: 4,
+                assetMaxExtent: maxExtent,
                 onRefresh: () =>
                     ref.read(LibraryProviders.assets.notifier).update(),
               );

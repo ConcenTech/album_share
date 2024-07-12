@@ -30,7 +30,7 @@ typedef ImmichAssetGridSelectionListener = void Function(
 
 class ImmichAssetGridView extends ConsumerStatefulWidget {
   final RenderList renderList;
-  final int assetsPerRow;
+  final int assetMaxExtent;
   final double margin;
   final ImmichAssetGridSelectionListener? listener;
   final Future<void> Function()? onRefresh;
@@ -45,7 +45,7 @@ class ImmichAssetGridView extends ConsumerStatefulWidget {
   const ImmichAssetGridView({
     super.key,
     required this.renderList,
-    required this.assetsPerRow,
+    required this.assetMaxExtent,
     this.listener,
     this.margin = 5.0,
     this.onRefresh,
@@ -100,7 +100,7 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
       section: section,
       margin: widget.margin,
       renderList: widget.renderList,
-      assetsPerRow: widget.assetsPerRow,
+      assetMaxExtent: widget.assetMaxExtent,
       scrolling: _scrolling,
       dynamicLayout: widget.dynamicLayout,
       showStack: widget.showStack,
@@ -328,7 +328,7 @@ class _Section extends StatelessWidget {
   final int sectionIndex;
   final bool scrolling;
   final double margin;
-  final int assetsPerRow;
+  final int assetMaxExtent;
   final RenderList renderList;
   final bool dynamicLayout;
   final bool showStack;
@@ -339,7 +339,7 @@ class _Section extends StatelessWidget {
     required this.sectionIndex,
     required this.scrolling,
     required this.margin,
-    required this.assetsPerRow,
+    required this.assetMaxExtent,
     required this.renderList,
     required this.dynamicLayout,
     required this.showStack,
@@ -352,6 +352,7 @@ class _Section extends StatelessWidget {
   ) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final assetsPerRow = (constraints.maxWidth / assetMaxExtent).ceil();
         final width = constraints.maxWidth / assetsPerRow -
             margin * (assetsPerRow - 1) / assetsPerRow;
         final rows = (section.count + assetsPerRow - 1) ~/ assetsPerRow;
