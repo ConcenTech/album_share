@@ -38,13 +38,18 @@ const PreferencesSchema = CollectionSchema(
       name: r'loadPreview',
       type: IsarType.bool,
     ),
-    r'syncFrequency': PropertySchema(
+    r'maxExtent': PropertySchema(
       id: 4,
+      name: r'maxExtent',
+      type: IsarType.long,
+    ),
+    r'syncFrequency': PropertySchema(
+      id: 5,
       name: r'syncFrequency',
       type: IsarType.long,
     ),
     r'theme': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'theme',
       type: IsarType.byte,
       enumMap: _PreferencesthemeEnumValueMap,
@@ -83,8 +88,9 @@ void _preferencesSerialize(
   writer.writeByte(offsets[1], object.groupBy.index);
   writer.writeBool(offsets[2], object.loadOriginal);
   writer.writeBool(offsets[3], object.loadPreview);
-  writer.writeLong(offsets[4], object.syncFrequency);
-  writer.writeByte(offsets[5], object.theme.index);
+  writer.writeLong(offsets[4], object.maxExtent);
+  writer.writeLong(offsets[5], object.syncFrequency);
+  writer.writeByte(offsets[6], object.theme.index);
 }
 
 Preferences _preferencesDeserialize(
@@ -100,8 +106,9 @@ Preferences _preferencesDeserialize(
             GroupAssetsBy.day,
     loadOriginal: reader.readBoolOrNull(offsets[2]) ?? false,
     loadPreview: reader.readBoolOrNull(offsets[3]) ?? true,
-    syncFrequency: reader.readLongOrNull(offsets[4]) ?? 300,
-    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[5])] ??
+    maxExtent: reader.readLongOrNull(offsets[4]) ?? 60,
+    syncFrequency: reader.readLongOrNull(offsets[5]) ?? 1800,
+    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
         ThemeMode.system,
   );
   return object;
@@ -124,8 +131,10 @@ P _preferencesDeserializeProp<P>(
     case 3:
       return (reader.readBoolOrNull(offset) ?? true) as P;
     case 4:
-      return (reader.readLongOrNull(offset) ?? 300) as P;
+      return (reader.readLongOrNull(offset) ?? 60) as P;
     case 5:
+      return (reader.readLongOrNull(offset) ?? 1800) as P;
+    case 6:
       return (_PreferencesthemeValueEnumMap[reader.readByteOrNull(offset)] ??
           ThemeMode.system) as P;
     default:
@@ -389,6 +398,62 @@ extension PreferencesQueryFilter
   }
 
   QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      maxExtentEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'maxExtent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      maxExtentGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'maxExtent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      maxExtentLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'maxExtent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      maxExtentBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'maxExtent',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
       syncFrequencyEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -558,6 +623,18 @@ extension PreferencesQuerySortBy
     });
   }
 
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByMaxExtent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maxExtent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByMaxExtentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maxExtent', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy> sortBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'syncFrequency', Sort.asc);
@@ -649,6 +726,18 @@ extension PreferencesQuerySortThenBy
     });
   }
 
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByMaxExtent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maxExtent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByMaxExtentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'maxExtent', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy> thenBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'syncFrequency', Sort.asc);
@@ -702,6 +791,12 @@ extension PreferencesQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Preferences, Preferences, QDistinct> distinctByMaxExtent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'maxExtent');
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QDistinct> distinctBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'syncFrequency');
@@ -745,6 +840,12 @@ extension PreferencesQueryProperty
   QueryBuilder<Preferences, bool, QQueryOperations> loadPreviewProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'loadPreview');
+    });
+  }
+
+  QueryBuilder<Preferences, int, QQueryOperations> maxExtentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'maxExtent');
     });
   }
 

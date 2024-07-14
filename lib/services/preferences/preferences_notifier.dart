@@ -5,9 +5,18 @@ import '../../models/preferences.dart';
 import '../database/database_service.dart';
 
 class PreferencesService extends StateNotifier<Preferences> {
-  PreferencesService(this._db) : super(const Preferences());
+  PreferencesService(this._db) : super(const Preferences()){
+    _init();
+  }
 
   final DatabaseService _db;
+
+  void _init() async {
+    final prefs = await _db.getPreferences();
+    if (prefs !=null){
+      state = prefs;
+    }
+  }
 
   void set(Preferences preferences) {
     state = preferences;

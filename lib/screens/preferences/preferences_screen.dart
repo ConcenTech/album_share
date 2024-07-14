@@ -33,7 +33,7 @@ class PreferencesWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final preferences = ref.watch(PreferencesProviders.service);
-    final captionStyle = Theme.of(context).textTheme.labelLarge;
+    final captionStyle = Theme.of(context).textTheme.titleMedium;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

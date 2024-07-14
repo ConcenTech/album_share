@@ -18,6 +18,8 @@ class MaxExtentWidget extends StatefulWidget {
 class _MaxExtentWidgetState extends State<MaxExtentWidget> {
   int? _value;
 
+  int get _extent => _value ?? widget.maxExtent;
+
   void _update(double val, bool notify) {
     setState(() {
       _value = val.toInt();
@@ -25,29 +27,42 @@ class _MaxExtentWidgetState extends State<MaxExtentWidget> {
     if (notify) {
       print('Notify');
       widget.onChanged(_value!);
+    } else {
+      print(val);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    const padding = EdgeInsets.symmetric(horizontal: 16.0);
+    const sliderSteps = (300 - 60) ~/ 10;
     return ListTile(
       isThreeLine: true,
-      title: const Text('Asset max width'),
+      title: const Padding(
+        padding: padding,
+        child: Text('Asset max width'),
+      ),
+      contentPadding: const EdgeInsets.all(0),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Describe what this does.'),
+          const Padding(
+            padding: padding,
+            child: Text('The maximum size of thumbnails is the library.'
+                '\nThumbnails may be smaller to prevent unused space, but will be no larger than this size.'),
+          ),
           Slider(
-            min: 5,
-            max: 500,
-            value: (_value ?? widget.maxExtent).toDouble(),
+            min: 60,
+            max: 300,
+            divisions: sliderSteps,
+            label: _extent.toString(),
+            value: _extent.toDouble(),
             onChanged: (v) => _update(v, false),
             onChangeEnd: (v) => _update(v, true),
           ),
           LayoutBuilder(
             builder: (context, constraints) {
-              final widgetCount =
-                  (constraints.maxWidth / widget.maxExtent).ceil();
+              final widgetCount = (constraints.maxWidth / _extent).ceil();
               final size = constraints.maxWidth / widgetCount;
               return Row(
                 children: List.filled(

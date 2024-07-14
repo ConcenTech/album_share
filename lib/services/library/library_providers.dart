@@ -1,37 +1,45 @@
 import 'dart:typed_data';
 
-import 'package:album_share/immich/asset_grid/asset_grid_data_structure.dart';
-import 'package:album_share/models/asset_group.dart';
-import 'package:album_share/services/files/file_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/album.dart';
+import '../../immich/asset_grid/asset_grid_data_structure.dart';
 import '../../models/asset.dart';
+import '../../models/asset_group.dart';
+import '../../models/library_state.dart';
 import '../api/api_provider.dart';
 import '../database/database_providers.dart';
+import '../files/file_service.dart';
 import '../preferences/preferences_providers.dart';
 import 'library_service.dart';
 
 abstract class LibraryProviders {
   /// Listens to a list of all assets.
-  static final assets =
-      StateNotifierProvider.autoDispose<LibraryService, List<Asset>>((ref) {
+  static final state =
+      StateNotifierProvider.autoDispose<LibraryService, LibraryState>((ref) {
     final db = ref.watch(DatabaseProviders.service);
     final api = ref.watch(ApiProviders.service);
-    final prefs = ref.watch(PreferencesProviders.service);
+    final syncFrequency =
+        ref.watch(PreferencesProviders.service.select((p) => p.syncFrequency));
 
-    return LibraryService(prefs, api, db);
+    return LibraryService(syncFrequency, api, db);
   });
 
   static final renderList = FutureProvider.autoDispose(
-    (ref) => RenderList.fromAssets(ref.watch(assets), GroupAssetsBy.day),
+    (ref) {
+      final libraryState = ref.watch(state);
+      final groupBy = ref.watch(PreferencesProviders.groupBy);
+      return libraryState.when(
+        building: () => Future.value(RenderList([], null, [])),
+        built: (assets) => RenderList.fromAssets(assets, groupBy),
+      );
+    },
   );
 
   /// Listens to a list of assets for the specified album.
-  static final assetsFor = Provider.autoDispose.family<List<Asset>, Album>(
-    (ref, album) =>
-        ref.watch(assets).where((a) => a.albumId == album.id).toList(),
-  );
+  // static final assetsFor = Provider.autoDispose.family<List<Asset>, Album>(
+  //   (ref, album) =>
+  //       ref.watch(assets).where((a) => a.albumId == album.id).toList(),
+  // );
 
   static final groupedAssets =
       FutureProvider.autoDispose.family<List<Asset>, AssetGroup>(

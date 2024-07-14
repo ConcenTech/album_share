@@ -32,7 +32,7 @@ class MainApp extends ConsumerWidget {
 
     return ref.watch(appInitProvider).when(
           loading: () => const InitSplashScreen(),
-          error: (error, _) => InitFailScreen(error: '$error'),
+          error: (error, _) => InitFailScreen(error),
           data: (data) {
             final appRouter = ref.watch(appRouterProvider);
             final appTheme = ref.watch(PreferencesProviders.theme);

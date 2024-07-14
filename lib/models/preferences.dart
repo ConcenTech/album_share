@@ -14,7 +14,7 @@ class Preferences {
     this.syncFrequency = 1800,
     this.loadPreview = true,
     this.loadOriginal = false,
-    this.maxExtent = 30,
+    this.maxExtent = 60,
   });
 
   static const id = 0;

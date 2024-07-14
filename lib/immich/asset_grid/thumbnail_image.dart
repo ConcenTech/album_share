@@ -90,7 +90,7 @@ class ThumbnailImage extends ConsumerWidget {
         width: 300,
         height: 300,
         child: Hero(
-          tag: asset.isarId + heroOffset,
+          tag: '${asset.id}_$heroOffset',
           child: ImmichThumbnail(
             asset: asset,
             height: 250,

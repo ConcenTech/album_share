@@ -1,4 +1,5 @@
 import 'package:album_share/core/components/app_snackbar.dart';
+import 'package:album_share/core/dialogs/confirmation_dialog.dart';
 import 'package:album_share/core/utils/extension_methods.dart';
 import 'package:album_share/routes/app_router.dart';
 import 'package:album_share/services/auth/auth_providers.dart';
@@ -17,6 +18,10 @@ class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
 
   void _signOut() async {
     if (_loading){
+      return;
+    }
+    final confirmed = await showConfirmationDialog(context: context);
+    if (!confirmed) {
       return;
     }
     _setLoading(true);

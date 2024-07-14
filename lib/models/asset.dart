@@ -1,6 +1,5 @@
 import 'package:isar/isar.dart';
 
-import '../core/utils/db_utils.dart';
 import 'json_map.dart';
 
 part 'asset.g.dart';
@@ -9,7 +8,7 @@ part 'asset.g.dart';
 class Asset {
   const Asset({
     required this.id,
-    required this.albumId,
+    required this.albums,
     required this.type,
     required this.createdAt,
     required this.fileName,
@@ -20,10 +19,12 @@ class Asset {
     this.thumbHash,
   });
 
-  Id get isarId => fastHash(id);
+  Id get isarId => Isar.autoIncrement;
 
   final String id;
-  final String albumId;
+
+  /// A list of album ids associated with this asset.
+  final List<String> albums;
   @enumerated
   final AssetType type;
   final DateTime createdAt;
@@ -39,10 +40,20 @@ class Asset {
   factory Asset.fromJson(String albumId, JsonMap json) {
     return Asset(
       id: json['id'],
-      albumId: albumId,
+      albums: [albumId],
       type: AssetType.fromString(json['type']),
       createdAt: DateTime.parse(json['fileCreatedAt']),
       fileName: json['originalFileName'],
+    );
+  }
+
+  Asset merge(Asset asset) {
+    return Asset(
+      id: id,
+      albums: [...albums, ...asset.albums],
+      type: type,
+      createdAt: createdAt,
+      fileName: fileName,
     );
   }
 

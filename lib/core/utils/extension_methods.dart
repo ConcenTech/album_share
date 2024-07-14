@@ -6,7 +6,7 @@ extension Time on int {
   Duration get minutes => Duration(minutes: this);
   Duration get hours => Duration(hours: this);
   Duration get days => Duration(days: this);
-  Duration get weeks => Duration(days: this *7);
+  Duration get weeks => Duration(days: this * 7);
 }
 
 extension ListExtensions<E> on Iterable<E> {
@@ -16,7 +16,7 @@ extension ListExtensions<E> on Iterable<E> {
 
   List<E> listWhere(bool Function(E e) f) => where(f).toList();
 
- List<T> mapList<T>(T Function(E e) f) => map(f).toList();
+  List<T> mapList<T>(T Function(E e) f) => map(f).toList();
 }
 
 extension AlbumListEquality on List<Album> {
@@ -35,7 +35,25 @@ extension AlbumListEquality on List<Album> {
 
 extension AssetListSorter on List<Asset> {
   List<Asset> sorted() {
-   return [...this]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    
+    return [...this]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  void merge(List<Asset> assets) {
+    if (isEmpty || assets.isEmpty){
+      return;
+    }
+    final a = this;
+    for (var asset in assets) {
+      final ind = a.indexWhere((ass) => ass.id == asset.id);
+      if (ind == -1) {
+        a.add(asset);
+      } else {
+        a[ind] = a[ind].merge(asset);
+      }
+    }
+  }
+
+  List<Asset> merged(List<Asset> assets) {
+    return [...this]..merge(assets);
   }
 }

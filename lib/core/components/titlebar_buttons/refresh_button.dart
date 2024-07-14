@@ -19,8 +19,7 @@ class _RefreshButtonState extends ConsumerState<RefreshButton> {
 
   void _refresh() async {
     _setStatus(_Status.refreshing);
-    await ref.read(LibraryProviders.assets.notifier).update();
-    await Future.delayed(2.seconds);
+    await ref.read(LibraryProviders.state.notifier).update();
     _setStatus(_Status.timeout);
     if (_timer?.isActive ?? false) {
       return;

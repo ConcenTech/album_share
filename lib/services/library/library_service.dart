@@ -4,20 +4,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/extension_methods.dart';
 import '../../models/asset.dart';
-import '../../models/preferences.dart';
+import '../../models/library_state.dart';
 import '../api/api_service.dart';
 import '../database/database_service.dart';
 
-class LibraryService extends StateNotifier<List<Asset>> {
+class LibraryService extends StateNotifier<LibraryState> {
   LibraryService(
-    this._prefs,
+    this._syncFrequency,
     this._api,
     this._db,
-  ) : super(_db.allAssetsSync()) {
+  ) : super(LibraryService._loadFromDb(_db)) {
     _init();
   }
 
-  final Preferences _prefs;
+  /// Checks the offline db for assets.
+  /// If nothing found, this is likely the first load of the app.
+  /// Check online before setting state to built.
+  static LibraryState _loadFromDb(DatabaseService db) {
+    final assets = db.allAssetsSync();
+    if (assets.isEmpty){
+      return LibraryState.building();
+    }
+    return LibraryState.built(assets);
+  }
+
+  final int _syncFrequency;
   final ApiService _api;
   final DatabaseService _db;
 
@@ -27,7 +38,7 @@ class LibraryService extends StateNotifier<List<Asset>> {
     addListener((_) => _didUpdate());
     await update();
     timer = Timer.periodic(
-      _prefs.syncFrequency.seconds,
+      _syncFrequency.seconds,
       (timer) {
         print('Checking for updates');
         update();
@@ -49,7 +60,9 @@ class LibraryService extends StateNotifier<List<Asset>> {
     /// Offline, use local
     if (albumFetchFailed) {
       print('Album fetch failed');
-      state = await _db.assets();
+      if (state.isBuilding){
+        state = LibraryState.built(await _db.assets());
+      }
       return;
     }
 
@@ -58,6 +71,7 @@ class LibraryService extends StateNotifier<List<Asset>> {
     // Downloaded new assets.
     bool assetsUpdated = false;
 
+    // Use a set to ensure duplicates are removed.
     final List<Asset> assets = [];
     for (var album in onlineAlbums) {
       final offlineIndex = offlineAlbums.indexOf(album);
@@ -82,14 +96,22 @@ class LibraryService extends StateNotifier<List<Asset>> {
       if (albumUpdated) {
         try {
           print('Fetching new assets for album ${album.id}');
-          assets.addAll(await _api.getAlbumAssets(album.id));
+          assets.merge(await _api.getAlbumAssets(album.id));
           assetsUpdated = true;
         } on ApiException catch (_) {
           print('Failed to reach endpoint, falling back to offline db');
-          assets.addAll(await _db.assets(album));
+          assets.merge(await _db.assets(album));
         }
       } else {
-        assets.addAll(await _db.assets(album));
+        assets.merge(await _db.assets(album));
+      }
+    }
+
+    for (int i = 0; i < assets.length; i++) {
+      final asset = assets.elementAt(i);
+      final duplicates = assets.where((a) => a.id == asset.id);
+      if (duplicates.length > 1){
+        throw 'Duplicate found for asset: $asset';
       }
     }
 
@@ -100,12 +122,17 @@ class LibraryService extends StateNotifier<List<Asset>> {
       print('Saving to db');
       _updateAssets(assets);
       await _db.setAlbums(onlineAlbums);
-      await _db.setAssets(state);
+      await _db.setAssets(state.assets);
+    }
+    
+    // Nothing online, nothing offline but all checks complete.
+    if (state.isBuilding){
+      _updateAssets([]);
     }
   }
 
   void _updateAssets(List<Asset> assets) {
-    state = assets.sorted();
+    state = LibraryState.built(assets.sorted());
   }
 
   @override

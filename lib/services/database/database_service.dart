@@ -52,6 +52,10 @@ class DatabaseService {
 
   /// Opens the database ready for reading and writing.
   Future<void> init() async {
+    if (_isar !=null){
+      print('Database already open');
+      return;
+    }
     try {
       final dir = await getApplicationDocumentsDirectory();
       _isar = await Isar.open([
@@ -161,7 +165,7 @@ class DatabaseService {
     return _readTxn(
       () => album == null
           ? _db.assets.where().anyIsarId().sortByCreatedAtDesc().findAll()
-          : _db.assets.where().filter().albumIdEqualTo(album.id).sortByCreatedAtDesc().findAll(),
+          : _db.assets.where().filter().albumsElementContains(album.id).sortByCreatedAtDesc().findAll(),
       'getAssets',
     );
   }
