@@ -2,6 +2,7 @@
 import 'dart:developer';
 import 'dart:math';
 
+import 'package:album_share/screens/asset_viewer/asset_viewer_screen_state.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -521,12 +522,13 @@ class _AssetRow extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () {
-              AppRouter.toGalleryViewer(
+              AppRouter.toAssetViewer(
                 context,
-                renderList: renderList,
-                initialIndex: absoluteOffset + index,
-                heroOffset: heroOffset,
-                showStack: showStack,
+                AssetViewerScreenState(
+                  initialIndex: absoluteOffset + index,
+                  heroOffset: heroOffset,
+                  showStack: showStack,
+                ),
               );
             },
             child: AssetIndexWrapper(
