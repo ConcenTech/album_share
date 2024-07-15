@@ -1,4 +1,4 @@
-import 'package:album_share/core/components/app_scaffold.dart';
+import 'package:album_share/core/components/scaffold/app_scaffold.dart';
 import 'package:flutter/material.dart';
 
 class GalleryViewerScreen extends StatelessWidget {

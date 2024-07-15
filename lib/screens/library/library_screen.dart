@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/components/app_scaffold.dart';
+import '../../core/components/scaffold/app_scaffold.dart';
 import '../../core/components/titlebar_buttons/preferences_button.dart';
 import '../../core/components/titlebar_buttons/refresh_button.dart';
 import '../../immich/asset_grid/immich_asset_grid_view.dart';

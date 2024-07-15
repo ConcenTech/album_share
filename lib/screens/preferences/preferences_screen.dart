@@ -3,7 +3,7 @@ import 'package:album_share/screens/preferences/sign_out_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/components/app_scaffold.dart';
+import '../../core/components/scaffold/app_scaffold.dart';
 import '../../services/preferences/preferences_notifier.dart';
 import '../../services/preferences/preferences_providers.dart';
 import 'theme_widget.dart';
