@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vrouter/vrouter.dart';
 
 import '../../constants/constants.dart';
-import '../../core/components/app_scaffold.dart';
+import '../../core/components/scaffold/app_scaffold.dart';
 import '../../core/theme/app_theme.dart';
 
 class ThemedMaterialScaffold extends StatelessWidget {

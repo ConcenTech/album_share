@@ -9,6 +9,7 @@ import 'routes/app_router_provider.dart';
 import 'screens/splash/init_fail_screen.dart';
 import 'screens/splash/init_splash_screen.dart';
 import 'services/preferences/preferences_providers.dart';
+import 'services/providers/app_bar_listener.dart';
 import 'services/providers/app_init_provider.dart';
 
 void main() {
@@ -28,8 +29,6 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
-
     return ref.watch(appInitProvider).when(
           loading: () => const InitSplashScreen(),
           error: (error, _) => InitFailScreen(error),
@@ -42,6 +41,11 @@ class MainApp extends ConsumerWidget {
               key: appRouter.vRouterKey,
               initialUrl: appRouter.initialRoute,
               routes: appRouter.routes,
+              navigatorObservers: [
+                MyNavObserver(onPop: () {
+                  ref.read(appBarListenerProvider.notifier).show();
+                }),
+              ],
               themeMode: appTheme,
               theme: ThemeData.light(),
               darkTheme: ThemeData.dark(),
@@ -52,3 +56,14 @@ class MainApp extends ConsumerWidget {
   }
 }
 
+class MyNavObserver extends NavigatorObserver {
+  MyNavObserver({required this.onPop});
+  final VoidCallback onPop;
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    // TODO: implement didPop
+    super.didPop(route, previousRoute);
+    onPop();
+  }
+}
