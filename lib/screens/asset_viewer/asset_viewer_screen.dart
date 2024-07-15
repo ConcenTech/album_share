@@ -1,4 +1,5 @@
 import 'package:album_share/core/utils/extension_methods.dart';
+import 'package:album_share/routes/app_router.dart';
 import 'package:album_share/services/providers/app_bar_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -48,6 +49,12 @@ class _AssetViewerScreenState extends ConsumerState<AssetViewerScreen> {
                 onPressed: () =>
                     ref.read(appBarListenerProvider.notifier).show(),
                 child: Text('Show'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  AppRouter.back(context);
+                },
+                child: Text('Back'),
               ),
             ],
           );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrouter/vrouter.dart';
 
@@ -62,8 +63,7 @@ class MyNavObserver extends NavigatorObserver {
 
   @override
   void didPop(Route route, Route? previousRoute) {
-    // TODO: implement didPop
     super.didPop(route, previousRoute);
-    onPop();
+    SchedulerBinding.instance.addPostFrameCallback((_) => onPop());
   }
 }
