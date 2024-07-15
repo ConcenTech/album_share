@@ -39,7 +39,8 @@ extension AssetListSorter on List<Asset> {
   }
 
   void merge(List<Asset> assets) {
-    if (isEmpty || assets.isEmpty){
+    if (isEmpty){
+      addAll(assets);
       return;
     }
     final a = this;
