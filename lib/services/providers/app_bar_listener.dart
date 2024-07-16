@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/extension_methods.dart';
@@ -14,34 +15,52 @@ class AppBarListener extends StateNotifier<bool> {
 
   Timer? _timer;
 
-  void show() {
+  void show([bool statusBar = false]) {
     _timer?.cancel();
     state = true;
+    _maybeToggleStatusBar(true, statusBar);
   }
 
-  void hide() {
+  void hide([bool statusBar = false]) {
     _timer?.cancel();
     state = false;
+    _maybeToggleStatusBar(false, statusBar);
   }
 
-  void hideIn(Duration duration) {
+  void hideIn(Duration duration, [bool statusBar = false]) {
     _timer = Timer(duration, () {
       if (mounted) {
         hide();
+        _maybeToggleStatusBar(false, statusBar);
       }
     });
   }
 
-  void showDelayed() {
+  void showDelayed([bool statusBar = false]) {
     show();
+    _maybeToggleStatusBar(true, statusBar);
     _timer = Timer(
       5.seconds,
       () {
         if (mounted) {
           hide();
+          _maybeToggleStatusBar(false, statusBar);
         }
       },
     );
+  }
+
+  void _maybeToggleStatusBar(bool show, bool statusBar) {
+    if (!statusBar) {
+      return;
+    }
+
+    if (show){
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    } else{
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
+    }
+    
   }
 
   @override
