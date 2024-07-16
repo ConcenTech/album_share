@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/components/platform_list_tile.dart';
+
 class PreviewImageWidget extends StatelessWidget {
   const PreviewImageWidget({
     required this.value,
@@ -12,7 +14,7 @@ class PreviewImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile(
+    return PlatformSwitchListTile(
       title: const Text('Load preview image'),
       subtitle: const Text(
         'Enable to load a medium-resolution image.\n'

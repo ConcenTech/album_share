@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/components/platform_list_tile.dart';
+
 class OriginalImageWidget extends StatelessWidget {
   const OriginalImageWidget({
     required this.value,
@@ -12,7 +14,7 @@ class OriginalImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile(
+    return PlatformSwitchListTile(
       title: const Text('Load original image'),
       subtitle: const Text(
         'Enable to load the original full-resolution image (large!).\n'

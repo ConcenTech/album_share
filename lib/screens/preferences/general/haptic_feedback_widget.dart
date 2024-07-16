@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/components/platform_list_tile.dart';
+
 class HapticFeedbackWidget extends StatelessWidget {
   const HapticFeedbackWidget({
     required this.value,
@@ -12,7 +14,7 @@ class HapticFeedbackWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile(
+    return PlatformSwitchListTile(
       title: const Text('Enable haptic feedback'),
       value: value,
       onChanged: onChanged,
