@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../immich/asset_grid/asset_grid_data_structure.dart';
 import '../../models/preferences.dart';
 import '../database/database_service.dart';
 
 class PreferencesService extends StateNotifier<Preferences> {
-  PreferencesService(this._db) : super(const Preferences()){
+  PreferencesService(this._db) : super(const Preferences()) {
     _init();
   }
 
@@ -13,7 +14,7 @@ class PreferencesService extends StateNotifier<Preferences> {
 
   void _init() async {
     final prefs = await _db.getPreferences();
-    if (prefs !=null){
+    if (prefs != null) {
       state = prefs;
     }
   }
@@ -23,15 +24,25 @@ class PreferencesService extends StateNotifier<Preferences> {
     _db.setPreferences(preferences);
   }
 
-  void setTheme(ThemeMode theme) {
-    set(state.copyWith(theme: theme));
-  }
-
-  void setSyncFrequency(int syncFrequency) {
-    set(state.copyWith(syncFrequency: syncFrequency));
-  }
-
-  void setMaxExtent(int maxExtent) {
-    set(state.copyWith(maxExtent: maxExtent));
+  void setValue({
+    bool? dynamicLayout,
+    bool? enableHapticFeedback,
+    GroupAssetsBy? groupBy,
+    bool? loadOriginal,
+    bool? loadPreview,
+    ThemeMode? theme,
+    int? syncFrequency,
+    int? maxExtent,
+  }) {
+    set(state.copyWith(
+      dynamicLayout: dynamicLayout,
+      enableHapticFeedback: enableHapticFeedback,
+      groupBy: groupBy,
+      loadOriginal: loadOriginal,
+      loadPreview: loadPreview,
+      maxExtent: maxExtent,
+      syncFrequency: syncFrequency,
+      theme: theme,
+    ));
   }
 }

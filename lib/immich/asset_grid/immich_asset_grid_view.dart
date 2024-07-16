@@ -1,8 +1,12 @@
 // Credit: Immich
+import 'dart:async';
 import 'dart:developer';
 import 'dart:math';
 
+import 'package:album_share/core/components/scaffold/app_scaffold.dart';
+import 'package:album_share/core/utils/extension_methods.dart';
 import 'package:album_share/screens/asset_viewer/asset_viewer_screen_state.dart';
+import 'package:album_share/services/providers/app_bar_listener.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,6 +74,12 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
       ScrollOffsetController();
   final ItemPositionsListener _itemPositionsListener =
       ItemPositionsListener.create();
+
+  /// The index of the first item visible on screen at the current time.
+  int _indexInView = 0;
+
+  /// The offset of the first item visible on screen, from the top of the screen.
+  double _indexInViewOffset = 0;
 
   /// The timestamp when the haptic feedback was last invoked
   int _hapticFeedbackTS = 0;
@@ -174,6 +184,7 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
       _itemPositionsListener.itemPositions.addListener(_positionListener);
     }
 
+    _itemPositionsListener.itemPositions.addListener(_offSetListener);
     _itemPositionsListener.itemPositions.addListener(_hapticsListener);
   }
 
@@ -184,8 +195,55 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
     if (widget.visibleItemsListener != null) {
       _itemPositionsListener.itemPositions.removeListener(_positionListener);
     }
+    _itemPositionsListener.itemPositions.removeListener(_offSetListener);
     _itemPositionsListener.itemPositions.removeListener(_hapticsListener);
+
     super.dispose();
+  }
+
+  void _offSetListener() {
+    final positions = _itemPositionsListener.itemPositions.value;
+    final firstInView = positions.firstOrNull;
+    if (firstInView == null) {
+      return;
+    }
+    void saveOffset() {
+      _indexInViewOffset = firstInView.itemLeadingEdge;
+    }
+
+    void saveIndex() {
+      _indexInView = firstInView.index;
+    }
+
+    if (firstInView.index > _indexInView) {
+      saveIndex();
+      saveOffset();
+      return _hideAppBar();
+    }
+    if (firstInView.index < _indexInView) {
+      saveIndex();
+      saveOffset();
+      return _showAppBar();
+    }
+
+    final diff = firstInView.itemLeadingEdge.difference(_indexInViewOffset);
+    if (diff > 0.1) {
+      saveOffset();
+      return _showAppBar();
+    }
+
+    if (diff < -0.1) {
+      saveOffset();
+      return _hideAppBar();
+    }
+  }
+
+  void _showAppBar() {
+    ref.read(appBarListenerProvider.notifier).show();
+  }
+
+  void _hideAppBar() {
+    ref.read(appBarListenerProvider.notifier).hide();
   }
 
   void _positionListener() {
@@ -253,8 +311,10 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
       }
     }
 
+    final appBarHeight = AppScaffold.appBarHeight(context);
+
     final listWidget = ScrollablePositionedList.builder(
-      padding: const EdgeInsets.only(top: 60, bottom: 220),
+      padding: EdgeInsets.only(top: appBarHeight, bottom: 220),
       itemBuilder: _itemBuilder,
       itemPositionsListener: _itemPositionsListener,
       itemScrollController: _itemScrollController,
@@ -271,7 +331,7 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
             controller: _itemScrollController,
             backgroundColor: context.themeData.hintColor,
             labelTextBuilder: _labelBuilder,
-            padding: const EdgeInsets.only(top: 60),
+            padding: EdgeInsets.only(top: appBarHeight),
             heightOffset: 60,
             labelConstraints: const BoxConstraints(maxHeight: 28),
             scrollbarAnimationDuration: const Duration(milliseconds: 300),

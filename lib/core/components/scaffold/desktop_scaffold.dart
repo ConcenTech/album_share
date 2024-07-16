@@ -5,6 +5,8 @@ import '../../../services/providers/app_bar_listener.dart';
 import '../titlebar_buttons/titlebar_back_button.dart';
 import '../window_titlebar.dart';
 
+const _appBarHeight = 36.0;
+
 class DesktopScaffold extends ConsumerWidget {
   const DesktopScaffold({
     required this.showTitleBar,
@@ -26,10 +28,11 @@ class DesktopScaffold extends ConsumerWidget {
 
   final Widget body;
 
+  static double appBarHeight() => _appBarHeight;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appBarVisible = ref.watch(appBarListenerProvider);
-    const appBarHeight = 36.0;
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -40,9 +43,9 @@ class DesktopScaffold extends ConsumerWidget {
             duration: kThemeAnimationDuration,
             left: 0,
             right: 0,
-            top: appBarVisible ? 0 : -appBarHeight,
+            top: appBarVisible ? 0 : -_appBarHeight,
             child: Container(
-              height: appBarHeight,
+              height: _appBarHeight,
               color: (theme.appBarTheme.backgroundColor ??
                       theme.colorScheme.surface)
                   .withOpacity(0.6),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../constants/constants.dart';
+import '../../../constants/constants.dart';
 
 class ThemeWidget extends StatelessWidget {
   const ThemeWidget({
@@ -14,11 +14,10 @@ class ThemeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
     return ListTile(
       title: const Text(kTheme),
       trailing: SizedBox(
-        width: 130,
+        width: 90,
         // height: 60
         child: DropdownButtonFormField(
           value: value,
@@ -40,7 +39,11 @@ class ThemeWidget extends StatelessWidget {
           onChanged: (v) => onChanged(v!),
           focusColor: Colors.transparent,
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))
+            isCollapsed: true,
+            contentPadding: const EdgeInsets.fromLTRB(16, 4, 0, 4),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
           ),
         ),
       ),

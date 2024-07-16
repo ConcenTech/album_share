@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../utils/platform_utils.dart';
 import 'desktop_scaffold.dart';
 import 'mobile_scaffold.dart';
 
@@ -27,25 +27,30 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-      case TargetPlatform.iOS:
-      case TargetPlatform.fuchsia:
-        return MobileScaffold(
-          showTitleBar: showTitleBar,
-          titleBarIcons: titleBarIcons,
-          showBackButton: showBackButton,
-          body: body,
-        );
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-      case TargetPlatform.windows:
+    return forPlatform(
+      desktop: () {
         return DesktopScaffold(
           showTitleBar: showTitleBar,
           titleBarIcons: titleBarIcons,
           showBackButton: showBackButton,
           body: body,
         );
-    }
+      },
+      mobile: () {
+        return MobileScaffold(
+          showTitleBar: showTitleBar,
+          titleBarIcons: titleBarIcons,
+          showBackButton: showBackButton,
+          body: body,
+        );
+      },
+    );
+  }
+
+  static double appBarHeight(BuildContext context) {
+    return forPlatform(
+      desktop: () => DesktopScaffold.appBarHeight(),
+      mobile: () => MobileScaffold.appBarHeight(context),
+    );
   }
 }

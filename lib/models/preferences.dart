@@ -14,7 +14,8 @@ class Preferences {
     this.syncFrequency = 1800,
     this.loadPreview = true,
     this.loadOriginal = false,
-    this.maxExtent = 60,
+    this.maxExtent = 90,
+    this.dynamicLayout = false,
   });
 
   static const id = 0;
@@ -47,6 +48,8 @@ class Preferences {
   /// The maximum size of thumbnails in the library view.
   final int maxExtent;
 
+  final bool dynamicLayout;
+
   Preferences copyWith({
     ThemeMode? theme,
     int? syncFrequency,
@@ -55,6 +58,7 @@ class Preferences {
     bool? loadPreview,
     bool? loadOriginal,
     int? maxExtent,
+    bool? dynamicLayout,
   }) {
     return Preferences(
       theme: theme ?? this.theme,
@@ -64,6 +68,7 @@ class Preferences {
       loadPreview: loadPreview ?? this.loadPreview,
       loadOriginal: loadOriginal ?? this.loadOriginal,
       maxExtent: maxExtent ?? this.maxExtent,
+      dynamicLayout: dynamicLayout ?? this.dynamicLayout,
     );
   }
 }

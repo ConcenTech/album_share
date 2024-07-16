@@ -17,39 +17,44 @@ const PreferencesSchema = CollectionSchema(
   name: r'Preferences',
   id: 4252616732994050084,
   properties: {
-    r'enableHapticFeedback': PropertySchema(
+    r'dynamicLayout': PropertySchema(
       id: 0,
+      name: r'dynamicLayout',
+      type: IsarType.bool,
+    ),
+    r'enableHapticFeedback': PropertySchema(
+      id: 1,
       name: r'enableHapticFeedback',
       type: IsarType.bool,
     ),
     r'groupBy': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'groupBy',
       type: IsarType.byte,
       enumMap: _PreferencesgroupByEnumValueMap,
     ),
     r'loadOriginal': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'loadOriginal',
       type: IsarType.bool,
     ),
     r'loadPreview': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'loadPreview',
       type: IsarType.bool,
     ),
     r'maxExtent': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'maxExtent',
       type: IsarType.long,
     ),
     r'syncFrequency': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'syncFrequency',
       type: IsarType.long,
     ),
     r'theme': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'theme',
       type: IsarType.byte,
       enumMap: _PreferencesthemeEnumValueMap,
@@ -84,13 +89,14 @@ void _preferencesSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeBool(offsets[0], object.enableHapticFeedback);
-  writer.writeByte(offsets[1], object.groupBy.index);
-  writer.writeBool(offsets[2], object.loadOriginal);
-  writer.writeBool(offsets[3], object.loadPreview);
-  writer.writeLong(offsets[4], object.maxExtent);
-  writer.writeLong(offsets[5], object.syncFrequency);
-  writer.writeByte(offsets[6], object.theme.index);
+  writer.writeBool(offsets[0], object.dynamicLayout);
+  writer.writeBool(offsets[1], object.enableHapticFeedback);
+  writer.writeByte(offsets[2], object.groupBy.index);
+  writer.writeBool(offsets[3], object.loadOriginal);
+  writer.writeBool(offsets[4], object.loadPreview);
+  writer.writeLong(offsets[5], object.maxExtent);
+  writer.writeLong(offsets[6], object.syncFrequency);
+  writer.writeByte(offsets[7], object.theme.index);
 }
 
 Preferences _preferencesDeserialize(
@@ -100,15 +106,16 @@ Preferences _preferencesDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Preferences(
-    enableHapticFeedback: reader.readBoolOrNull(offsets[0]) ?? true,
+    dynamicLayout: reader.readBoolOrNull(offsets[0]) ?? false,
+    enableHapticFeedback: reader.readBoolOrNull(offsets[1]) ?? true,
     groupBy:
-        _PreferencesgroupByValueEnumMap[reader.readByteOrNull(offsets[1])] ??
+        _PreferencesgroupByValueEnumMap[reader.readByteOrNull(offsets[2])] ??
             GroupAssetsBy.day,
-    loadOriginal: reader.readBoolOrNull(offsets[2]) ?? false,
-    loadPreview: reader.readBoolOrNull(offsets[3]) ?? true,
-    maxExtent: reader.readLongOrNull(offsets[4]) ?? 60,
-    syncFrequency: reader.readLongOrNull(offsets[5]) ?? 1800,
-    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
+    loadOriginal: reader.readBoolOrNull(offsets[3]) ?? false,
+    loadPreview: reader.readBoolOrNull(offsets[4]) ?? true,
+    maxExtent: reader.readLongOrNull(offsets[5]) ?? 90,
+    syncFrequency: reader.readLongOrNull(offsets[6]) ?? 1800,
+    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[7])] ??
         ThemeMode.system,
   );
   return object;
@@ -122,19 +129,21 @@ P _preferencesDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readBoolOrNull(offset) ?? true) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 1:
+      return (reader.readBoolOrNull(offset) ?? true) as P;
+    case 2:
       return (_PreferencesgroupByValueEnumMap[reader.readByteOrNull(offset)] ??
           GroupAssetsBy.day) as P;
-    case 2:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 3:
-      return (reader.readBoolOrNull(offset) ?? true) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 4:
-      return (reader.readLongOrNull(offset) ?? 60) as P;
+      return (reader.readBoolOrNull(offset) ?? true) as P;
     case 5:
-      return (reader.readLongOrNull(offset) ?? 1800) as P;
+      return (reader.readLongOrNull(offset) ?? 90) as P;
     case 6:
+      return (reader.readLongOrNull(offset) ?? 1800) as P;
+    case 7:
       return (_PreferencesthemeValueEnumMap[reader.readByteOrNull(offset)] ??
           ThemeMode.system) as P;
     default:
@@ -259,6 +268,16 @@ extension PreferencesQueryWhere
 
 extension PreferencesQueryFilter
     on QueryBuilder<Preferences, Preferences, QFilterCondition> {
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      dynamicLayoutEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dynamicLayout',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
       enableHapticFeedbackEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
@@ -572,6 +591,19 @@ extension PreferencesQueryLinks
 
 extension PreferencesQuerySortBy
     on QueryBuilder<Preferences, Preferences, QSortBy> {
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByDynamicLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dynamicLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      sortByDynamicLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dynamicLayout', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy>
       sortByEnableHapticFeedback() {
     return QueryBuilder.apply(this, (query) {
@@ -663,6 +695,19 @@ extension PreferencesQuerySortBy
 
 extension PreferencesQuerySortThenBy
     on QueryBuilder<Preferences, Preferences, QSortThenBy> {
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByDynamicLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dynamicLayout', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      thenByDynamicLayoutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dynamicLayout', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy>
       thenByEnableHapticFeedback() {
     return QueryBuilder.apply(this, (query) {
@@ -766,6 +811,12 @@ extension PreferencesQuerySortThenBy
 
 extension PreferencesQueryWhereDistinct
     on QueryBuilder<Preferences, Preferences, QDistinct> {
+  QueryBuilder<Preferences, Preferences, QDistinct> distinctByDynamicLayout() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dynamicLayout');
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QDistinct>
       distinctByEnableHapticFeedback() {
     return QueryBuilder.apply(this, (query) {
@@ -815,6 +866,12 @@ extension PreferencesQueryProperty
   QueryBuilder<Preferences, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
+    });
+  }
+
+  QueryBuilder<Preferences, bool, QQueryOperations> dynamicLayoutProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dynamicLayout');
     });
   }
 

@@ -1,3 +1,4 @@
+import 'package:album_share/core/utils/extension_methods.dart';
 import 'package:isar/isar.dart';
 
 import 'json_map.dart';
@@ -12,11 +13,11 @@ class Asset {
     required this.type,
     required this.createdAt,
     required this.fileName,
-    this.width,
-    this.height,
-    this.durationInSeconds,
-    this.stackCount = 0,
-    this.thumbHash,
+    required this.width,
+    required this.height,
+    required this.durationString,
+    required this.stackCount,
+    required this.thumbHash,
   });
 
   Id get isarId => Isar.autoIncrement;
@@ -33,17 +34,23 @@ class Asset {
   //TODO:
   final int? width;
   final int? height;
-  final int? durationInSeconds;
+  final String? durationString;
   final int? stackCount;
   final String? thumbHash;
 
   factory Asset.fromJson(String albumId, JsonMap json) {
+    final exif = json['exifInfo'] as Map<String, dynamic>?;
     return Asset(
       id: json['id'],
       albums: [albumId],
       type: AssetType.fromString(json['type']),
       createdAt: DateTime.parse(json['fileCreatedAt']),
       fileName: json['originalFileName'],
+      height: exif?['exifImageHeight'] as int?,
+      width: exif?['exifImageWidth'] as int?,
+      stackCount: json['stackCount'] as int?,
+      durationString: json['duration'] as String?,
+      thumbHash: json['thumbhash'] as String,
     );
   }
 
@@ -54,6 +61,11 @@ class Asset {
       type: type,
       createdAt: createdAt,
       fileName: fileName,
+      durationString: durationString,
+      height: height,
+      width: width,
+      stackCount: stackCount,
+      thumbHash: thumbHash,
     );
   }
 
@@ -61,9 +73,7 @@ class Asset {
   bool get isImage => type == AssetType.image;
 
   @ignore
-  Duration get duration => durationInSeconds == null
-      ? Duration.zero
-      : Duration(seconds: durationInSeconds!);
+  Duration get duration => durationString?.toDuration() ?? Duration.zero;
 
   @ignore
   int get stackChildrenCount => stackCount ?? 0;

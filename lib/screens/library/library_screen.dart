@@ -11,13 +11,6 @@ import '../../services/preferences/preferences_providers.dart';
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
 
-   /// assets need different hero tags across tabs / modals
-    /// otherwise, hero animations are performed across tabs (looks buggy!)
-    int heroOffset() {
-      const int range = 1152921504606846976; // 2^60
-      return range * 7;
-    }
-
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -25,8 +18,6 @@ class LibraryScreen extends StatelessWidget {
       titleBarIcons: const [RefreshButton(), PreferencesButton()],
       body: Center(
         child: Consumer(builder: (context, ref, child) {
-          final maxExtent = ref.watch(PreferencesProviders.maxExtent);
-
           final libraryProvider = ref.watch(LibraryProviders.state);
 
           return libraryProvider.when(
@@ -46,14 +37,23 @@ class LibraryScreen extends StatelessWidget {
               );
             },
             built: (_) {
+              final maxExtent = ref.watch(PreferencesProviders.maxExtent);
+              final dynamicLayout =
+                  ref.watch(PreferencesProviders.dynamicLayout);
               final renderList = ref.watch(LibraryProviders.renderList);
+
               return renderList.when(
                 data: (renderList) {
-                  return ImmichAssetGridView(
-                    renderList: renderList,
-                    assetMaxExtent: maxExtent,
-                    onRefresh: () =>
-                        ref.read(LibraryProviders.state.notifier).update(),
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: ImmichAssetGridView(
+                      dynamicLayout: dynamicLayout,
+                      showStack: true,
+                      renderList: renderList,
+                      assetMaxExtent: maxExtent,
+                      onRefresh: () =>
+                          ref.read(LibraryProviders.state.notifier).update(),
+                    ),
                   );
                 },
                 error: (e, _) => Text('$e'),

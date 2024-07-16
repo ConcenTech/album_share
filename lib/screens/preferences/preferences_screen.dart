@@ -1,12 +1,17 @@
-import 'package:album_share/screens/preferences/max_extent_widget.dart';
-import 'package:album_share/screens/preferences/sign_out_widget.dart';
+import 'package:album_share/screens/preferences/assets/group_by_widget.dart';
+import 'package:album_share/screens/preferences/assets/max_extent_widget.dart';
+import 'package:album_share/screens/preferences/assets/original_image_widget.dart';
+import 'package:album_share/screens/preferences/assets/preview_image_widget.dart';
+import 'package:album_share/screens/preferences/general/haptic_feedback_widget.dart';
+import 'package:album_share/screens/preferences/user/password_widget.dart';
+import 'package:album_share/screens/preferences/user/sign_out_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/components/scaffold/app_scaffold.dart';
 import '../../services/preferences/preferences_notifier.dart';
 import '../../services/preferences/preferences_providers.dart';
-import 'theme_widget.dart';
+import 'general/theme_widget.dart';
 
 class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({super.key});
@@ -33,29 +38,45 @@ class PreferencesWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final preferences = ref.watch(PreferencesProviders.service);
-    final captionStyle = Theme.of(context).textTheme.titleMedium;
+    final theme = Theme.of(context);
+    final captionStyle = theme.textTheme.titleLarge?.copyWith(
+      color: theme.colorScheme.primary,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: AppScaffold.appBarHeight(context)),
         Text('Preferences', style: captionStyle),
         ThemeWidget(
           value: preferences.theme,
-          onChanged: (v) => _service(ref).setTheme(v),
+          onChanged: (v) => _service(ref).setValue(theme: v),
+        ),
+        HapticFeedbackWidget(
+          value: preferences.enableHapticFeedback,
+          onChanged: (v) => _service(ref).setValue(enableHapticFeedback: v),
+        ),
+        const Divider(),
+        Text('Assets & thumbnails', style: captionStyle),
+        PreviewImageWidget(
+          value: preferences.loadPreview,
+          onChanged: (v) => _service(ref).setValue(loadPreview: v),
+        ),
+        OriginalImageWidget(
+          value: preferences.loadOriginal,
+          onChanged: (v) => _service(ref).setValue(loadOriginal: v),
+        ),
+        GroupByWidget(
+          value: preferences.groupBy,
+          onChanged: (v) => _service(ref).setValue(groupBy: v),
         ),
         MaxExtentWidget(
           maxExtent: preferences.maxExtent,
-          onChanged: (v) => _service(ref).setMaxExtent(v),
+          onChanged: (v) => _service(ref).setValue(maxExtent: v),
         ),
+        const Divider(),
         Text('User', style: captionStyle),
-        ListTile(
-          title: const Text('Change password'),
-          trailing: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.chevron_right),
-          ),
-          onTap: () {},
-        ),
+        const PasswordWidget(),
         const SignOutWidget(),
       ],
     );

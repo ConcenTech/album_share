@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
@@ -40,6 +41,15 @@ enum GroupAssetsBy {
   auto,
   none,
   ;
+
+  String get display {
+    return switch (this) {
+      GroupAssetsBy.day => 'Day',
+      GroupAssetsBy.month => 'Month',
+      GroupAssetsBy.auto => 'Auto',
+      GroupAssetsBy.none => 'None',
+    };
+  }
 }
 
 class RenderList {

@@ -1,12 +1,33 @@
+import 'dart:core';
+
 import '../../models/album.dart';
 import '../../models/asset.dart';
 
-extension Time on int {
+extension StringDuration on String {
+  Duration? toDuration() {
+    try {
+      final parts = split(':')
+          .map((e) => double.parse(e).toInt())
+          .toList(growable: false);
+      return Duration(hours: parts[0], minutes: parts[1], seconds: parts[2]);
+    } catch (e) {
+      return null;
+    }
+  }
+}
+
+extension IntExtensions on int {
   Duration get seconds => Duration(seconds: this);
   Duration get minutes => Duration(minutes: this);
   Duration get hours => Duration(hours: this);
   Duration get days => Duration(days: this);
   Duration get weeks => Duration(days: this * 7);
+}
+
+extension DoubleExtensions on double {
+  double difference(double other) {
+    return this - other;
+  }
 }
 
 extension ListExtensions<E> on Iterable<E> {
@@ -39,7 +60,7 @@ extension AssetListSorter on List<Asset> {
   }
 
   void merge(List<Asset> assets) {
-    if (isEmpty){
+    if (isEmpty) {
       addAll(assets);
       return;
     }

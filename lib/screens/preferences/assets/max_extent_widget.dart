@@ -40,7 +40,7 @@ class _MaxExtentWidgetState extends State<MaxExtentWidget> {
       isThreeLine: true,
       title: const Padding(
         padding: padding,
-        child: Text('Asset max width'),
+        child: Text('Thumbnail max width'),
       ),
       contentPadding: const EdgeInsets.all(0),
       subtitle: Column(

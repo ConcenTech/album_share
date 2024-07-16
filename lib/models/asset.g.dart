@@ -27,10 +27,10 @@ const AssetSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'durationInSeconds': PropertySchema(
+    r'durationString': PropertySchema(
       id: 2,
-      name: r'durationInSeconds',
-      type: IsarType.long,
+      name: r'durationString',
+      type: IsarType.string,
     ),
     r'fileName': PropertySchema(
       id: 3,
@@ -101,6 +101,12 @@ int _assetEstimateSize(
       bytesCount += value.length * 3;
     }
   }
+  {
+    final value = object.durationString;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.fileName.length * 3;
   bytesCount += 3 + object.id.length * 3;
   {
@@ -120,7 +126,7 @@ void _assetSerialize(
 ) {
   writer.writeStringList(offsets[0], object.albums);
   writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeLong(offsets[2], object.durationInSeconds);
+  writer.writeString(offsets[2], object.durationString);
   writer.writeString(offsets[3], object.fileName);
   writer.writeLong(offsets[4], object.hashCode);
   writer.writeLong(offsets[5], object.height);
@@ -140,7 +146,7 @@ Asset _assetDeserialize(
   final object = Asset(
     albums: reader.readStringList(offsets[0]) ?? [],
     createdAt: reader.readDateTime(offsets[1]),
-    durationInSeconds: reader.readLongOrNull(offsets[2]),
+    durationString: reader.readStringOrNull(offsets[2]),
     fileName: reader.readString(offsets[3]),
     height: reader.readLongOrNull(offsets[5]),
     id: reader.readString(offsets[6]),
@@ -165,7 +171,7 @@ P _assetDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
@@ -554,73 +560,148 @@ extension AssetQueryFilter on QueryBuilder<Asset, Asset, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationInSecondsIsNull() {
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'durationInSeconds',
+        property: r'durationString',
       ));
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterFilterCondition>
-      durationInSecondsIsNotNull() {
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'durationInSeconds',
+        property: r'durationString',
       ));
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationInSecondsEqualTo(
-      int? value) {
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'durationInSeconds',
+        property: r'durationString',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterFilterCondition>
-      durationInSecondsGreaterThan(
-    int? value, {
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringGreaterThan(
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'durationInSeconds',
+        property: r'durationString',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationInSecondsLessThan(
-    int? value, {
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringLessThan(
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'durationInSeconds',
+        property: r'durationString',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationInSecondsBetween(
-    int? lower,
-    int? upper, {
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringBetween(
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'durationInSeconds',
+        property: r'durationString',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'durationString',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'durationString',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'durationString',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'durationString',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'durationString',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> durationStringIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'durationString',
+        value: '',
       ));
     });
   }
@@ -1409,15 +1490,15 @@ extension AssetQuerySortBy on QueryBuilder<Asset, Asset, QSortBy> {
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterSortBy> sortByDurationInSeconds() {
+  QueryBuilder<Asset, Asset, QAfterSortBy> sortByDurationString() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'durationInSeconds', Sort.asc);
+      return query.addSortBy(r'durationString', Sort.asc);
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterSortBy> sortByDurationInSecondsDesc() {
+  QueryBuilder<Asset, Asset, QAfterSortBy> sortByDurationStringDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'durationInSeconds', Sort.desc);
+      return query.addSortBy(r'durationString', Sort.desc);
     });
   }
 
@@ -1531,15 +1612,15 @@ extension AssetQuerySortThenBy on QueryBuilder<Asset, Asset, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterSortBy> thenByDurationInSeconds() {
+  QueryBuilder<Asset, Asset, QAfterSortBy> thenByDurationString() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'durationInSeconds', Sort.asc);
+      return query.addSortBy(r'durationString', Sort.asc);
     });
   }
 
-  QueryBuilder<Asset, Asset, QAfterSortBy> thenByDurationInSecondsDesc() {
+  QueryBuilder<Asset, Asset, QAfterSortBy> thenByDurationStringDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'durationInSeconds', Sort.desc);
+      return query.addSortBy(r'durationString', Sort.desc);
     });
   }
 
@@ -1665,9 +1746,11 @@ extension AssetQueryWhereDistinct on QueryBuilder<Asset, Asset, QDistinct> {
     });
   }
 
-  QueryBuilder<Asset, Asset, QDistinct> distinctByDurationInSeconds() {
+  QueryBuilder<Asset, Asset, QDistinct> distinctByDurationString(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'durationInSeconds');
+      return query.addDistinctBy(r'durationString',
+          caseSensitive: caseSensitive);
     });
   }
 
@@ -1742,9 +1825,9 @@ extension AssetQueryProperty on QueryBuilder<Asset, Asset, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Asset, int?, QQueryOperations> durationInSecondsProperty() {
+  QueryBuilder<Asset, String?, QQueryOperations> durationStringProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'durationInSeconds');
+      return query.addPropertyName(r'durationString');
     });
   }
 

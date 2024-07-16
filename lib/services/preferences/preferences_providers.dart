@@ -23,4 +23,8 @@ abstract class PreferencesProviders {
   static final maxExtent = Provider.autoDispose<int>(
     (ref) => ref.watch(service.select((p) => p.maxExtent)),
   );
+
+  static final dynamicLayout = Provider.autoDispose<bool>(
+    (ref) => ref.watch(service.select((p) => p.dynamicLayout)),
+  );
 }

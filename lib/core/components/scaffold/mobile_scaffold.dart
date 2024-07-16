@@ -26,10 +26,13 @@ class MobileScaffold extends ConsumerWidget {
 
   final Widget body;
 
+  static double appBarHeight(BuildContext context) =>
+      kToolbarHeight + MediaQuery.of(context).padding.top;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appBarVisible = ref.watch(appBarListenerProvider);
-    final appBarHeight = kToolbarHeight + MediaQuery.of(context).padding.top;
+    final appBarHeight = MobileScaffold.appBarHeight(context);
 
     return Scaffold(
       body: Stack(

@@ -14,8 +14,15 @@ class AppBarListener extends StateNotifier<bool> {
 
   Timer? _timer;
 
-  void show() => state = true;
-  void hide() => state = false;
+  void show() {
+    _timer?.cancel();
+    state = true;
+  }
+
+  void hide() {
+    _timer?.cancel();
+    state = false;
+  }
 
   void hideIn(Duration duration) {
     _timer = Timer(duration, () {
