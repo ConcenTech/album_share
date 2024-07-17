@@ -143,23 +143,7 @@ class ApiService {
       expected: JSON_MAP,
     );
 
-    final success = body['successful'] as bool;
-
-    //TODO: Remove test code below once behaviour of cokies verified.
-    if (success) {
-      final cookies =
-          await _cookieJar.loadForRequest(Uri.parse(_dio.options.baseUrl));
-      print('User logged out. Remaining cookies:');
-      if (cookies.isEmpty) {
-        print('EMPTY');
-      } else {
-        for (var cookie in cookies) {
-          print(cookie);
-        }
-      }
-    }
-
-    return success;
+    return body['successful'] as bool;
   }
 
   /// Changes the password of the current user.

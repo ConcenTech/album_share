@@ -1,10 +1,11 @@
-import 'package:album_share/core/components/app_snackbar.dart';
-import 'package:album_share/core/dialogs/confirmation_dialog.dart';
-import 'package:album_share/core/utils/extension_methods.dart';
-import 'package:album_share/routes/app_router.dart';
-import 'package:album_share/services/auth/auth_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/components/app_snackbar.dart';
+import '../../../core/dialogs/confirmation_dialog.dart';
+import '../../../routes/app_router.dart';
+import '../../../services/api/api_service.dart';
+import '../../../services/auth/auth_providers.dart';
 
 class SignOutWidget extends ConsumerStatefulWidget {
   const SignOutWidget({super.key});
@@ -17,7 +18,7 @@ class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
   bool _loading = false;
 
   void _signOut() async {
-    if (_loading){
+    if (_loading) {
       return;
     }
     final confirmed = await showConfirmationDialog(context: context);
@@ -25,12 +26,20 @@ class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
       return;
     }
     _setLoading(true);
-    final signedOut = await ref.read(AuthProviders.service).logout();
-    if (signedOut) {
-      return _toLogin();
+    try {
+      final signedOut = await ref
+          .read(AuthProviders.service)
+          .logout()
+          .onError((e, _) => false);
+      if (signedOut) {
+        return _toLogin();
+      }
+      // If signed out is false, the server has responded to our request but it was not successful.
+      // TODO: Do we know what the server would return if not a success message?
+      _signOutFailed('A server error occurred');
+    } on ApiException catch (e) {
+      _signOutFailed(e.message);
     }
-    _signOutFailed();
-    _setLoading(false);
   }
 
   void _toLogin() {
@@ -39,11 +48,11 @@ class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
     }
   }
 
-  void _signOutFailed() {
+  void _signOutFailed(String e) {
     if (mounted) {
       AppSnackbar.warning(
           context: context,
-          message: 'Failed to sign out, an unknown error occurred.');
+          message: 'Failed to sign out, $e');
     }
   }
 
