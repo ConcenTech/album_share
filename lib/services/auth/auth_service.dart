@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:album_share/immich/image/cache/remote_image_cache_manager.dart';
-import 'package:album_share/immich/image/cache/thumbnail_image_cache_manager.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-
+import '../../immich/image/cache/remote_image_cache_manager.dart';
+import '../../immich/image/cache/thumbnail_image_cache_manager.dart';
 import '../../models/endpoint.dart';
 import '../../models/user.dart';
 import '../api/api_service.dart';
@@ -62,7 +60,7 @@ class AuthService {
     } on ApiException catch (_) {
       final user = await _db.getUser();
       print('Working offline');
-      return user == null;
+      return user != null;
     }
     return await _api.validateAuthToken();
   }
