@@ -38,6 +38,7 @@ dev_dependencies:
   build_runner: ^2.4.11
   riverpod_lint: ^2.1.1
   flutter_native_splash: ^2.4.1
+  flutter_launcher_icons: ^0.13.1
   # analyzer: ^5.13.0
 
 flutter:
@@ -51,3 +52,12 @@ flutter_native_splash:
   image: assets/logo-splash.png
   android_12:
     image: assets/logo-splash-android12.png
+
+flutter_launcher_icons:
+  image_path_android: 'assets/logo-large.png'
+  adaptive_icon_background: '#ffffff'
+  adaptive_icon_foreground: 'assets/logo-android-adaptive.png'
+  image_path_ios: 'assets/logo-large-white.png'
+  android: 'ic_launcher'
+  ios: false
+  remove_alpha_ios: true
