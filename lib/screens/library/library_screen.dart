@@ -1,3 +1,4 @@
+import 'package:album_share/core/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,6 +51,7 @@ class LibraryScreen extends StatelessWidget {
                       // Remove default scroll bar
                       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
                       child: ImmichAssetGridView(
+                        alwaysVisibleScrollThumb: forPlatform(desktop: ()=> true, mobile: () => false,),
                         dynamicLayout: dynamicLayout,
                         showStack: true,
                         renderList: renderList,

@@ -44,6 +44,7 @@ class ImmichAssetGridView extends ConsumerStatefulWidget {
       visibleItemsListener;
   final int heroOffset;
   final bool shrinkWrap;
+  final bool alwaysVisibleScrollThumb;
   final bool showDragScroll;
   final bool showStack;
 
@@ -58,6 +59,7 @@ class ImmichAssetGridView extends ConsumerStatefulWidget {
     this.visibleItemsListener,
     this.heroOffset = 0,
     this.shrinkWrap = false,
+    this.alwaysVisibleScrollThumb = false,
     this.showDragScroll = true,
     this.showStack = false,
   });
@@ -336,6 +338,7 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
             labelConstraints: const BoxConstraints(maxHeight: 28),
             scrollbarAnimationDuration: const Duration(milliseconds: 300),
             scrollbarTimeToFade: const Duration(milliseconds: 1000),
+            alwaysVisibleScrollThumb: widget.alwaysVisibleScrollThumb,
             child: listWidget,
           )
         : listWidget;
