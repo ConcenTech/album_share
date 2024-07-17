@@ -46,13 +46,17 @@ class LibraryScreen extends StatelessWidget {
                 data: (renderList) {
                   return Padding(
                     padding: const EdgeInsets.only(left: 4),
-                    child: ImmichAssetGridView(
-                      dynamicLayout: dynamicLayout,
-                      showStack: true,
-                      renderList: renderList,
-                      assetMaxExtent: maxExtent,
-                      onRefresh: () =>
-                          ref.read(LibraryProviders.state.notifier).update(),
+                    child: ScrollConfiguration(
+                      // Remove default scroll bar
+                      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                      child: ImmichAssetGridView(
+                        dynamicLayout: dynamicLayout,
+                        showStack: true,
+                        renderList: renderList,
+                        assetMaxExtent: maxExtent,
+                        onRefresh: () =>
+                            ref.read(LibraryProviders.state.notifier).update(),
+                      ),
                     ),
                   );
                 },
