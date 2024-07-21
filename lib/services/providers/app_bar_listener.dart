@@ -55,12 +55,17 @@ class AppBarListener extends StateNotifier<bool> {
       return;
     }
 
-    if (show){
+    if (show) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    } else{
+    } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
     }
-    
+  }
+
+  void toggle([bool statusBar = true]) {
+    _timer?.cancel();
+    state = !state;
+    _maybeToggleStatusBar(state, statusBar);
   }
 
   @override
