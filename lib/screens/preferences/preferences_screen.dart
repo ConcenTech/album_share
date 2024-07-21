@@ -1,17 +1,18 @@
-import 'package:album_share/screens/preferences/assets/group_by_widget.dart';
-import 'package:album_share/screens/preferences/assets/max_extent_widget.dart';
-import 'package:album_share/screens/preferences/assets/original_image_widget.dart';
-import 'package:album_share/screens/preferences/assets/preview_image_widget.dart';
-import 'package:album_share/screens/preferences/general/haptic_feedback_widget.dart';
-import 'package:album_share/screens/preferences/user/password_widget.dart';
-import 'package:album_share/screens/preferences/user/sign_out_widget.dart';
+import 'package:album_share/screens/preferences/assets/loop_videos_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/components/scaffold/app_scaffold.dart';
 import '../../services/preferences/preferences_notifier.dart';
 import '../../services/preferences/preferences_providers.dart';
+import 'assets/group_by_widget.dart';
+import 'assets/max_extent_widget.dart';
+import 'assets/original_image_widget.dart';
+import 'assets/preview_image_widget.dart';
+import 'general/haptic_feedback_widget.dart';
 import 'general/theme_widget.dart';
+import 'user/password_widget.dart';
+import 'user/sign_out_widget.dart';
 
 class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({super.key});
@@ -69,6 +70,14 @@ class PreferencesWidget extends ConsumerWidget {
         GroupByWidget(
           value: preferences.groupBy,
           onChanged: (v) => _service(ref).setValue(groupBy: v),
+        ),
+        // DynamicLayoutWidget(
+        //   value: preferences.dynamicLayout,
+        //   onChanged: (v) => _service(ref).setValue(dynamicLayout: v),
+        // ),
+        LoopVideosWidget(
+          value: preferences.loopVideos,
+          onChanged: (v) => _service(ref).setValue(loopVideos: v),
         ),
         MaxExtentWidget(
           maxExtent: preferences.maxExtent,
