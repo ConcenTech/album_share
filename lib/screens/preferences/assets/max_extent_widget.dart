@@ -1,4 +1,3 @@
-import 'package:album_share/immich/asset_grid/thumbnail_placeholder.dart';
 import 'package:flutter/material.dart';
 
 class MaxExtentWidget extends StatefulWidget {
