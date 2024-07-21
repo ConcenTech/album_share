@@ -39,8 +39,6 @@ class LibraryScreen extends StatelessWidget {
             },
             built: (_) {
               final maxExtent = ref.watch(PreferencesProviders.maxExtent);
-              final dynamicLayout =
-                  ref.watch(PreferencesProviders.dynamicLayout);
               final renderList = ref.watch(LibraryProviders.renderList);
 
               return renderList.when(
@@ -52,7 +50,7 @@ class LibraryScreen extends StatelessWidget {
                       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
                       child: ImmichAssetGridView(
                         alwaysVisibleScrollThumb: forPlatform(desktop: ()=> true, mobile: () => false,),
-                        dynamicLayout: dynamicLayout,
+                        dynamicLayout: false,
                         showStack: true,
                         renderList: renderList,
                         assetMaxExtent: maxExtent,
