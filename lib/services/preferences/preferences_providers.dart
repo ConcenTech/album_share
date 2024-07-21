@@ -24,7 +24,11 @@ abstract class PreferencesProviders {
     (ref) => ref.watch(service.select((p) => p.maxExtent)),
   );
 
-  static final dynamicLayout = Provider.autoDispose<bool>(
-    (ref) => ref.watch(service.select((p) => p.dynamicLayout)),
+  static final shouldLoopVideo = Provider.autoDispose<bool>(
+    (ref) => ref.watch(service.select((p) => p.loopVideos)),
   );
+
+  // static final dynamicLayout = Provider.autoDispose<bool>(
+  //   (ref) => ref.watch(service.select((p) => p.dynamicLayout)),
+  // );
 }

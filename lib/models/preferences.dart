@@ -16,6 +16,7 @@ class Preferences {
     this.loadOriginal = false,
     this.maxExtent = 90,
     this.dynamicLayout = false,
+    this.loopVideos = true,
   });
 
   static const id = 0;
@@ -50,6 +51,8 @@ class Preferences {
 
   final bool dynamicLayout;
 
+  final bool loopVideos;
+
   Preferences copyWith({
     ThemeMode? theme,
     int? syncFrequency,
@@ -59,6 +62,7 @@ class Preferences {
     bool? loadOriginal,
     int? maxExtent,
     bool? dynamicLayout,
+    bool? loopVideos,
   }) {
     return Preferences(
       theme: theme ?? this.theme,
@@ -69,6 +73,7 @@ class Preferences {
       loadOriginal: loadOriginal ?? this.loadOriginal,
       maxExtent: maxExtent ?? this.maxExtent,
       dynamicLayout: dynamicLayout ?? this.dynamicLayout,
+      loopVideos: loopVideos ?? this.loopVideos,
     );
   }
 }

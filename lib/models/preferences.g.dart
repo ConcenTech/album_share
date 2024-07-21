@@ -48,13 +48,18 @@ const PreferencesSchema = CollectionSchema(
       name: r'maxExtent',
       type: IsarType.long,
     ),
-    r'syncFrequency': PropertySchema(
+    r'shouldLoopVideo': PropertySchema(
       id: 6,
+      name: r'shouldLoopVideo',
+      type: IsarType.bool,
+    ),
+    r'syncFrequency': PropertySchema(
+      id: 7,
       name: r'syncFrequency',
       type: IsarType.long,
     ),
     r'theme': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'theme',
       type: IsarType.byte,
       enumMap: _PreferencesthemeEnumValueMap,
@@ -95,8 +100,9 @@ void _preferencesSerialize(
   writer.writeBool(offsets[3], object.loadOriginal);
   writer.writeBool(offsets[4], object.loadPreview);
   writer.writeLong(offsets[5], object.maxExtent);
-  writer.writeLong(offsets[6], object.syncFrequency);
-  writer.writeByte(offsets[7], object.theme.index);
+  writer.writeBool(offsets[6], object.loopVideos);
+  writer.writeLong(offsets[7], object.syncFrequency);
+  writer.writeByte(offsets[8], object.theme.index);
 }
 
 Preferences _preferencesDeserialize(
@@ -114,8 +120,9 @@ Preferences _preferencesDeserialize(
     loadOriginal: reader.readBoolOrNull(offsets[3]) ?? false,
     loadPreview: reader.readBoolOrNull(offsets[4]) ?? true,
     maxExtent: reader.readLongOrNull(offsets[5]) ?? 90,
-    syncFrequency: reader.readLongOrNull(offsets[6]) ?? 1800,
-    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[7])] ??
+    loopVideos: reader.readBoolOrNull(offsets[6]) ?? true,
+    syncFrequency: reader.readLongOrNull(offsets[7]) ?? 1800,
+    theme: _PreferencesthemeValueEnumMap[reader.readByteOrNull(offsets[8])] ??
         ThemeMode.system,
   );
   return object;
@@ -142,8 +149,10 @@ P _preferencesDeserializeProp<P>(
     case 5:
       return (reader.readLongOrNull(offset) ?? 90) as P;
     case 6:
-      return (reader.readLongOrNull(offset) ?? 1800) as P;
+      return (reader.readBoolOrNull(offset) ?? true) as P;
     case 7:
+      return (reader.readLongOrNull(offset) ?? 1800) as P;
+    case 8:
       return (_PreferencesthemeValueEnumMap[reader.readByteOrNull(offset)] ??
           ThemeMode.system) as P;
     default:
@@ -473,6 +482,16 @@ extension PreferencesQueryFilter
   }
 
   QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
+      shouldLoopVideoEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'shouldLoopVideo',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterFilterCondition>
       syncFrequencyEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -667,6 +686,19 @@ extension PreferencesQuerySortBy
     });
   }
 
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> sortByShouldLoopVideo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shouldLoopVideo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      sortByShouldLoopVideoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shouldLoopVideo', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy> sortBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'syncFrequency', Sort.asc);
@@ -783,6 +815,19 @@ extension PreferencesQuerySortThenBy
     });
   }
 
+  QueryBuilder<Preferences, Preferences, QAfterSortBy> thenByShouldLoopVideo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shouldLoopVideo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Preferences, Preferences, QAfterSortBy>
+      thenByShouldLoopVideoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shouldLoopVideo', Sort.desc);
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QAfterSortBy> thenBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'syncFrequency', Sort.asc);
@@ -848,6 +893,13 @@ extension PreferencesQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Preferences, Preferences, QDistinct>
+      distinctByShouldLoopVideo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'shouldLoopVideo');
+    });
+  }
+
   QueryBuilder<Preferences, Preferences, QDistinct> distinctBySyncFrequency() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'syncFrequency');
@@ -903,6 +955,12 @@ extension PreferencesQueryProperty
   QueryBuilder<Preferences, int, QQueryOperations> maxExtentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'maxExtent');
+    });
+  }
+
+  QueryBuilder<Preferences, bool, QQueryOperations> shouldLoopVideoProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'shouldLoopVideo');
     });
   }
 

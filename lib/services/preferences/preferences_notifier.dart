@@ -33,6 +33,7 @@ class PreferencesService extends StateNotifier<Preferences> {
     ThemeMode? theme,
     int? syncFrequency,
     int? maxExtent,
+    bool? loopVideos,
   }) {
     set(state.copyWith(
       dynamicLayout: dynamicLayout,
@@ -43,6 +44,7 @@ class PreferencesService extends StateNotifier<Preferences> {
       maxExtent: maxExtent,
       syncFrequency: syncFrequency,
       theme: theme,
+      loopVideos: loopVideos,
     ));
   }
 }
