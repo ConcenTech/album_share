@@ -1,10 +1,10 @@
-import 'package:album_share/core/utils/extension_methods.dart';
-import 'package:album_share/models/asset_group.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/utils/extension_methods.dart';
 import '../../models/album.dart';
 import '../../models/asset.dart';
+import '../../models/asset_group.dart';
 import '../../models/endpoint.dart';
 import '../../models/preferences.dart';
 import '../../models/user.dart';
@@ -259,4 +259,9 @@ class DatabaseException implements Exception {
   final String method;
 
   String debugMessage() => 'DatabaseService.$method: $message \n$details';
+
+  @override
+  String toString() {
+    return 'DatabaseException: ${debugMessage()}';
+  }
 }

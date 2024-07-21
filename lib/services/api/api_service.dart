@@ -350,6 +350,11 @@ class ApiException implements Exception {
       ApiExceptionType.unauthenticated => 'Authentication error.',
     };
   }
+
+ @override
+  String toString() {
+    return 'ApiException: $message';
+  }
 }
 
 enum ApiExceptionType {
