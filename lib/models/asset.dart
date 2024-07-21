@@ -18,6 +18,7 @@ class Asset {
     required this.durationString,
     required this.stackCount,
     required this.thumbHash,
+    required this.livePhotoVideoId,
   });
 
   Id get isarId => Isar.autoIncrement;
@@ -37,6 +38,7 @@ class Asset {
   final String? durationString;
   final int? stackCount;
   final String? thumbHash;
+  final String? livePhotoVideoId;
 
   factory Asset.fromJson(String albumId, JsonMap json) {
     final exif = json['exifInfo'] as Map<String, dynamic>?;
@@ -51,10 +53,12 @@ class Asset {
       stackCount: json['stackCount'] as int?,
       durationString: json['duration'] as String?,
       thumbHash: json['thumbhash'] as String,
+      livePhotoVideoId: json['livePhotoVideoId'] as String?,
     );
   }
 
   Asset merge(Asset asset) {
+    assert(this == asset);
     return Asset(
       id: id,
       albums: [...albums, ...asset.albums],
@@ -66,6 +70,7 @@ class Asset {
       width: width,
       stackCount: stackCount,
       thumbHash: thumbHash,
+      livePhotoVideoId: livePhotoVideoId,
     );
   }
 

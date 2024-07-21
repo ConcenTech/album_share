@@ -52,24 +52,29 @@ const AssetSchema = CollectionSchema(
       name: r'id',
       type: IsarType.string,
     ),
-    r'stackCount': PropertySchema(
+    r'livePhotoVideoId': PropertySchema(
       id: 7,
+      name: r'livePhotoVideoId',
+      type: IsarType.string,
+    ),
+    r'stackCount': PropertySchema(
+      id: 8,
       name: r'stackCount',
       type: IsarType.long,
     ),
     r'thumbHash': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'thumbHash',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'type',
       type: IsarType.byte,
       enumMap: _AssettypeEnumValueMap,
     ),
     r'width': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'width',
       type: IsarType.long,
     )
@@ -110,6 +115,12 @@ int _assetEstimateSize(
   bytesCount += 3 + object.fileName.length * 3;
   bytesCount += 3 + object.id.length * 3;
   {
+    final value = object.livePhotoVideoId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.thumbHash;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -131,10 +142,11 @@ void _assetSerialize(
   writer.writeLong(offsets[4], object.hashCode);
   writer.writeLong(offsets[5], object.height);
   writer.writeString(offsets[6], object.id);
-  writer.writeLong(offsets[7], object.stackCount);
-  writer.writeString(offsets[8], object.thumbHash);
-  writer.writeByte(offsets[9], object.type.index);
-  writer.writeLong(offsets[10], object.width);
+  writer.writeString(offsets[7], object.livePhotoVideoId);
+  writer.writeLong(offsets[8], object.stackCount);
+  writer.writeString(offsets[9], object.thumbHash);
+  writer.writeByte(offsets[10], object.type.index);
+  writer.writeLong(offsets[11], object.width);
 }
 
 Asset _assetDeserialize(
@@ -150,11 +162,12 @@ Asset _assetDeserialize(
     fileName: reader.readString(offsets[3]),
     height: reader.readLongOrNull(offsets[5]),
     id: reader.readString(offsets[6]),
-    stackCount: reader.readLongOrNull(offsets[7]),
-    thumbHash: reader.readStringOrNull(offsets[8]),
-    type: _AssettypeValueEnumMap[reader.readByteOrNull(offsets[9])] ??
+    livePhotoVideoId: reader.readStringOrNull(offsets[7]),
+    stackCount: reader.readLongOrNull(offsets[8]),
+    thumbHash: reader.readStringOrNull(offsets[9]),
+    type: _AssettypeValueEnumMap[reader.readByteOrNull(offsets[10])] ??
         AssetType.image,
-    width: reader.readLongOrNull(offsets[10]),
+    width: reader.readLongOrNull(offsets[11]),
   );
   return object;
 }
@@ -181,13 +194,15 @@ P _assetDeserializeProp<P>(
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset)) as P;
-    case 8:
       return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readLongOrNull(offset)) as P;
     case 9:
+      return (reader.readStringOrNull(offset)) as P;
+    case 10:
       return (_AssettypeValueEnumMap[reader.readByteOrNull(offset)] ??
           AssetType.image) as P;
-    case 10:
+    case 11:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1136,6 +1151,154 @@ extension AssetQueryFilter on QueryBuilder<Asset, Asset, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'livePhotoVideoId',
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition>
+      livePhotoVideoIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'livePhotoVideoId',
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'livePhotoVideoId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'livePhotoVideoId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'livePhotoVideoId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'livePhotoVideoId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'livePhotoVideoId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'livePhotoVideoId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'livePhotoVideoId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'livePhotoVideoId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> livePhotoVideoIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'livePhotoVideoId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition>
+      livePhotoVideoIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'livePhotoVideoId',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Asset, Asset, QAfterFilterCondition> stackCountIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1550,6 +1713,18 @@ extension AssetQuerySortBy on QueryBuilder<Asset, Asset, QSortBy> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QAfterSortBy> sortByLivePhotoVideoId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'livePhotoVideoId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterSortBy> sortByLivePhotoVideoIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'livePhotoVideoId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Asset, Asset, QAfterSortBy> sortByStackCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stackCount', Sort.asc);
@@ -1684,6 +1859,18 @@ extension AssetQuerySortThenBy on QueryBuilder<Asset, Asset, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QAfterSortBy> thenByLivePhotoVideoId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'livePhotoVideoId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterSortBy> thenByLivePhotoVideoIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'livePhotoVideoId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Asset, Asset, QAfterSortBy> thenByStackCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stackCount', Sort.asc);
@@ -1780,6 +1967,14 @@ extension AssetQueryWhereDistinct on QueryBuilder<Asset, Asset, QDistinct> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QDistinct> distinctByLivePhotoVideoId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'livePhotoVideoId',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Asset, Asset, QDistinct> distinctByStackCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'stackCount');
@@ -1852,6 +2047,12 @@ extension AssetQueryProperty on QueryBuilder<Asset, Asset, QQueryProperty> {
   QueryBuilder<Asset, String, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Asset, String?, QQueryOperations> livePhotoVideoIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'livePhotoVideoId');
     });
   }
 
