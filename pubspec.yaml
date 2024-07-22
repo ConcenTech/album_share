@@ -29,7 +29,6 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   # sentry_logging: ^8.3.0
   thumbhash: ^0.1.0+1
-  vrouter: ^1.2.1
 
 dev_dependencies:
   flutter_test:

@@ -47,6 +47,7 @@ class MainApp extends ConsumerWidget {
                 }),
               ],
               routerConfig: appRouter.routerConfig,
+              navigatorKey: appRouter.navigatorKey,
             );
           },
         );

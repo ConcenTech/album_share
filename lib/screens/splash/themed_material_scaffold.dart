@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:vrouter/vrouter.dart';
 
 import '../../constants/constants.dart';
 import '../../core/components/scaffold/app_scaffold.dart';
 import '../../core/theme/app_theme.dart';
+import '../../routes/platform_app.dart';
 
 class ThemedMaterialScaffold extends StatelessWidget {
   const ThemedMaterialScaffold({required this.child, super.key});
@@ -13,21 +13,16 @@ class ThemedMaterialScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = AppTheme();
-    return VRouter(
-      key: const ValueKey('Init_Material_App'),
+    return PlatformApp.splash(
+      key: const ValueKey('Init_Platform_App'),
       title: kAppTitle,
       theme: theme.lightTheme(),
       darkTheme: theme.darkTheme(),
-      mode: VRouterMode.history,
-      routes: [
-        VWidget(
-          path: r':_(.+)',
-          widget: AppScaffold(
-            showTitleBar: false,
-            body: child,
-          ),
-        ),
-      ],
+      mode: ThemeMode.system,
+      child: AppScaffold(
+        showTitleBar: false,
+        body: child,
+      ),
     );
   }
 }
