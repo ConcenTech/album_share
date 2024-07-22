@@ -201,6 +201,7 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
         return PopScope(
           canPop: !_isZoomed,
           onPopInvoked: (pop) {
+            print('onPopInvoked. pop:$pop isZoomed:$_isZoomed');
             if (!pop) {
               _setIfMounted(() {
                 _isZoomed = false;

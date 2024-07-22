@@ -37,21 +37,21 @@ class MainApp extends ConsumerWidget {
             final appRouter = ref.watch(appRouterProvider);
             final appTheme = ref.watch(PreferencesProviders.theme);
 
-            return VRouter(
-              title: kAppTitle,
-              key: appRouter.vRouterKey,
-              initialUrl: appRouter.initialRoute,
-              routes: appRouter.routes,
-              navigatorObservers: [
-                MyNavObserver(onPop: () {
-                  ref.read(appBarListenerProvider.notifier).show();
-                }),
-              ],
-              themeMode: appTheme,
-              theme: ThemeData.light(),
-              darkTheme: ThemeData.dark(),
-              builder: (_, child) => FocusRemover(child),
-            );
+              return VRouter(
+                title: kAppTitle,
+                key: appRouter.vRouterKey,
+                initialUrl: appRouter.initialRoute,
+                routes: appRouter.routes,
+                navigatorObservers: [
+                  MyNavObserver(onPop: () {
+                    ref.read(appBarListenerProvider.notifier).show();
+                  }),
+                ],
+                themeMode: appTheme,
+                theme: ThemeData.light(),
+                darkTheme: ThemeData.dark(),
+              ,
+              );
           },
         );
   }

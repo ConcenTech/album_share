@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vrouter/vrouter.dart';
+import 'package:go_router/go_router.dart';
 
 import '../screens/asset_viewer/asset_viewer_screen.dart';
 import '../screens/asset_viewer/asset_viewer_screen_state.dart';
@@ -13,66 +13,57 @@ const _kLoginRoute = '/login';
 const _kPreferencesRoute = '/preferences';
 const _kAssetViewerRoute = '/assets';
 
+final router = GoRouter(
+  routes: [],
+);
+
 class AppRouter {
   AppRouter(this._auth);
 
   final AuthService _auth;
 
-  final vRouterKey = GlobalKey<VRouterState>();
-
-  Future<void> _authGuard(
-    VRedirector vRedirector, [
-    bool authRequired = true,
-  ]) async {
+  Future<String?> _authRedirect(bool authRequired) async {
     final authenticated = await _auth.checkAuthStatus();
 
     if (authenticated && !authRequired) {
-      return vRedirector.to(_kLibraryRoute, isReplacement: true);
+      return _kLibraryRoute;
     }
 
     if (!authenticated && authRequired) {
-      return vRedirector.to(_kLoginRoute, isReplacement: true);
+      return _kLoginRoute;
     }
+
+    return null;
   }
 
-  String get initialRoute => _kLibraryRoute;
-
-  List<VRouteElement> get routes => [
-        VGuard(
-          beforeEnter: (vRedirector) => _authGuard(vRedirector),
-          stackedRoutes: [
-            VWidget(
-              path: _kLibraryRoute,
-              widget: const LibraryScreen(),
-              stackedRoutes: [
-                VWidget(
-                  path: _kPreferencesRoute,
-                  widget: const PreferencesScreen(),
-                ),
-                VWidget(
-                  path: _kAssetViewerRoute,
-                  widget: const AssetViewerScreen(),
-                )
-              ],
-            ),
-          ],
+  List<GoRoute> get routes => [
+        GoRoute(
+          path: _kLibraryRoute,
+          builder: (_, __) => const LibraryScreen(),
+          redirect: (_, __) => _authRedirect(true),
         ),
-        VGuard(
-          beforeEnter: (vRedirector) => _authGuard(vRedirector, false),
-          stackedRoutes: [
-            VWidget(
-              path: _kLoginRoute,
-              widget: const AuthScreen(),
-            ),
-          ],
+        GoRoute(
+          path: _kPreferencesRoute,
+          builder: (_, __) => const PreferencesScreen(),
+          redirect: (_, __) => _authRedirect(true),
+        ),
+        GoRoute(
+          path: _kAssetViewerRoute,
+          builder: (_, __) => const AssetViewerScreen(),
+          redirect: (_, __) => _authRedirect(true),
+        ),
+        GoRoute(
+          path: _kLoginRoute,
+          builder: (_, __) => const AuthScreen(),
+          redirect: (_, __) => _authRedirect(false),
         ),
       ];
 
   static void to(String route, BuildContext context,
           [Map<String, String> queryParameters = const {}]) =>
-      VRouter.of(context).to(route, queryParameters: queryParameters);
+      GoRouter.of(context).go(route, extra: queryParameters);
 
-  static void back(BuildContext context) => VRouter.of(context).pop();
+  static void back(BuildContext context) => GoRouter.of(context).pop();
 
   static void toLibrary(BuildContext context) => to(_kLibraryRoute, context);
   static void toPreferences(BuildContext context) =>
