@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vrouter/vrouter.dart';
 
 import 'constants/constants.dart';
-import 'core/components/focus_remover.dart';
 import 'core/components/window_titlebar.dart';
 import 'routes/app_router_provider.dart';
+import 'routes/platform_app.dart';
 import 'screens/splash/init_fail_screen.dart';
 import 'screens/splash/init_splash_screen.dart';
 import 'services/preferences/preferences_providers.dart';
@@ -37,21 +36,18 @@ class MainApp extends ConsumerWidget {
             final appRouter = ref.watch(appRouterProvider);
             final appTheme = ref.watch(PreferencesProviders.theme);
 
-              return VRouter(
-                title: kAppTitle,
-                key: appRouter.vRouterKey,
-                initialUrl: appRouter.initialRoute,
-                routes: appRouter.routes,
-                navigatorObservers: [
-                  MyNavObserver(onPop: () {
-                    ref.read(appBarListenerProvider.notifier).show();
-                  }),
-                ],
-                themeMode: appTheme,
-                theme: ThemeData.light(),
-                darkTheme: ThemeData.dark(),
-              ,
-              );
+            return PlatformApp.router(
+              title: kAppTitle,
+              theme: ThemeData.light(),
+              darkTheme: ThemeData.dark(),
+              mode: appTheme,
+              observers: [
+                MyNavObserver(onPop: () {
+                  ref.read(appBarListenerProvider.notifier).show();
+                }),
+              ],
+              routerConfig: appRouter.routerConfig,
+            );
           },
         );
   }

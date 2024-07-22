@@ -10,8 +10,8 @@ import '../services/auth/auth_service.dart';
 
 const _kLibraryRoute = '/';
 const _kLoginRoute = '/login';
-const _kPreferencesRoute = '/preferences';
-const _kAssetViewerRoute = '/assets';
+const _kPreferencesRoute = 'preferences';
+const _kAssetViewerRoute = 'assets';
 
 final router = GoRouter(
   routes: [],
@@ -21,6 +21,8 @@ class AppRouter {
   AppRouter(this._auth);
 
   final AuthService _auth;
+
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   Future<String?> _authRedirect(bool authRequired) async {
     final authenticated = await _auth.checkAuthStatus();
@@ -36,21 +38,32 @@ class AppRouter {
     return null;
   }
 
+  GoRouter get routerConfig => GoRouter(
+        routes: routes,
+        debugLogDiagnostics: true,
+        navigatorKey: navigatorKey,
+      );
+
   List<GoRoute> get routes => [
         GoRoute(
           path: _kLibraryRoute,
           builder: (_, __) => const LibraryScreen(),
           redirect: (_, __) => _authRedirect(true),
-        ),
-        GoRoute(
-          path: _kPreferencesRoute,
-          builder: (_, __) => const PreferencesScreen(),
-          redirect: (_, __) => _authRedirect(true),
-        ),
-        GoRoute(
-          path: _kAssetViewerRoute,
-          builder: (_, __) => const AssetViewerScreen(),
-          redirect: (_, __) => _authRedirect(true),
+          routes: [
+            GoRoute(
+              path: _kPreferencesRoute,
+              builder: (_, __) => const PreferencesScreen(),
+              redirect: (_, __) => _authRedirect(true),
+            ),
+            GoRoute(
+              path: _kAssetViewerRoute,
+              builder: (_, state) => AssetViewerScreen(
+                viewerState:
+                    AssetViewerScreenState.fromExtra(state.extra ?? {}),
+              ),
+              redirect: (_, __) => _authRedirect(true),
+            ),
+          ],
         ),
         GoRoute(
           path: _kLoginRoute,
@@ -59,9 +72,8 @@ class AppRouter {
         ),
       ];
 
-  static void to(String route, BuildContext context,
-          [Map<String, String> queryParameters = const {}]) =>
-      GoRouter.of(context).go(route, extra: queryParameters);
+  static void to(String route, BuildContext context) =>
+      GoRouter.of(context).go(route.startsWith('/') ? route : '/$route');
 
   static void back(BuildContext context) => GoRouter.of(context).pop();
 
@@ -71,7 +83,10 @@ class AppRouter {
   static void toLogin(BuildContext context) => to(_kLoginRoute, context);
   static void toAssetViewer(
     BuildContext context,
-    AssetViewerScreenState routeState,
+    AssetViewerScreenState viewerState,
   ) =>
-      to(_kAssetViewerRoute, context, routeState.toQuery());
+      GoRouter.of(context).go(
+        '/$_kAssetViewerRoute',
+        extra: viewerState.toExtra(),
+      );
 }

@@ -588,6 +588,7 @@ class _AssetRow extends StatelessWidget {
               AppRouter.toAssetViewer(
                 context,
                 AssetViewerScreenState(
+                  renderList: renderList,
                   initialIndex: absoluteOffset + index,
                   heroOffset: heroOffset,
                   showStack: showStack,

@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../core/components/focus_remover.dart';
 
 class PlatformApp extends StatelessWidget {
-  const PlatformApp.builder({
+  const PlatformApp.router({
     required this.title,
     required this.theme,
     required this.darkTheme,
     required this.mode,
     this.observers = const [],
+    this.routerConfig,
     super.key,
   });
 
@@ -21,10 +21,10 @@ class PlatformApp extends StatelessWidget {
   final ThemeData darkTheme;
   final ThemeMode mode;
   final List<NavigatorObserver> observers;
+  final RouterConfig<Object>? routerConfig;
 
   @override
   Widget build(BuildContext context) {
-    final routerConfig = GoRouter(routes: []);
     assert(!kIsWeb, 'The web platform is not supported by this application');
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:

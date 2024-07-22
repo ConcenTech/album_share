@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vrouter/vrouter.dart';
 
 import '../../core/components/scaffold/app_scaffold.dart';
 import '../../core/utils/extension_methods.dart';
@@ -10,14 +9,18 @@ import 'asset_viewer_screen_state.dart';
 import 'asset_viewer_widget.dart';
 
 class AssetViewerScreen extends ConsumerStatefulWidget {
-  const AssetViewerScreen({super.key});
+  const AssetViewerScreen({
+    required this.viewerState,
+    super.key,
+  });
+
+  final AssetViewerScreenState viewerState;
 
   @override
   ConsumerState<AssetViewerScreen> createState() => _AssetViewerScreenState();
 }
 
 class _AssetViewerScreenState extends ConsumerState<AssetViewerScreen> {
-  AssetViewerScreenState? _viewerState;
 
   @override
   void initState() {
@@ -31,13 +34,10 @@ class _AssetViewerScreenState extends ConsumerState<AssetViewerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final route = VRouter.of(context);
-    final viewerState = _viewerState??= AssetViewerScreenState.fromQuery(route.queryParameters);
-
     return AppScaffold(
       showTitleBar: true,
       showBackButton: true,
-      body: AssetViewerWidget(viewerState: viewerState),
+      body: AssetViewerWidget(viewerState: widget.viewerState),
     );
   }
 }

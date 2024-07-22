@@ -15,7 +15,6 @@ import '../../immich/photo_view/photo_view_gallery.dart';
 import '../../immich/providers/haptic_feedback.provider.dart';
 import '../../models/asset.dart';
 import '../../routes/app_router.dart';
-import '../../services/library/library_providers.dart';
 import '../../services/preferences/preferences_providers.dart';
 import '../../services/providers/app_bar_listener.dart';
 import 'asset_viewer_screen_state.dart';
@@ -25,13 +24,9 @@ import 'video_viewer/video_viewer.dart';
 class AssetViewerWidget extends ConsumerStatefulWidget {
   const AssetViewerWidget({
     required this.viewerState,
-    this.heroOffset = 0,
-    this.album,
     super.key,
   });
 
-  final String? album;
-  final int heroOffset;
   final AssetViewerScreenState viewerState;
 
   @override
@@ -173,35 +168,17 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
   //     );
   //   }
 
+  RenderList get renderList => widget.viewerState.renderList;
+
   @override
   Widget build(BuildContext context) {
-    final renderListProvider = ref.watch(LibraryProviders.renderList);
-
-    return renderListProvider.when(
-      loading: () {
-        return const Center(
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-            ),
-          ),
-        );
-      },
-      error: (error, stackTrace) {
-        return Center(
-          child: Text('$error'),
-        );
-      },
-      data: (renderList) {
-        _currentAsset = renderList.loadAsset(_currentIndex);
+    _currentAsset = renderList.loadAsset(_currentIndex);
         final shouldLoopVideo = ref.watch(PreferencesProviders.shouldLoopVideo);
-
+        //TODO: waiting on framework update for PopScope to work as expected.
+        // https://github.com/flutter/flutter/issues/138737
         return PopScope(
           canPop: !_isZoomed,
           onPopInvoked: (pop) {
-            print('onPopInvoked. pop:$pop isZoomed:$_isZoomed');
             if (!pop) {
               _setIfMounted(() {
                 _isZoomed = false;
@@ -260,7 +237,7 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
                   },
                   imageProvider: provider,
                   heroAttributes: PhotoViewHeroAttributes(
-                    tag: '${_currentAsset.id}_${widget.heroOffset}',
+                    tag: '${_currentAsset.id}_${widget.viewerState.heroOffset}',
                     transitionOnUserGestures: true,
                   ),
                   filterQuality: FilterQuality.high,
@@ -282,7 +259,7 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
                     handleSwipeUpDown(details, renderList);
                   },
                   heroAttributes: PhotoViewHeroAttributes(
-                    tag: '${_currentAsset.id}_${widget.heroOffset}',
+                    tag: '${_currentAsset.id}_${widget.viewerState.heroOffset}',
                   ),
                   filterQuality: FilterQuality.high,
                   maxScale: 1.0,
@@ -308,6 +285,7 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
               return ClipRect(
                 child: Stack(
                   fit: StackFit.expand,
+
                   children: [
                     BackdropFilter(
                       filter: ui.ImageFilter.blur(
@@ -325,7 +303,5 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
             },
           ),
         );
-      },
-    );
   }
 }
