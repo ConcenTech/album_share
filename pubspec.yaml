@@ -10,6 +10,7 @@ dependencies:
   another_flushbar: ^1.12.30
   bitsdojo_window: ^0.1.6
   cached_network_image: ^3.3.1
+  chewie: ^1.7.5
   collection: ^1.18.0
   cookie_jar: ^4.0.8
   dio: ^5.4.3+1
@@ -29,6 +30,8 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   # sentry_logging: ^8.3.0
   thumbhash: ^0.1.0+1
+  video_player: ^2.9.1
+  wakelock_plus: ^1.1.4
 
 dev_dependencies:
   flutter_test:
