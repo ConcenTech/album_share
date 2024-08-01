@@ -28,34 +28,37 @@ class VideoViewer extends ConsumerWidget {
   final bool showDownloadingIndicator;
   final bool loopVideo;
 
-  
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoController =
-        ref.watch(videoPlayerControllerProvider(asset));
+    final videoController = ref.watch(videoPlayerControllerProvider(asset));
 
-    return videoController.when(
-      data: (controller) {
-        return VideoPlayerWidget(
-          controller: controller,
-          isMotionVideo: isMotionVideo,
-          placeholder: placeholder,
-          hideControlsTimer: hideControlsTimer,
-          showControls: showControls,
-          showDownloadingIndicator: showDownloadingIndicator,
-          loopVideo: loopVideo,
-        );
-      },
-      loading: () {
-        return const DelayedLoadingIndicator();
-      },
-      error: (e, _) {
-        SchedulerBinding.instance.addPostFrameCallback((_){
-          AppRouter.back(context);
-        });
-        return const SizedBox();
-
-      },
+    return SizedBox.fromSize(
+      size: MediaQuery.sizeOf(context),
+      child: videoController.when(
+        data: (controller) {
+          return VideoPlayerWidget(
+            controller: controller,
+            isMotionVideo: isMotionVideo,
+            placeholder: placeholder,
+            hideControlsTimer: hideControlsTimer,
+            showControls: showControls,
+            showDownloadingIndicator: showDownloadingIndicator,
+            loopVideo: loopVideo,
+          );
+        },
+        loading: () {
+          return placeholder ??
+              const DelayedLoadingIndicator(
+                fadeInDuration: Duration(milliseconds: 500),
+              );
+        },
+        error: (e, _) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            AppRouter.back(context);
+          });
+          return const SizedBox();
+        },
+      ),
     );
   }
 }

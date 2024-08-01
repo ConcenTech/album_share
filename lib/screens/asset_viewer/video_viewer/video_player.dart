@@ -2,6 +2,8 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import 'delayed_loading_indicator.dart';
+
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({
     super.key,
@@ -27,7 +29,7 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late ChewieController? _controller;
+  ChewieController? _controller;
 
   @override
   void initState() {
@@ -78,6 +80,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Unlikely but possible.
+    if (_controller == null) {
+      return widget.placeholder ??
+          const DelayedLoadingIndicator(
+            fadeInDuration: Duration(milliseconds: 500),
+          );
+    }
     return Chewie(
       controller: _controller!,
     );
