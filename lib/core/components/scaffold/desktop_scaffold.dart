@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../services/providers/app_bar_listener.dart';
 import '../titlebar_buttons/titlebar_back_button.dart';
-import '../window_titlebar.dart';
+import '../app_window/desktop_window_titlebar.dart';
 
 const _appBarHeight = 36.0;
 
@@ -44,15 +44,19 @@ class DesktopScaffold extends ConsumerWidget {
             left: 0,
             right: 0,
             top: appBarVisible ? 0 : -_appBarHeight,
-            child: Container(
-              height: _appBarHeight,
-              color: (theme.appBarTheme.backgroundColor ??
-                      theme.colorScheme.surface)
-                  .withOpacity(0.6),
-              child: DesktopWindowTitlebar(
-                showTitle: showTitleBar,
-                titleBarIcons: titleBarIcons,
-                leading: showBackButton ? const TitlebarBackButton() : null,
+            child: MouseRegion(
+              hitTestBehavior: HitTestBehavior.translucent,
+              opaque: false,
+              child: Container(
+                height: _appBarHeight,
+                color: (theme.appBarTheme.backgroundColor ??
+                        theme.colorScheme.surface)
+                    .withOpacity(0.6),
+                child: DesktopWindowTitlebar(
+                  showTitle: showTitleBar,
+                  titleBarIcons: titleBarIcons,
+                  leading: showBackButton ? const TitlebarBackButton() : null,
+                ),
               ),
             ),
           ),

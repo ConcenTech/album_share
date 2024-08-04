@@ -2,13 +2,8 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'logo_widget.dart';
-
-const _desktopPlatforms = [
-  TargetPlatform.linux,
-  TargetPlatform.macOS,
-  TargetPlatform.windows,
-];
+import '../logo_widget.dart';
+import 'app_window.dart';
 
 class DesktopWindowTitlebar extends StatelessWidget {
   const DesktopWindowTitlebar({
@@ -23,14 +18,12 @@ class DesktopWindowTitlebar extends StatelessWidget {
   final List<Widget> titleBarIcons;
 
   static void openWindow() {
-    if (_desktopPlatforms.contains(defaultTargetPlatform)) {
-      doWhenWindowReady(() {
-        appWindow.title = 'Album share';
-        appWindow.minSize = const Size(300, 500);
-        appWindow.size = const Size(600, 500);
-        appWindow.show();
-      });
-    }
+    doWhenWindowReady(() {
+      appWindow.title = 'Album share';
+      appWindow.minSize = const Size(300, 500);
+      appWindow.size = const Size(600, 500);
+      appWindow.show();
+    });
   }
 
   /// If true, displays the app logo and name in the top bar.
@@ -38,7 +31,7 @@ class DesktopWindowTitlebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    assert(_desktopPlatforms.contains(defaultTargetPlatform));
+    assert(desktopPlatforms.contains(defaultTargetPlatform));
 
     return WindowTitleBarBox(
       child: Row(

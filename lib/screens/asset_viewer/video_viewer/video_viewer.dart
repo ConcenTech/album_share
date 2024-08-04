@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../models/asset.dart';
-import '../../../routes/app_router.dart';
-import '../../../services/library/video/video_player_controller_provider.dart';
-import 'delayed_loading_indicator.dart';
-import 'video_player.dart';
+import '../../../services/library/video/video_player_url_provider.dart';
+import '../../../services/providers/app_bar_listener.dart';
 
 class VideoViewer extends ConsumerWidget {
   const VideoViewer({
@@ -15,48 +13,33 @@ class VideoViewer extends ConsumerWidget {
     this.isMotionVideo = false,
     this.placeholder,
     this.showControls = true,
-    this.hideControlsTimer = const Duration(seconds: 5),
-    this.showDownloadingIndicator = true,
     this.loopVideo = false,
   });
 
   final Asset asset;
   final bool isMotionVideo;
   final Widget? placeholder;
-  final Duration hideControlsTimer;
   final bool showControls;
-  final bool showDownloadingIndicator;
   final bool loopVideo;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoController = ref.watch(videoPlayerControllerProvider(asset));
+    final urlProvider = ref.watch(videoPlayerUrlProvider(asset));
 
     return SizedBox.fromSize(
       size: MediaQuery.sizeOf(context),
-      child: videoController.when(
-        data: (controller) {
-          return VideoPlayerWidget(
-            controller: controller,
-            isMotionVideo: isMotionVideo,
-            placeholder: placeholder,
-            hideControlsTimer: hideControlsTimer,
-            showControls: showControls,
-            showDownloadingIndicator: showDownloadingIndicator,
-            loopVideo: loopVideo,
-          );
-        },
-        loading: () {
-          return placeholder ??
-              const DelayedLoadingIndicator(
-                fadeInDuration: Duration(milliseconds: 500),
-              );
-        },
-        error: (e, _) {
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            AppRouter.back(context);
-          });
-          return const SizedBox();
+      child: VideoPlayer.url(
+        url: urlProvider.url,
+        headers: urlProvider.headers,
+        showControls: showControls && !isMotionVideo,
+        loop: loopVideo,
+        onControlsViewChanged: (show) {
+          final notifier = ref.read(appBarListenerProvider.notifier);
+          if (show) {
+            notifier.show(true);
+          } else {
+            notifier.hide(true);
+          }
         },
       ),
     );

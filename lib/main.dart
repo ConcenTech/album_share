@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:video_player/video_player.dart';
 
 import 'constants/constants.dart';
-import 'core/components/window_titlebar.dart';
+import 'core/components/app_window/app_window.dart';
 import 'routes/app_router_provider.dart';
 import 'routes/platform_app.dart';
 import 'screens/splash/init_fail_screen.dart';
@@ -14,6 +15,7 @@ import 'services/providers/app_init_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  VideoPlayer.ensureInitialized();
 
   runApp(
     const ProviderScope(
@@ -21,7 +23,7 @@ void main() {
     ),
   );
 
-  DesktopWindowTitlebar.openWindow();
+  AppWindow.setWindow();
 }
 
 class MainApp extends ConsumerWidget {
@@ -37,6 +39,7 @@ class MainApp extends ConsumerWidget {
             final appTheme = ref.watch(PreferencesProviders.theme);
 
             return PlatformApp.router(
+              key: appRouter.key,
               title: kAppTitle,
               theme: ThemeData.light(),
               darkTheme: ThemeData.dark(),

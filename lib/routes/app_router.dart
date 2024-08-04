@@ -22,6 +22,7 @@ class AppRouter {
 
   final AuthService _auth;
 
+  final key = GlobalKey();
   final navigatorKey = GlobalKey<NavigatorState>();
 
   Future<String?> _authRedirect(bool authRequired) async {

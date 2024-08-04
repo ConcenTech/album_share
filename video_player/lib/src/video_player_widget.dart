@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:video_player/src/controls/controls.dart';
 
 class VideoPlayer extends StatefulWidget {
   static void ensureInitialized() => MediaKit.ensureInitialized();
@@ -9,6 +10,8 @@ class VideoPlayer extends StatefulWidget {
     required this.media,
     required this.loop,
     required this.autoPlay,
+    required this.showControls,
+    this.onControlsViewChanged,
     this.onReady,
     super.key,
   });
@@ -18,6 +21,8 @@ class VideoPlayer extends StatefulWidget {
     Map<String, String> headers = const {},
     this.loop = true,
     this.autoPlay = true,
+    this.showControls = true,
+    this.onControlsViewChanged,
     this.onReady,
     super.key,
   }) : media = Media(url, httpHeaders: headers);
@@ -26,6 +31,8 @@ class VideoPlayer extends StatefulWidget {
 
   final bool loop;
   final bool autoPlay;
+  final bool showControls;
+  final void Function(bool show)? onControlsViewChanged;
 
   final VoidCallback? onReady;
 
@@ -40,13 +47,18 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   void initState() {
     super.initState();
-   _setPlayer();
+    _setPlayer();
   }
 
   void _setPlayer() {
-    _player = Player(configuration: PlayerConfiguration(ready: widget.onReady),);
+    _player?.dispose();
+    _player = Player(
+      configuration: PlayerConfiguration(ready: widget.onReady),
+    );
     _controller = VideoController(_player!);
-    _player!.open(widget.media);
+    _player!.open(widget.media, play: widget.autoPlay);
+    _player!
+        .setPlaylistMode(widget.loop ? PlaylistMode.single : PlaylistMode.none);
   }
 
   @override
@@ -54,7 +66,13 @@ class _VideoPlayerState extends State<VideoPlayer> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.media != widget.media) {
       _setPlayer();
-    } 
+    }
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,6 +80,14 @@ class _VideoPlayerState extends State<VideoPlayer> {
     if (_controller == null) {
       return const Placeholder();
     }
-    return Video(controller: _controller!);
+    return Video(
+      controller: _controller!,
+      controls: widget.showControls
+          ? (state) => VideoPlayerControls(
+                state: state,
+                onVisibilityChanged: widget.onControlsViewChanged,
+              )
+          : NoVideoControls,
+    );
   }
 }
