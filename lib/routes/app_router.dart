@@ -43,6 +43,7 @@ class AppRouter {
         routes: routes,
         debugLogDiagnostics: true,
         navigatorKey: navigatorKey,
+        restorationScopeId: 'router_config_scope',
       );
 
   List<GoRoute> get routes => [

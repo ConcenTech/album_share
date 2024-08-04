@@ -12,12 +12,11 @@ class ThemedMaterialScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = AppTheme();
     return PlatformApp.splash(
       key: const ValueKey('Init_Platform_App'),
       title: kAppTitle,
-      theme: theme.lightTheme(),
-      darkTheme: theme.darkTheme(),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
       mode: ThemeMode.system,
       child: AppScaffold(
         showTitleBar: false,

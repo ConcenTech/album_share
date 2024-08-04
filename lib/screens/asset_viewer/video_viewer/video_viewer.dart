@@ -34,6 +34,10 @@ class VideoViewer extends ConsumerWidget {
         showControls: showControls && !isMotionVideo,
         loop: loopVideo,
         onControlsViewChanged: (show) {
+          // onControlsViewChanged fires some time after widget is disposed.
+          if (!context.mounted) {
+            return;
+          }
           final notifier = ref.read(appBarListenerProvider.notifier);
           if (show) {
             notifier.show(true);

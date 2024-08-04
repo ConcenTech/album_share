@@ -1,3 +1,4 @@
+import 'package:album_share/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,22 +36,23 @@ class MainApp extends ConsumerWidget {
           loading: () => const InitSplashScreen(),
           error: (error, _) => InitFailScreen(error),
           data: (data) {
-            final appRouter = ref.watch(appRouterProvider);
-            final appTheme = ref.watch(PreferencesProviders.theme);
+            final navigatorKey =
+                ref.watch(appRouterProvider.select((r) => r.navigatorKey));
+            final routerConfig = ref.watch(routerConfigProvider);
+            final themeMode = ref.watch(PreferencesProviders.theme);
 
             return PlatformApp.router(
-              key: appRouter.key,
               title: kAppTitle,
-              theme: ThemeData.light(),
-              darkTheme: ThemeData.dark(),
-              mode: appTheme,
+              theme: AppTheme.light(),
+              darkTheme: AppTheme.dark(),
+              mode: themeMode,
               observers: [
                 MyNavObserver(onPop: () {
                   ref.read(appBarListenerProvider.notifier).show();
                 }),
               ],
-              routerConfig: appRouter.routerConfig,
-              navigatorKey: appRouter.navigatorKey,
+              routerConfig: routerConfig,
+              navigatorKey: navigatorKey,
             );
           },
         );

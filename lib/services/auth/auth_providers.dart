@@ -5,7 +5,7 @@ import '../database/database_providers.dart';
 import 'auth_service.dart';
 
 abstract class AuthProviders {
-  static final service = Provider.autoDispose(
+  static final service = Provider(
     (ref) => AuthService(
       ref.watch(DatabaseProviders.service),
       ref.watch(ApiProviders.service),

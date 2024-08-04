@@ -34,6 +34,12 @@ class MobileScaffold extends ConsumerWidget {
     final appBarVisible = ref.watch(appBarListenerProvider);
     final appBarHeight = MobileScaffold.appBarHeight(context);
 
+    final theme = Theme.of(context);
+
+    final appBarColor =
+        (theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface)
+            .withOpacity(0.7);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -46,8 +52,9 @@ class MobileScaffold extends ConsumerWidget {
               top: appBarVisible ? 0 : -appBarHeight,
               child: Container(
                 height: appBarHeight,
-                color: Theme.of(context).appBarTheme.backgroundColor,
+                color: appBarColor,
                 child: AppBar(
+                  backgroundColor: Colors.transparent,
                   leading: showBackButton ? const TitlebarBackButton() : null,
                   automaticallyImplyLeading: false,
                   actions: titleBarIcons,

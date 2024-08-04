@@ -431,11 +431,9 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
                     if (mount)
                       Padding(
                         padding: _theme(context).padding ??
-                            (
-                                // Add padding in fullscreen!
-                                isFullscreen(context)
-                                    ? MediaQuery.of(context).padding
-                                    : EdgeInsets.zero),
+                            MediaQuery.of(context).padding.add(
+                                  const EdgeInsets.only(bottom: 12),
+                                ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -473,16 +471,19 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
                               alignment: Alignment.bottomCenter,
                               children: [
                                 if (_theme(context).displaySeekBar)
-                                  MaterialSeekBar(
-                                    onSeekStart: () {
-                                      _timer?.cancel();
-                                    },
-                                    onSeekEnd: () {
-                                      _timer = Timer(
-                                        _theme(context).controlsHoverDuration,
-                                        () => _updateVisibility(false),
-                                      );
-                                    },
+                                  Padding(
+                                    padding: _theme(context).seekBarMargin,
+                                    child: MaterialSeekBar(
+                                      onSeekStart: () {
+                                        _timer?.cancel();
+                                      },
+                                      onSeekEnd: () {
+                                        _timer = Timer(
+                                          _theme(context).controlsHoverDuration,
+                                          () => _updateVisibility(false),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 Container(
                                   height: _theme(context).buttonBarHeight,
@@ -527,12 +528,8 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
               // Buffering Indicator.
               IgnorePointer(
                 child: Padding(
-                  padding: _theme(context).padding ??
-                      (
-                          // Add padding in fullscreen!
-                          isFullscreen(context)
-                              ? MediaQuery.of(context).padding
-                              : EdgeInsets.zero),
+                  padding:
+                      _theme(context).padding ?? MediaQuery.of(context).padding,
                   child: Column(
                     children: [
                       Container(
@@ -628,6 +625,7 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
                                 )
                               : const SizedBox(),
                         ),
+                        const SizedBox(width: 20),
                         Expanded(
                           child: _mountSeekForwardButton
                               ? TweenAnimationBuilder<double>(
@@ -686,11 +684,10 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
 
   // [MaterialVideoControlsThemeData] available in this [context].
   MaterialVideoControlsThemeData _theme(BuildContext context) =>
-      FullscreenInheritedWidget.maybeOf(context) == null
-          ? MaterialVideoControlsTheme.maybeOf(context)?.normal ??
-              kDefaultMaterialVideoControlsThemeData
-          : MaterialVideoControlsTheme.maybeOf(context)?.fullscreen ??
-              kDefaultMaterialVideoControlsThemeDataFullscreen;
+      const MaterialVideoControlsThemeData(
+        bottomButtonBar: [MaterialPositionIndicator()],
+        seekBarMargin: const EdgeInsets.symmetric(horizontal: 12),
+      );
 }
 
 class _BackwardSeekIndicator extends StatefulWidget {

@@ -38,7 +38,6 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
   late Asset _currentAsset;
 
   int _currentIndex = 0;
-  int _stackIndex = -1;
   bool _isZoomed = false;
   bool _isPlayingVideo = false;
   Offset? _localPosition;
@@ -120,6 +119,7 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
 
     final ratio = d.dy / max(d.dx.abs(), 1);
     if (d.dy > sensitivity && ratio > ratioThreshold) {
+      ref.read(appBarListenerProvider.notifier).show();
       AppRouter.back(context);
     }
     // else if (d.dy < -sensitivity && ratio < -ratioThreshold) {
@@ -173,135 +173,133 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
   @override
   Widget build(BuildContext context) {
     _currentAsset = renderList.loadAsset(_currentIndex);
-        final shouldLoopVideo = ref.watch(PreferencesProviders.shouldLoopVideo);
-        //TODO: waiting on framework update for PopScope to work as expected.
-        // https://github.com/flutter/flutter/issues/138737
-        return PopScope(
-          canPop: !_isZoomed,
-          onPopInvoked: (pop) {
-            if (!pop) {
-              _setIfMounted(() {
-                _isZoomed = false;
-              });
-            }
-          },
-          child: PhotoViewGallery.builder(
-            pageController: _controller,
-            itemCount: renderList.totalAssets,
-            scrollDirection: Axis.horizontal,
-            scrollPhysics: _isZoomed
-                ? const NeverScrollableScrollPhysics() // Don't allow paging while scrolled in
-                : (Platform.isIOS
-                    ? const ScrollPhysics() // Use bouncing physics for iOS
-                    : const ClampingScrollPhysics() // Use heavy physics for Android
-                ),
-            scaleStateChangedCallback: _updateScaleState,
-            onPageChanged: (value) async {
-              final next = _currentIndex < value ? value + 1 : value - 1;
+    final shouldLoopVideo = ref.watch(PreferencesProviders.shouldLoopVideo);
+    //TODO: waiting on framework update for PopScope to work as expected.
+    // https://github.com/flutter/flutter/issues/138737
+    return PopScope(
+      canPop: !_isZoomed,
+      onPopInvoked: (pop) {
+        if (!pop) {
+          _setIfMounted(() {
+            _isZoomed = false;
+          });
+        }
+      },
+      child: PhotoViewGallery.builder(
+        pageController: _controller,
+        itemCount: renderList.totalAssets,
+        scrollDirection: Axis.horizontal,
+        scrollPhysics: _isZoomed
+            ? const NeverScrollableScrollPhysics() // Don't allow paging while scrolled in
+            : (Platform.isIOS
+                ? const ScrollPhysics() // Use bouncing physics for iOS
+                : const ClampingScrollPhysics() // Use heavy physics for Android
+            ),
+        scaleStateChangedCallback: _updateScaleState,
+        onPageChanged: (value) async {
+          final next = _currentIndex < value ? value + 1 : value - 1;
 
-              ref.read(hapticFeedbackProvider.notifier).selectionClick();
+          ref.read(hapticFeedbackProvider.notifier).selectionClick();
 
-              _currentIndex = value;
-              _stackIndex = -1;
-              _isPlayingVideo = false;
+          _currentIndex = value;
+          _isPlayingVideo = false;
 
-              // Wait for page change animation to finish
-              await Future.delayed(const Duration(milliseconds: 400));
-              // Then precache the next image
-              unawaited(precacheNextImage(next, renderList));
-            },
-            builder: (context, index) {
-              final a = index == _currentIndex
-                  ? _currentAsset
-                  : renderList.loadAsset(index);
-              final ImageProvider provider = ImmichImage.imageProvider(
+          // Wait for page change animation to finish
+          await Future.delayed(const Duration(milliseconds: 400));
+          // Then precache the next image
+          unawaited(precacheNextImage(next, renderList));
+        },
+        builder: (context, index) {
+          final a = index == _currentIndex
+              ? _currentAsset
+              : renderList.loadAsset(index);
+          final ImageProvider provider = ImmichImage.imageProvider(
+            asset: a,
+            preferences: ref.watch(PreferencesProviders.service),
+          );
+
+          if (a.isImage && !_isPlayingVideo) {
+            return PhotoViewGalleryPageOptions(
+              onDragStart: (_, details, __) =>
+                  _localPosition = details.localPosition,
+              onDragUpdate: (_, details, __) =>
+                  handleSwipeUpDown(details, renderList),
+              onTapDown: (_, __, ___) {
+                ref.read(appBarListenerProvider.notifier).toggle();
+              },
+              onLongPressStart: (_, __, ___) {
+                if (_currentAsset.livePhotoVideoId != null) {
+                  _setIfMounted(() {
+                    _isPlayingVideo = true;
+                  });
+                }
+              },
+              imageProvider: provider,
+              heroAttributes: PhotoViewHeroAttributes(
+                tag: '${_currentAsset.id}_${widget.viewerState.heroOffset}',
+                transitionOnUserGestures: true,
+              ),
+              filterQuality: FilterQuality.high,
+              tightMode: true,
+              minScale: PhotoViewComputedScale.contained,
+              errorBuilder: (context, error, stackTrace) => ImmichImage(
+                a,
+                fit: BoxFit.contain,
+              ),
+            );
+          } else {
+            return PhotoViewGalleryPageOptions.customChild(
+              onDragStart: (_, details, __) {
+                _setIfMounted(() {
+                  _localPosition = details.localPosition;
+                });
+              },
+              onDragUpdate: (_, details, __) {
+                handleSwipeUpDown(details, renderList);
+              },
+              heroAttributes: PhotoViewHeroAttributes(
+                tag: '${_currentAsset.id}_${widget.viewerState.heroOffset}',
+              ),
+              filterQuality: FilterQuality.high,
+              maxScale: 1.0,
+              minScale: 1.0,
+              basePosition: Alignment.center,
+              child: VideoViewer(
+                key: ValueKey(a),
                 asset: a,
-                preferences: ref.watch(PreferencesProviders.service),
-              );
-
-              if (a.isImage && !_isPlayingVideo) {
-                return PhotoViewGalleryPageOptions(
-                  onDragStart: (_, details, __) =>
-                      _localPosition = details.localPosition,
-                  onDragUpdate: (_, details, __) =>
-                      handleSwipeUpDown(details, renderList),
-                  onTapDown: (_, __, ___) {
-                    ref.read(appBarListenerProvider.notifier).toggle();
-                  },
-                  onLongPressStart: (_, __, ___) {
-                    if (_currentAsset.livePhotoVideoId != null) {
-                      _setIfMounted(() {
-                        _isPlayingVideo = true;
-                      });
-                    }
-                  },
-                  imageProvider: provider,
-                  heroAttributes: PhotoViewHeroAttributes(
-                    tag: '${_currentAsset.id}_${widget.viewerState.heroOffset}',
-                    transitionOnUserGestures: true,
-                  ),
-                  filterQuality: FilterQuality.high,
-                  tightMode: true,
-                  minScale: PhotoViewComputedScale.contained,
-                  errorBuilder: (context, error, stackTrace) => ImmichImage(
-                    a,
-                    fit: BoxFit.contain,
-                  ),
-                );
-              } else {
-                return PhotoViewGalleryPageOptions.customChild(
-                  onDragStart: (_, details, __) {
-                    _setIfMounted(() {
-                      _localPosition = details.localPosition;
-                    });
-                  },
-                  onDragUpdate: (_, details, __) {
-                    handleSwipeUpDown(details, renderList);
-                  },
-                  heroAttributes: PhotoViewHeroAttributes(
-                    tag: '${_currentAsset.id}_${widget.viewerState.heroOffset}',
-                  ),
-                  filterQuality: FilterQuality.high,
-                  maxScale: 1.0,
-                  minScale: 1.0,
-                  basePosition: Alignment.center,
-                  child: VideoViewer(
-                    key: ValueKey(a),
-                    asset: a,
-                    isMotionVideo: a.livePhotoVideoId != null,
-                    loopVideo: shouldLoopVideo,
-                    placeholder: Image(
-                      image: provider,
-                      fit: BoxFit.contain,
-                      height: context.height,
-                      width: context.width,
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                );
-              }
-            },
-            loadingBuilder: (context, event, index) {
-              return ClipRect(
-                child: Stack(
-                  fit: StackFit.expand,
-
-                  children: [
-                    BackdropFilter(
-                      filter: ui.ImageFilter.blur(
-                        sigmaX: 10,
-                        sigmaY: 10,
-                      ),
-                    ),
-                    ImmichThumbnail(
-                      asset: _currentAsset,
-                      fit: BoxFit.contain,
-                    ),
-                  ],
+                isMotionVideo: a.livePhotoVideoId != null,
+                loopVideo: shouldLoopVideo,
+                placeholder: Image(
+                  image: provider,
+                  fit: BoxFit.contain,
+                  height: context.height,
+                  width: context.width,
+                  alignment: Alignment.center,
                 ),
-              );
-            },
-          ),
-        );
+              ),
+            );
+          }
+        },
+        loadingBuilder: (context, event, index) {
+          return ClipRect(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                BackdropFilter(
+                  filter: ui.ImageFilter.blur(
+                    sigmaX: 10,
+                    sigmaY: 10,
+                  ),
+                ),
+                ImmichThumbnail(
+                  asset: _currentAsset,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
