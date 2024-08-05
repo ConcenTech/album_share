@@ -1,6 +1,6 @@
 # album_share
 
-An unofficial Immich client based on the incredible work of ''.
+An unofficial Immich client.
 
 This client is optimised for sharing photos with friends/family.
 
