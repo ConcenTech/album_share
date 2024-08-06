@@ -1,3 +1,4 @@
+import 'package:album_share/core/utils/app_localisations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,56 @@ import 'package:go_router/go_router.dart';
 
 import '../core/components/focus_remover.dart';
 
+class _PlatformApp extends StatelessWidget {
+  const _PlatformApp({
+    required this.child,
+    required this.localizationsDelegates,
+    required this.supportedLocales,
+    super.key,
+  });
+
+  final Widget child;
+
+  final Iterable<LocalizationsDelegate> localizationsDelegates;
+  final Iterable<Locale> supportedLocales;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+      case TargetPlatform.fuchsia:
+        return MaterialApp(
+          home: child,
+          localizationsDelegates: localizationsDelegates,
+          supportedLocales: supportedLocales,
+        );
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+        return CupertinoApp(
+          home: child,
+          localizationsDelegates: localizationsDelegates,
+          supportedLocales: supportedLocales,
+        );
+    }
+  }
+}
+
 class PlatformApp extends StatelessWidget {
+  static base({
+    required Widget child,
+    required Iterable<LocalizationsDelegate> localizationsDelegates,
+    required Iterable<Locale> supportedLocales,
+    Key? key,
+  }) =>
+      _PlatformApp(
+        localizationsDelegates: localizationsDelegates,
+        supportedLocales: supportedLocales,
+        child: child,
+        key: key,
+      );
+
   const PlatformApp.router({
     required this.title,
     required this.theme,
@@ -37,7 +87,6 @@ class PlatformApp extends StatelessWidget {
   final ThemeMode mode;
   final List<NavigatorObserver> observers;
   final RouterConfig<Object>? routerConfig;
-
   final Widget? child;
 
   @override
@@ -59,6 +108,8 @@ class PlatformApp extends StatelessWidget {
           themeMode: mode,
           routerConfig: routerConfig,
           builder: builder,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
         );
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
@@ -72,6 +123,8 @@ class PlatformApp extends StatelessWidget {
           }),
           routerConfig: routerConfig,
           builder: builder,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
         );
     }
   }

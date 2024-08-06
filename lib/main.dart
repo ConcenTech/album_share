@@ -1,11 +1,12 @@
-import 'package:album_share/core/theme/app_theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import 'constants/constants.dart';
 import 'core/components/app_window/app_window.dart';
+import 'core/theme/app_theme.dart';
+import 'core/utils/app_localisations.dart';
 import 'routes/app_router_provider.dart';
 import 'routes/platform_app.dart';
 import 'screens/splash/init_fail_screen.dart';
@@ -20,7 +21,9 @@ void main() {
 
   runApp(
     const ProviderScope(
-      child: MainApp(),
+      child: LocaleScope(
+        app: MainApp(),
+      ),
     ),
   );
 
@@ -32,6 +35,12 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = AppLocalizations.of(context);
+    if (locale == null) {
+      print('Locale not found in current context :(');
+    } else {
+      print('Locale was found in current context :)');
+    }
     return ref.watch(appInitProvider).when(
           loading: () => const InitSplashScreen(),
           error: (error, _) => InitFailScreen(error),
@@ -42,12 +51,12 @@ class MainApp extends ConsumerWidget {
             final themeMode = ref.watch(PreferencesProviders.theme);
 
             return PlatformApp.router(
-              title: kAppTitle,
+              title: AppLocalizations.of(context)!.appTitle,
               theme: AppTheme.light(),
               darkTheme: AppTheme.dark(),
               mode: themeMode,
               observers: [
-                MyNavObserver(onPop: () {
+                PopObserver(onPop: () {
                   ref.read(appBarListenerProvider.notifier).show();
                 }),
               ],
@@ -59,8 +68,26 @@ class MainApp extends ConsumerWidget {
   }
 }
 
-class MyNavObserver extends NavigatorObserver {
-  MyNavObserver({required this.onPop});
+class LocaleScope extends StatelessWidget {
+  const LocaleScope({
+    required this.app,
+    super.key,
+  });
+
+  final MainApp app;
+
+  @override
+  Widget build(BuildContext context) {
+    return PlatformApp.base(
+      child: app,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+    );
+  }
+}
+
+class PopObserver extends NavigatorObserver {
+  PopObserver({required this.onPop});
   final VoidCallback onPop;
 
   @override

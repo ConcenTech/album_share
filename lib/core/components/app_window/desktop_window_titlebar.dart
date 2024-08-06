@@ -17,6 +17,10 @@ class DesktopWindowTitlebar extends StatelessWidget {
 
   final List<Widget> titleBarIcons;
 
+  static void setTitle(String title) {
+    appWindow.title = title;
+  }
+
   static void openWindow() {
     doWhenWindowReady(() {
       appWindow.title = 'Album share';

@@ -1,5 +1,4 @@
 const kRequired = 'Required';
-const kAppTitle = 'Album share';
 const kSuccess = 'Success';
 
 // Theme

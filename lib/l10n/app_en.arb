@@ -1,0 +1,11 @@
+{
+    "@@locale": "en",
+    "appTitle": "Album share",
+    "@appTitle": {
+        "description": "The application name."
+    },
+    "appTagLine": "An unofficial Immich client.",
+    "@appTagLine": {
+        "description": "A short description of the application"
+    }
+}

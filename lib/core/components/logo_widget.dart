@@ -1,3 +1,4 @@
+import 'package:album_share/core/utils/app_localisations.dart';
 import 'package:flutter/material.dart';
 
 class LogoImage extends StatelessWidget {
@@ -13,23 +14,29 @@ class LogoImage extends StatelessWidget {
 }
 
 class LogoText extends StatelessWidget {
-  const LogoText({this.tagline = true, super.key});
+  const LogoText({this.tagLine = true, super.key});
 
-  final bool tagline;
+  final bool tagLine;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final locale = AppLocalizations.of(context);
+    if (locale == null) {
+      print('No locale in logo_widget.dart');
+    } else {
+      print('Locale in logo_widget.dart');
+    }
     return Hero(
       tag: 'LogoTextWidget',
       child: RichText(
         text: TextSpan(
-          text: 'Album share',
-          style: tagline ? textTheme.headlineMedium : textTheme.titleMedium,
+          text: locale?.appTitle,
+          style: tagLine ? textTheme.headlineMedium : textTheme.titleMedium,
           children: [
-            if (tagline)
+            if (tagLine)
               TextSpan(
-                text: '\nAn unofficial Immich client',
+                text: '\n${locale?.appTagLine}',
                 style: textTheme.labelMedium,
               ),
           ],

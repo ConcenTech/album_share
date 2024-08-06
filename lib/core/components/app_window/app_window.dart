@@ -10,6 +10,12 @@ const desktopPlatforms = [
 ];
 
 abstract class AppWindow {
+  static void setTitle(String title) {
+    if (desktopPlatforms.contains(defaultTargetPlatform)) {
+      DesktopWindowTitlebar.setTitle(title);
+    }
+  }
+
   static void setWindow() async {
     if (desktopPlatforms.contains(defaultTargetPlatform)) {
       return DesktopWindowTitlebar.openWindow();

@@ -63,7 +63,7 @@ class MobileScaffold extends ConsumerWidget {
                     children: [
                       SizedBox(height: 25, child: LogoImage()),
                       SizedBox(width: 5),
-                      LogoText(tagline: false),
+                      LogoText(tagLine: false),
                     ],
                   ),
                 ),
