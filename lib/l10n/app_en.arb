@@ -7,5 +7,12 @@
     "appTagLine": "An unofficial Immich client.",
     "@appTagLine": {
         "description": "A short description of the application"
-    }
+    },
+    "theme": "Theme",
+    "groupBy": "Group by",
+    "automatic": "Auto",
+    "light": "Light",
+    "dark": "Dark",
+    "required": "Required",
+    "success": "Success"
 }

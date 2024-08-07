@@ -32,8 +32,9 @@ class _AppLifecycleScopeState extends State<AppLifecycleScope>
   }
 
   void initWindow() {
-    final locale = AppLocalizations.of(context);
-    AppWindow.setWindow(locale?.appTitle ?? 'Album share')
+    final locale = AppLocalizations.of(context)!;
+    AppLocale.instance.set(locale);
+    AppWindow.setWindow(locale.appTitle)
         .then((_) => print('App window set'))
         .onError((e, _) => print('Failed to set window $e'));
   }

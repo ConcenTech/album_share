@@ -1,21 +1,22 @@
 import 'package:form_field_validator/form_field_validator.dart';
 
-import '../../constants/constants.dart';
+import 'app_localisations.dart';
 
 class Validators {
   // static final required = RequiredValidator(errorText: kRequired);
   static const required = _requiredValidator;
 
   static String? _requiredValidator(Object? value) {
+    final locale = AppLocale.instance.current;
     if (value is String) {
-      return value.isEmpty ? kRequired : null;
+      return value.isEmpty ? locale.required : null;
     }
-    return value == null ? kRequired : null;
+    return value == null ? locale.required : null;
   }
 
   static String? requiredInt(String? value) {
     if (value == null) {
-      return kRequired;
+      return AppLocale.instance.current.required;
     }
 
     if (int.tryParse(value) == null) {
@@ -27,7 +28,7 @@ class Validators {
 
   static final password = MultiValidator(
     [
-      RequiredValidator(errorText: kRequired),
+      RequiredValidator(errorText: AppLocale.instance.current.required),
       MinLengthValidator(
         6,
         errorText: 'Password must be at least 6 digits long',
@@ -40,7 +41,7 @@ class Validators {
   ).call;
 
   static final postcode = MultiValidator([
-    RequiredValidator(errorText: kRequired),
+    RequiredValidator(errorText: AppLocale.instance.current.required),
     PatternValidator(
       r'^([A-Z]{1,2}\d{1,2}[A-Z]?)\s*(\d[A-Z]{2})$',
       errorText: 'Not a valid postcode',
@@ -48,7 +49,7 @@ class Validators {
   ]);
 
   static final email = MultiValidator([
-    RequiredValidator(errorText: kRequired),
+    RequiredValidator(errorText: AppLocale.instance.current.required),
     optionalEmail,
   ]).call;
 
@@ -66,7 +67,7 @@ class Validators {
   static String? numberMaxLength(
       {required String? value, required double max}) {
     if (value == null) {
-      return 'Required';
+      return AppLocale.instance.current.required;
     }
     final number = double.tryParse(value);
     if (number == null) {

@@ -2,7 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../constants/constants.dart';
+import '../utils/app_localisations.dart';
 
 class AppSnackbar {
   static Future<void> success({
@@ -13,7 +13,7 @@ class AppSnackbar {
   }) {
     final color = Colors.green.shade300;
     return _baseFlushbar(
-      title: kSuccess,
+      title: AppLocalizations.of(context)!.success,
       message: message,
       icon: Icon(
         Icons.done,

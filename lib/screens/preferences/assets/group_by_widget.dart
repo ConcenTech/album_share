@@ -1,8 +1,8 @@
-import 'package:album_share/core/utils/extension_methods.dart';
-import 'package:album_share/immich/asset_grid/asset_grid_data_structure.dart';
 import 'package:flutter/material.dart';
 
-import '../../../constants/constants.dart';
+import '../../../core/utils/app_localisations.dart';
+import '../../../core/utils/extension_methods.dart';
+import '../../../immich/asset_grid/asset_grid_data_structure.dart';
 
 class GroupByWidget extends StatelessWidget {
   const GroupByWidget({
@@ -17,7 +17,7 @@ class GroupByWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: const Text(kGroupBy),
+      title: Text(AppLocalizations.of(context)!.groupBy),
       trailing: SizedBox(
         width: 90,
         // height: 60

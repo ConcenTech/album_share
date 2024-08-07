@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../constants/constants.dart';
+import '../../../core/utils/app_localisations.dart';
 
 class ThemeWidget extends StatelessWidget {
   const ThemeWidget({
@@ -14,25 +14,26 @@ class ThemeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return ListTile(
-      title: const Text(kTheme),
+      title: Text(locale.theme),
       trailing: SizedBox(
         width: 90,
         // height: 60
         child: DropdownButtonFormField(
           value: value,
-          items: const [
+          items: [
             DropdownMenuItem(
               value: ThemeMode.system,
-              child: Text(kAutomatic),
+              child: Text(locale.automatic),
             ),
             DropdownMenuItem(
               value: ThemeMode.light,
-              child: Text(kLight),
+              child: Text(locale.light),
             ),
             DropdownMenuItem(
               value: ThemeMode.dark,
-              child: Text(kDark),
+              child: Text(locale.dark),
             ),
           ],
           autofocus: false,
