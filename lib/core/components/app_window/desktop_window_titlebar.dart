@@ -21,9 +21,9 @@ class DesktopWindowTitlebar extends StatelessWidget {
     appWindow.title = title;
   }
 
-  static void openWindow() {
+  static void openWindow(String title) {
     doWhenWindowReady(() {
-      appWindow.title = 'Album share';
+      appWindow.title = title;
       appWindow.minSize = const Size(300, 500);
       appWindow.size = const Size(600, 500);
       appWindow.show();

@@ -1,61 +1,12 @@
-import 'package:album_share/core/utils/app_localisations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/components/focus_remover.dart';
-
-class _PlatformApp extends StatelessWidget {
-  const _PlatformApp({
-    required this.child,
-    required this.localizationsDelegates,
-    required this.supportedLocales,
-    super.key,
-  });
-
-  final Widget child;
-
-  final Iterable<LocalizationsDelegate> localizationsDelegates;
-  final Iterable<Locale> supportedLocales;
-
-  @override
-  Widget build(BuildContext context) {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
-      case TargetPlatform.fuchsia:
-        return MaterialApp(
-          home: child,
-          localizationsDelegates: localizationsDelegates,
-          supportedLocales: supportedLocales,
-        );
-      case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
-        return CupertinoApp(
-          home: child,
-          localizationsDelegates: localizationsDelegates,
-          supportedLocales: supportedLocales,
-        );
-    }
-  }
-}
+import '../components/focus_remover.dart';
+import '../utils/app_localisations.dart';
 
 class PlatformApp extends StatelessWidget {
-  static base({
-    required Widget child,
-    required Iterable<LocalizationsDelegate> localizationsDelegates,
-    required Iterable<Locale> supportedLocales,
-    Key? key,
-  }) =>
-      _PlatformApp(
-        localizationsDelegates: localizationsDelegates,
-        supportedLocales: supportedLocales,
-        child: child,
-        key: key,
-      );
-
   const PlatformApp.router({
     required this.title,
     required this.theme,

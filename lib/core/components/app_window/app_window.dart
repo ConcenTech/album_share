@@ -10,15 +10,9 @@ const desktopPlatforms = [
 ];
 
 abstract class AppWindow {
-  static void setTitle(String title) {
+  static Future<void> setWindow(String title) async {
     if (desktopPlatforms.contains(defaultTargetPlatform)) {
-      DesktopWindowTitlebar.setTitle(title);
-    }
-  }
-
-  static void setWindow() async {
-    if (desktopPlatforms.contains(defaultTargetPlatform)) {
-      return DesktopWindowTitlebar.openWindow();
+      return DesktopWindowTitlebar.openWindow(title);
     }
     if (defaultTargetPlatform == TargetPlatform.android) {
       await FlutterDisplayMode.setHighRefreshRate();
