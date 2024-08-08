@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/components/platform_list_tile.dart';
+import '../../../core/utils/app_localisations.dart';
 
 class PreviewImageWidget extends StatelessWidget {
   const PreviewImageWidget({
@@ -14,12 +15,10 @@ class PreviewImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return PlatformSwitchListTile(
-      title: const Text('Load preview image'),
-      subtitle: const Text(
-        'Enable to load a medium-resolution image.\n'
-        'Disable to either directly load the original or only use the thumbnail.',
-      ),
+      title: Text(locale.loadPreviewImage),
+      subtitle: Text(locale.loadPreviewImageDescription),
       isThreeLine: true,
       value: value,
       onChanged: onChanged,

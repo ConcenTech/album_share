@@ -21,22 +21,17 @@ class LogoText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final locale = AppLocalizations.of(context);
-    if (locale == null) {
-      print('No locale in logo_widget.dart');
-    } else {
-      print('Locale in logo_widget.dart');
-    }
+    final locale = AppLocalizations.of(context)!;
     return Hero(
       tag: 'LogoTextWidget',
       child: RichText(
         text: TextSpan(
-          text: locale?.appTitle,
+          text: locale.appTitle,
           style: tagLine ? textTheme.headlineMedium : textTheme.titleMedium,
           children: [
             if (tagLine)
               TextSpan(
-                text: '\n${locale?.appTagLine}',
+                text: '\n${locale.appTagLine}',
                 style: textTheme.labelMedium,
               ),
           ],

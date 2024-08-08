@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/components/platform_list_tile.dart';
+import '../../../core/utils/app_localisations.dart';
 
 class LoopVideosWidget extends StatelessWidget {
   const LoopVideosWidget({
@@ -15,7 +16,7 @@ class LoopVideosWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformSwitchListTile(
-      title: const Text('Loop videos'),
+      title: Text(AppLocalizations.of(context)!.loopVideos),
       value: value,
       onChanged: onChanged,
     );

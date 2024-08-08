@@ -1,3 +1,4 @@
+import 'package:album_share/core/utils/app_localisations.dart';
 import 'package:album_share/core/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,17 +24,17 @@ class LibraryScreen extends StatelessWidget {
 
           return libraryProvider.when(
             building: () {
-              return const Column(
+              return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                     ),
                   ),
-                  Text('Please wait. Building Library')
+                  Text(AppLocalizations.of(context)!.buildingLibrary)
                 ],
               );
             },
@@ -47,9 +48,13 @@ class LibraryScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 4),
                     child: ScrollConfiguration(
                       // Remove default scroll bar
-                      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                      behavior: ScrollConfiguration.of(context)
+                          .copyWith(scrollbars: false),
                       child: ImmichAssetGridView(
-                        alwaysVisibleScrollThumb: forPlatform(desktop: ()=> true, mobile: () => false,),
+                        alwaysVisibleScrollThumb: forPlatform(
+                          desktop: () => true,
+                          mobile: () => false,
+                        ),
                         dynamicLayout: false,
                         showStack: true,
                         renderList: renderList,

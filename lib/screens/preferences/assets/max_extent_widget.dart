@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/app_localisations.dart';
+
 class MaxExtentWidget extends StatefulWidget {
   const MaxExtentWidget({
     required this.maxExtent,
@@ -24,10 +26,7 @@ class _MaxExtentWidgetState extends State<MaxExtentWidget> {
       _value = val.toInt();
     });
     if (notify) {
-      print('Notify');
       widget.onChanged(_value!);
-    } else {
-      print(val);
     }
   }
 
@@ -35,20 +34,20 @@ class _MaxExtentWidgetState extends State<MaxExtentWidget> {
   Widget build(BuildContext context) {
     const padding = EdgeInsets.symmetric(horizontal: 16.0);
     const sliderSteps = (300 - 60) ~/ 10;
+    final locale = AppLocalizations.of(context)!;
     return ListTile(
       isThreeLine: true,
-      title: const Padding(
+      title: Padding(
         padding: padding,
-        child: Text('Thumbnail max width'),
+        child: Text(locale.thumbnailMaxWidth),
       ),
       contentPadding: const EdgeInsets.all(0),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Padding(
+          Padding(
             padding: padding,
-            child: Text('The maximum size of thumbnails is the library.'
-                '\nThumbnails may be smaller to prevent unused space, but will be no larger than this size.'),
+            child: Text(locale.thumbnailMaxWidthDescription),
           ),
           Slider(
             min: 60,
@@ -70,7 +69,7 @@ class _MaxExtentWidgetState extends State<MaxExtentWidget> {
                     width: size,
                     height: size,
                     child: const Padding(
-                      padding: const EdgeInsets.all(2),
+                      padding: EdgeInsets.all(2),
                       child: ColoredBox(color: Colors.grey),
                     ),
                   ),

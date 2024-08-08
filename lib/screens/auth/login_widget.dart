@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/components/app_snackbar.dart';
+import '../../core/utils/app_localisations.dart';
 import '../../core/utils/validators.dart';
 import '../../services/api/api_service.dart';
 import '../../services/auth/auth_providers.dart';
@@ -64,6 +65,7 @@ class _LoginWidgetState extends ConsumerState<LoginWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return AutofillGroup(
       child: Form(
         key: _formKey,
@@ -76,9 +78,9 @@ class _LoginWidgetState extends ConsumerState<LoginWidget> {
               onSaved: (v) => _email = v!,
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.email],
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: locale.email,
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
             ),
@@ -91,9 +93,9 @@ class _LoginWidgetState extends ConsumerState<LoginWidget> {
               textInputAction: TextInputAction.done,
               onEditingComplete: _login,
               autofillHints: const [AutofillHints.password],
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Password',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: locale.password,
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
             ),
@@ -108,12 +110,12 @@ class _LoginWidgetState extends ConsumerState<LoginWidget> {
               children: [
                 ElevatedButton(
                   onPressed: widget.onBack,
-                  child: const Text('Back'),
+                  child: Text(locale.back),
                 ),
                 FilledButton.icon(
-                  label: const Text(
-                    'Login',
-                    style: TextStyle(fontWeight: FontWeight.w800),
+                  label: Text(
+                    locale.login,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   icon: const Icon(Icons.arrow_right_alt),
                   iconAlignment: IconAlignment.end,

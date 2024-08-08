@@ -1,11 +1,12 @@
-import 'package:album_share/screens/preferences/assets/loop_videos_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/components/scaffold/app_scaffold.dart';
+import '../../core/utils/app_localisations.dart';
 import '../../services/preferences/preferences_notifier.dart';
 import '../../services/preferences/preferences_providers.dart';
 import 'assets/group_by_widget.dart';
+import 'assets/loop_videos_widget.dart';
 import 'assets/max_extent_widget.dart';
 import 'assets/original_image_widget.dart';
 import 'assets/preview_image_widget.dart';
@@ -43,12 +44,13 @@ class PreferencesWidget extends ConsumerWidget {
     final captionStyle = theme.textTheme.titleLarge?.copyWith(
       color: theme.colorScheme.primary,
     );
+    final locale = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: AppScaffold.appBarHeight(context)),
-        Text('Preferences', style: captionStyle),
+        Text(locale.preferences, style: captionStyle),
         ThemeWidget(
           value: preferences.theme,
           onChanged: (v) => _service(ref).setValue(theme: v),
@@ -58,7 +60,7 @@ class PreferencesWidget extends ConsumerWidget {
           onChanged: (v) => _service(ref).setValue(enableHapticFeedback: v),
         ),
         const Divider(),
-        Text('Assets & thumbnails', style: captionStyle),
+        Text(locale.assetsThumbnails, style: captionStyle),
         PreviewImageWidget(
           value: preferences.loadPreview,
           onChanged: (v) => _service(ref).setValue(loadPreview: v),
@@ -84,7 +86,7 @@ class PreferencesWidget extends ConsumerWidget {
           onChanged: (v) => _service(ref).setValue(maxExtent: v),
         ),
         const Divider(),
-        Text('User', style: captionStyle),
+        Text(locale.user, style: captionStyle),
         const PasswordWidget(),
         const SignOutWidget(),
       ],

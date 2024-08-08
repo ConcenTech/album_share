@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
 
+import '../../core/utils/app_localisations.dart';
 import '../../models/asset.dart';
 
 final log = Logger('AssetGridDataStructure');
@@ -48,6 +49,16 @@ enum GroupAssetsBy {
       GroupAssetsBy.month => 'Month',
       GroupAssetsBy.auto => 'Auto',
       GroupAssetsBy.none => 'None',
+    };
+  }
+
+  String localised(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    return switch (this) {
+      GroupAssetsBy.day => locale.day,
+      GroupAssetsBy.month => locale.month,
+      GroupAssetsBy.auto => locale.automatic,
+      GroupAssetsBy.none => locale.none,
     };
   }
 }

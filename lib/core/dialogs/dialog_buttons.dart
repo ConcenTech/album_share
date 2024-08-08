@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/app_localisations.dart';
+
 class DialogButtons extends StatelessWidget {
   const DialogButtons({
     required this.onConfirm,
@@ -22,6 +24,7 @@ class DialogButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -30,12 +33,12 @@ class DialogButtons extends StatelessWidget {
             : OutlinedButton(
                 onPressed: onCancel,
                 style: cancelStyle,
-                child: Text(cancelText ?? 'Cancel'),
+                child: Text(cancelText ?? locale.cancel),
               ),
         FilledButton(
           onPressed: onConfirm,
           style: confirmStyle,
-          child: Text(confirmText ?? 'Okay'),
+          child: Text(confirmText ?? locale.confirm),
         ),
       ],
     );

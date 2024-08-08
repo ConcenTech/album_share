@@ -14,5 +14,59 @@
     "light": "Light",
     "dark": "Dark",
     "required": "Required",
-    "success": "Success"
+    "success": "Success",
+    "areYouSure": "Are you sure",
+    "@areYouSure": {
+        "description": "Confirmation question"
+    },
+    "signOut" : "Sign out",
+    "confirm": "Okay",
+    "cancel": "Cancel",
+    "invalidValueError": "Invalid value",
+    "@invalidValueError": {
+        "description": "The user passed an invalid value into an integer text field so it could not be parsed"
+    },
+    "invalidPasswordLengthError" : "Password must be at least 6 digits",
+    "@invalidPasswordLengthError": {
+        "description": "The user entered a password that was less than 6 digits long"
+    },
+    "invalidPasswordError": "Passwords must have at least one special character",
+    "@invalidPasswordError": {
+        "description": "The user entered a password without any special characters."
+    },
+    "invalidPasswordMatchError": "Passwords must match",
+    "@invalidPasswordMatchError" : {
+        "description": "The user entered two passwords that were not the same"
+    },
+    "invalidEmailError" : "Please enter a valid email",
+    "serverUrl": "Server url",
+    "next": "Next",
+    "email": "Email",
+    "password": "Password",
+    "back": "Back",
+    "login": "login",
+    "buildingLibrary" : "Please wait. Building library",
+    "dynamicLayout" : "Dynamic layout",
+    "day": "Day",
+    "month": "Month",
+    "none": "None",
+    "loopVideos": "Loop videos",
+    "thumbnailMaxWidth": "Thumbnail max width",
+    "thumbnailMaxWidthDescription": "The maximum size of thumbnails is the library.\nThumbnails may be smaller to prevent unused space, but will be no larger than this size.",
+    "loadOriginalImage": "Load original image",
+    "loadOriginalImageDescription": "Enable to load the original full-resolution image (large!).\nDisable to reduce data usage (both network and on device cache).",
+    "loadPreviewImage": "Load preview image",
+    "loadPreviewImageDescription": "Enable to load a medium-resolution image.\nDisable to either directly load the original or only use the thumbnail.",
+    "enableHaptics": "Enable haptic feedback",
+    "changePassword": "Change password",
+    "serverErrorMessage": "A server error occurred",
+    "signOutFailed": "Failed to sign out, {error}",
+    "preferences": "Preferences",
+    "assetsThumbnails": "Assets & thumbnails",
+    "user": "User",
+    "unknownError": "An unknown error occurred",
+    "appInitError": "Error initialising application"
+
+
+
 }

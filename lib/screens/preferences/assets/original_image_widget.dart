@@ -1,3 +1,4 @@
+import 'package:album_share/core/utils/app_localisations.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/components/platform_list_tile.dart';
@@ -14,11 +15,11 @@ class OriginalImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return PlatformSwitchListTile(
-      title: const Text('Load original image'),
-      subtitle: const Text(
-        'Enable to load the original full-resolution image (large!).\n'
-        'Disable to reduce data usage (both network and on device cache).',
+      title: Text(locale.loadOriginalImage),
+      subtitle: Text(
+        locale.loadOriginalImageDescription,
       ),
       isThreeLine: true,
       value: value,

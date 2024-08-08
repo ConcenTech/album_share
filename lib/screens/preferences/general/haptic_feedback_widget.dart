@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/components/platform_list_tile.dart';
+import '../../../core/utils/app_localisations.dart';
 
 class HapticFeedbackWidget extends StatelessWidget {
   const HapticFeedbackWidget({
@@ -15,7 +16,7 @@ class HapticFeedbackWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformSwitchListTile(
-      title: const Text('Enable haptic feedback'),
+      title: Text(AppLocalizations.of(context)!.enableHaptics),
       value: value,
       onChanged: onChanged,
     );

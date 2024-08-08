@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/components/app_snackbar.dart';
 import '../../../core/dialogs/confirmation_dialog.dart';
+import '../../../core/utils/app_localisations.dart';
 import '../../../routes/app_router.dart';
 import '../../../services/api/api_service.dart';
 import '../../../services/auth/auth_providers.dart';
@@ -15,6 +16,7 @@ class SignOutWidget extends ConsumerStatefulWidget {
 }
 
 class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
+  late final _locale = AppLocalizations.of(context)!;
   bool _loading = false;
 
   void _signOut() async {
@@ -36,7 +38,7 @@ class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
       }
       // If signed out is false, the server has responded to our request but it was not successful.
       // TODO: Do we know what the server would return if not a success message?
-      _signOutFailed('A server error occurred');
+      _signOutFailed(_locale.serverErrorMessage);
     } on ApiException catch (e) {
       _signOutFailed(e.message);
     }
@@ -51,8 +53,9 @@ class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
   void _signOutFailed(String e) {
     if (mounted) {
       AppSnackbar.warning(
-          context: context,
-          message: 'Failed to sign out, $e');
+        context: context,
+        message: _locale.signOutFailed(e),
+      );
     }
   }
 
@@ -67,7 +70,7 @@ class _SignOutWidgetState extends ConsumerState<SignOutWidget> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: const Text('Sign out'),
+      title: Text(_locale.signOut),
       trailing: IconButton(
         onPressed: _signOut,
         icon: _loading

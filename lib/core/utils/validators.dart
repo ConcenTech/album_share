@@ -20,7 +20,7 @@ class Validators {
     }
 
     if (int.tryParse(value) == null) {
-      return 'Invalid value';
+      return AppLocale.instance.current.invalidValueError;
     }
 
     return null;
@@ -31,22 +31,12 @@ class Validators {
       RequiredValidator(errorText: AppLocale.instance.current.required),
       MinLengthValidator(
         6,
-        errorText: 'Password must be at least 6 digits long',
+        errorText: AppLocale.instance.current.invalidPasswordLengthError,
       ),
-      PatternValidator(
-        r'(?=.*?[#?!@$%^&*-=])',
-        errorText: 'Passwords must have at least one special character',
-      ),
+      PatternValidator(r'(?=.*?[#?!@$%^&*-=])',
+          errorText: AppLocale.instance.current.invalidPasswordError),
     ],
   ).call;
-
-  static final postcode = MultiValidator([
-    RequiredValidator(errorText: AppLocale.instance.current.required),
-    PatternValidator(
-      r'^([A-Z]{1,2}\d{1,2}[A-Z]?)\s*(\d[A-Z]{2})$',
-      errorText: 'Not a valid postcode',
-    ),
-  ]);
 
   static final email = MultiValidator([
     RequiredValidator(errorText: AppLocale.instance.current.required),
@@ -54,27 +44,12 @@ class Validators {
   ]).call;
 
   static final optionalEmail =
-      EmailValidator(errorText: 'Please enter a valid email');
+      EmailValidator(errorText: AppLocale.instance.current.invalidEmailError);
 
   static String? passwordMatch(
       {required String? value1, required String? value2}) {
-    if ((value1 ?? '1') != (value2 ?? '2')) {
-      return 'Passwords must match';
-    }
-    return null;
-  }
-
-  static String? numberMaxLength(
-      {required String? value, required double max}) {
-    if (value == null) {
-      return AppLocale.instance.current.required;
-    }
-    final number = double.tryParse(value);
-    if (number == null) {
-      return 'Error';
-    }
-    if (number > max) {
-      return 'Value too high';
+    if (value1 != value2) {
+      return AppLocale.instance.current.invalidPasswordMatchError;
     }
     return null;
   }

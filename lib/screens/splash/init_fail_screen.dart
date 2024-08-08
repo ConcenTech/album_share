@@ -1,7 +1,8 @@
-import 'package:album_share/services/database/database_service.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/components/logo_widget.dart';
+import '../../core/utils/app_localisations.dart';
+import '../../services/database/database_service.dart';
 import 'themed_material_scaffold.dart';
 
 class InitFailScreen extends StatelessWidget {
@@ -9,19 +10,20 @@ class InitFailScreen extends StatelessWidget {
 
   final Object? error;
 
-  Widget _buildErrorText() {
-   switch (error) {
-     case final DatabaseException e:
-      return Text('${e.message}''\n${e.details}');
-    case null:
-      return const Text('An unknown error occurred');
-     default:
-     return Text('$error');
-   }
+  Widget _buildErrorText(AppLocalizations locale) {
+    switch (error) {
+      case final DatabaseException e:
+        return Text('${e.message}' '\n${e.details}');
+      case null:
+        return Text(locale.unknownError);
+      default:
+        return Text('$error');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return ThemedMaterialScaffold(
       child: Center(
         child: Column(
@@ -29,8 +31,8 @@ class InitFailScreen extends StatelessWidget {
           children: [
             const LogoImageText(),
             const SizedBox(height: 8),
-            const Text('Error initialising application'),
-            _buildErrorText(),
+            Text(locale.appInitError),
+            _buildErrorText(locale),
           ],
         ),
       ),

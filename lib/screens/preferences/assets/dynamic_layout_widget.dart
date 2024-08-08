@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/components/platform_list_tile.dart';
+import '../../../core/utils/app_localisations.dart';
 
 class DynamicLayoutWidget extends StatelessWidget {
   const DynamicLayoutWidget({
@@ -15,7 +16,7 @@ class DynamicLayoutWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformSwitchListTile(
-      title: const Text('Dynamic layout'),
+      title: Text(AppLocalizations.of(context)!.dynamicLayout),
       value: value,
       onChanged: onChanged,
     );

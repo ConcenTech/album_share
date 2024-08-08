@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/components/app_snackbar.dart';
+import '../../core/utils/app_localisations.dart';
 import '../../core/utils/extension_methods.dart';
 import '../../core/utils/validators.dart';
 import '../../services/api/api_service.dart';
@@ -46,7 +47,7 @@ class _EndpointWidgetState extends ConsumerState<EndpointWidget> {
   }
 
   void _onError(String message) {
-    if (mounted){
+    if (mounted) {
       setState(() {
         _loading = false;
       });
@@ -72,6 +73,8 @@ class _EndpointWidgetState extends ConsumerState<EndpointWidget> {
           _endpoint = data?.serverUrl ?? 'https://';
         }
 
+        final locale = AppLocalizations.of(context)!;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -82,10 +85,10 @@ class _EndpointWidgetState extends ConsumerState<EndpointWidget> {
                 validator: Validators.required,
                 onEditingComplete: () => _saveEndpoint(ref),
                 onSaved: (v) => _endpoint = v!,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
                   hintText: 'https://demo.immich.app',
-                  labelText: 'Server url',
+                  labelText: locale.serverUrl,
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
               ),
@@ -97,9 +100,9 @@ class _EndpointWidgetState extends ConsumerState<EndpointWidget> {
               ),
             const SizedBox(height: 10),
             FilledButton.icon(
-              label: const Text(
-                'Next',
-                style: TextStyle(fontWeight: FontWeight.w800),
+              label: Text(
+                locale.next,
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
               icon: const Icon(Icons.arrow_right_alt),
               iconAlignment: IconAlignment.end,

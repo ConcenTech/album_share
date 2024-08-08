@@ -26,7 +26,7 @@ class GroupByWidget extends StatelessWidget {
           items: GroupAssetsBy.values.mapList((e) {
             return DropdownMenuItem(
               value: e,
-              child: Text(e.display),
+              child: Text(e.localised(context)),
             );
           }),
           autofocus: false,
