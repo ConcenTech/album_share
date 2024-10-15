@@ -57,24 +57,29 @@ const AssetSchema = CollectionSchema(
       name: r'livePhotoVideoId',
       type: IsarType.string,
     ),
-    r'stackCount': PropertySchema(
+    r'ownerId': PropertySchema(
       id: 8,
+      name: r'ownerId',
+      type: IsarType.string,
+    ),
+    r'stackCount': PropertySchema(
+      id: 9,
       name: r'stackCount',
       type: IsarType.long,
     ),
     r'thumbHash': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'thumbHash',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'type',
       type: IsarType.byte,
       enumMap: _AssettypeEnumValueMap,
     ),
     r'width': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'width',
       type: IsarType.long,
     )
@@ -90,7 +95,7 @@ const AssetSchema = CollectionSchema(
   getId: _assetGetId,
   getLinks: _assetGetLinks,
   attach: _assetAttach,
-  version: '3.1.0+1',
+  version: '3.1.8',
 );
 
 int _assetEstimateSize(
@@ -120,6 +125,7 @@ int _assetEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.ownerId.length * 3;
   {
     final value = object.thumbHash;
     if (value != null) {
@@ -143,10 +149,11 @@ void _assetSerialize(
   writer.writeLong(offsets[5], object.height);
   writer.writeString(offsets[6], object.id);
   writer.writeString(offsets[7], object.livePhotoVideoId);
-  writer.writeLong(offsets[8], object.stackCount);
-  writer.writeString(offsets[9], object.thumbHash);
-  writer.writeByte(offsets[10], object.type.index);
-  writer.writeLong(offsets[11], object.width);
+  writer.writeString(offsets[8], object.ownerId);
+  writer.writeLong(offsets[9], object.stackCount);
+  writer.writeString(offsets[10], object.thumbHash);
+  writer.writeByte(offsets[11], object.type.index);
+  writer.writeLong(offsets[12], object.width);
 }
 
 Asset _assetDeserialize(
@@ -163,11 +170,12 @@ Asset _assetDeserialize(
     height: reader.readLongOrNull(offsets[5]),
     id: reader.readString(offsets[6]),
     livePhotoVideoId: reader.readStringOrNull(offsets[7]),
-    stackCount: reader.readLongOrNull(offsets[8]),
-    thumbHash: reader.readStringOrNull(offsets[9]),
-    type: _AssettypeValueEnumMap[reader.readByteOrNull(offsets[10])] ??
+    ownerId: reader.readString(offsets[8]),
+    stackCount: reader.readLongOrNull(offsets[9]),
+    thumbHash: reader.readStringOrNull(offsets[10]),
+    type: _AssettypeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
         AssetType.image,
-    width: reader.readLongOrNull(offsets[11]),
+    width: reader.readLongOrNull(offsets[12]),
   );
   return object;
 }
@@ -196,13 +204,15 @@ P _assetDeserializeProp<P>(
     case 7:
       return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 9:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 10:
+      return (reader.readStringOrNull(offset)) as P;
+    case 11:
       return (_AssettypeValueEnumMap[reader.readByteOrNull(offset)] ??
           AssetType.image) as P;
-    case 11:
+    case 12:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1299,6 +1309,136 @@ extension AssetQueryFilter on QueryBuilder<Asset, Asset, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ownerId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'ownerId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'ownerId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'ownerId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'ownerId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'ownerId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'ownerId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'ownerId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ownerId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterFilterCondition> ownerIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'ownerId',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Asset, Asset, QAfterFilterCondition> stackCountIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1725,6 +1865,18 @@ extension AssetQuerySortBy on QueryBuilder<Asset, Asset, QSortBy> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QAfterSortBy> sortByOwnerId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ownerId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterSortBy> sortByOwnerIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ownerId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Asset, Asset, QAfterSortBy> sortByStackCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stackCount', Sort.asc);
@@ -1871,6 +2023,18 @@ extension AssetQuerySortThenBy on QueryBuilder<Asset, Asset, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QAfterSortBy> thenByOwnerId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ownerId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Asset, Asset, QAfterSortBy> thenByOwnerIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ownerId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Asset, Asset, QAfterSortBy> thenByStackCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stackCount', Sort.asc);
@@ -1975,6 +2139,13 @@ extension AssetQueryWhereDistinct on QueryBuilder<Asset, Asset, QDistinct> {
     });
   }
 
+  QueryBuilder<Asset, Asset, QDistinct> distinctByOwnerId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'ownerId', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Asset, Asset, QDistinct> distinctByStackCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'stackCount');
@@ -2053,6 +2224,12 @@ extension AssetQueryProperty on QueryBuilder<Asset, Asset, QQueryProperty> {
   QueryBuilder<Asset, String?, QQueryOperations> livePhotoVideoIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'livePhotoVideoId');
+    });
+  }
+
+  QueryBuilder<Asset, String, QQueryOperations> ownerIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'ownerId');
     });
   }
 

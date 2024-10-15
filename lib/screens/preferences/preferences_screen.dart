@@ -5,6 +5,7 @@ import '../../core/components/scaffold/app_scaffold.dart';
 import '../../core/utils/app_localisations.dart';
 import '../../services/preferences/preferences_notifier.dart';
 import '../../services/preferences/preferences_providers.dart';
+import 'assets/background_sync_widget.dart';
 import 'assets/dynamic_layout_widget.dart';
 import 'assets/group_by_widget.dart';
 import 'assets/loop_videos_widget.dart';
@@ -21,9 +22,12 @@ import 'user/sign_out_widget.dart';
 class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({super.key});
 
+  static const id = 'preferences_screen';
+
   @override
   Widget build(BuildContext context) {
     return const AppScaffold(
+      id: id,
       showTitleBar: true,
       showBackButton: true,
       body: SingleChildScrollView(
@@ -49,57 +53,67 @@ class PreferencesWidget extends ConsumerWidget {
     );
     final locale = AppLocalizations.of(context)!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: AppScaffold.appBarHeight(context)),
-        Text(locale.preferences, style: captionStyle),
-        ThemeWidget(
-          value: preferences.theme,
-          onChanged: (v) => _service(ref).setValue(theme: v),
-        ),
-        HapticFeedbackWidget(
-          value: preferences.enableHapticFeedback,
-          onChanged: (v) => _service(ref).setValue(enableHapticFeedback: v),
-        ),
-        const Divider(),
-        Text(locale.assetsThumbnails, style: captionStyle),
-        PreviewImageWidget(
-          value: preferences.loadPreview,
-          onChanged: (v) => _service(ref).setValue(loadPreview: v),
-        ),
-        OriginalImageWidget(
-          value: preferences.loadOriginal,
-          onChanged: (v) => _service(ref).setValue(loadOriginal: v),
-        ),
-        GroupByWidget(
-          value: preferences.groupBy,
-          onChanged: (v) => _service(ref).setValue(groupBy: v),
-        ),
-        SyncFrequencyWidget(
-          value: preferences.syncFrequency,
-          onChanged: (v) => _service(ref).setValue(syncFrequency: v),
-        ),
-        DynamicLayoutWidget(
-          value: preferences.dynamicLayout,
-          onChanged: (v) => _service(ref).setValue(dynamicLayout: v),
-        ),
-        LoopVideosWidget(
-          value: preferences.loopVideos,
-          onChanged: (v) => _service(ref).setValue(loopVideos: v),
-        ),
-        MaxExtentWidget(
-          maxExtent: preferences.maxExtent,
-          onChanged: (v) => _service(ref).setValue(maxExtent: v),
-        ),
-        const Divider(),
-        Text(locale.user, style: captionStyle),
-        const PasswordWidget(),
-        const SignOutWidget(),
-        const Divider(),
-        Text(locale.support, style: captionStyle),
-        const LogsWidget(),
-      ],
+    return SafeArea(
+      top: false,
+      left: false,
+      right: false,
+      bottom: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: AppScaffold.appBarHeight(context)),
+          Text(locale.preferences, style: captionStyle),
+          ThemeWidget(
+            value: preferences.theme,
+            onChanged: (v) => _service(ref).setValue(theme: v),
+          ),
+          HapticFeedbackWidget(
+            value: preferences.enableHapticFeedback,
+            onChanged: (v) => _service(ref).setValue(enableHapticFeedback: v),
+          ),
+          const Divider(),
+          Text(locale.assetsThumbnails, style: captionStyle),
+          PreviewImageWidget(
+            value: preferences.loadPreview,
+            onChanged: (v) => _service(ref).setValue(loadPreview: v),
+          ),
+          OriginalImageWidget(
+            value: preferences.loadOriginal,
+            onChanged: (v) => _service(ref).setValue(loadOriginal: v),
+          ),
+          GroupByWidget(
+            value: preferences.groupBy,
+            onChanged: (v) => _service(ref).setValue(groupBy: v),
+          ),
+          SyncFrequencyWidget(
+            value: preferences.syncFrequency,
+            onChanged: (v) => _service(ref).setValue(syncFrequency: v),
+          ),
+          BackgroundSyncWidget(
+            value: preferences.backgroundSync,
+            onChanged: (v) => _service(ref).setValue(backgroundSync: v),
+          ),
+          DynamicLayoutWidget(
+            value: preferences.dynamicLayout,
+            onChanged: (v) => _service(ref).setValue(dynamicLayout: v),
+          ),
+          LoopVideosWidget(
+            value: preferences.loopVideos,
+            onChanged: (v) => _service(ref).setValue(loopVideos: v),
+          ),
+          MaxExtentWidget(
+            maxExtent: preferences.maxExtent,
+            onChanged: (v) => _service(ref).setValue(maxExtent: v),
+          ),
+          const Divider(),
+          Text(locale.user, style: captionStyle),
+          const PasswordWidget(),
+          const SignOutWidget(),
+          const Divider(),
+          Text(locale.support, style: captionStyle),
+          const LogsWidget(),
+        ],
+      ),
     );
   }
 }

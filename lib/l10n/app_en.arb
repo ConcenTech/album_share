@@ -19,14 +19,14 @@
     "@areYouSure": {
         "description": "Confirmation question"
     },
-    "signOut" : "Sign out",
+    "signOut": "Sign out",
     "confirm": "Okay",
     "cancel": "Cancel",
     "invalidValueError": "Invalid value",
     "@invalidValueError": {
         "description": "The user passed an invalid value into an integer text field so it could not be parsed"
     },
-    "invalidPasswordLengthError" : "Password must be at least 6 digits",
+    "invalidPasswordLengthError": "Password must be at least 6 digits",
     "@invalidPasswordLengthError": {
         "description": "The user entered a password that was less than 6 digits long"
     },
@@ -35,18 +35,18 @@
         "description": "The user entered a password without any special characters."
     },
     "invalidPasswordMatchError": "Passwords must match",
-    "@invalidPasswordMatchError" : {
+    "@invalidPasswordMatchError": {
         "description": "The user entered two passwords that were not the same"
     },
-    "invalidEmailError" : "Please enter a valid email",
+    "invalidEmailError": "Please enter a valid email",
     "serverUrl": "Server url",
     "next": "Next",
     "email": "Email",
     "password": "Password",
     "back": "Back",
     "login": "login",
-    "buildingLibrary" : "Please wait. Building library",
-    "dynamicLayout" : "Dynamic layout",
+    "buildingLibrary": "Please wait. Building library",
+    "dynamicLayout": "Dynamic layout",
     "day": "Day",
     "month": "Month",
     "none": "None",
@@ -60,6 +60,13 @@
     "changePassword": "Change password",
     "serverErrorMessage": "A server error occurred",
     "signOutFailed": "Failed to sign out, {error}",
+    "@signOutFailed" : {
+        "placeholders": {
+            "error" :{
+                "type": "String"
+            }
+        }
+    },
     "preferences": "Preferences",
     "assetsThumbnails": "Assets & thumbnails",
     "user": "User",
@@ -68,17 +75,147 @@
     "logs": "Logs",
     "close": "Close",
     "clipboardSave": "Saved to clipboard",
-    "support" : "Support",
+    "support": "Support",
     "syncFrequency": "Sync Frequency",
-    "syncFrequencyDescription": "How often to check for new assets and activity.",
+    "syncFrequencyDescription": "How often to check for new assets and activity when the app is open.",
     "fiveMinutes": "5 Minutes",
     "fifteenMinutes": "15 Minutes",
-    "thirtyMinutes" : "30 Minutes",
+    "thirtyMinutes": "30 Minutes",
     "oneHour": "1 Hour",
-    "twoHours" : "2 Hours",
+    "twoHours": "2 Hours",
     "fourHours": "4 Hours",
-    "eightHours" : "8 Hours",
-    "twelveHours": "12 Hours"
-
-
+    "eightHours": "8 Hours",
+    "twelveHours": "12 Hours",
+    "backgroundSync": "Background Sync",
+    "backgroundSyncDescription": "Allow checking for new assets and activity when the app is closed.",
+    "batteryOptimisations": "Battery optimisations",
+    "batteryOptimisationsMessage": "Some Android manufacturers prefer battery life over proper app functionality. \n\nIt is recommended you disable battery optimisations for Album Share to ensure background sync can be performed and notifications are delivered as expected. \n\nFor more information, please visit:",
+    "@batteryOptimisationsMessage": {
+        "description": "A message to warn the users about restrictions some Android manufacturers apply to background processes"
+    },
+    "save": "Save",
+    "@save" : {
+        "description": "Save button label"
+    },
+    "userUploadedOther": "{user} uploaded {count} new items.",
+    "@userUploadedOther": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "userUploadedImages": "{user} uploaded {count} new images.",
+    "@userUploadedImages": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "userUploadedVideos": "{user} uploaded {count} new videos.",
+    "@userUploadedVideos": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "newActivityNotification": "New activity",
+    "@newActivityNotification": {
+        "description": "Title for notifications about new activity"
+    },
+    "newAssetsNotification": "New content",
+    "@newAssetsNotification": {
+        "description": "Title for notifications about newly assets uploaded"
+    },
+    "userLikedImages": "{user} liked {count, plural, =1{an image} other{{count} images}}.",
+    "@userLikedImages": {
+        "description": "Notify the user that somebody liked a number images. (Specifically A image not THEIR image)",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "userLikedVideos": "{user} liked {count, plural, =1{a video} other{{count} videos}}.",
+    "@userLikedVideos": {
+        "description": "Notify the user that somebody liked a number of videos. (Specifically A video not THEIR video)",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "userLikedOther": "{user} liked {count, plural, =1{an item} other{{count} items}}.",
+    "@userLikedOther": {
+        "description": "Notify the user that somebody liked a number of assets of any type.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "userCommentedImages": "{user} commented on {count, plural, =1{an image} other{{count} images}}.",
+    "@userCommentedImages": {
+        "description": "Notify the user that somebody commented on number of images.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "userCommentedVideos": "{user} commented on {count, plural, =1{a video} other{{count} videos}}.",
+    "@userCommentedVideos": {
+        "description": "Notify the user that somebody commented on number of videos.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "userCommentedOther": "{user} commented on {count, plural, =1{an item} other{{count} items}}.",
+    "@userCommentedOther": {
+        "description": "Notify the user that somebody commented on a number of assets of any type.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "user": {
+                "type": "String"
+            }
+        }
+    },
+    "noActivity": "No activity yet.",
+    "@noActivity": {
+        "description": "A message when the activity list is empty"
+    },
+    "message": "Message",
+    "@message": {
+        "description": "Label for the message text field"
+    } 
 }

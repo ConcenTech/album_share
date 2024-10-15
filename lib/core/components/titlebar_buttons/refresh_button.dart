@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../services/foreground/foreground_service_provider.dart';
+import '../../../services/sync/foreground_sync_service_provider.dart';
 import '../../utils/extension_methods.dart';
 import '../../utils/platform_utils.dart';
 
@@ -32,7 +32,7 @@ class _RefreshButtonState extends ConsumerState<RefreshButton> {
 
   void _refresh() async {
     _setStatus(_Status.refreshing);
-    await ref.read(foregroundServiceProvider.notifier).update();
+    await ref.read(foregroundSyncServiceProvider.notifier).update();
     _setStatus(_Status.timeout);
     if (_timer?.isActive ?? false) {
       return;

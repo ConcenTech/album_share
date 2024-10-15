@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:album_share/core/utils/extension_methods.dart';
+import 'package:album_share/models/activity.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -237,11 +239,11 @@ class ApiService {
   /// Gets assets for the selected album.
   ///
   /// Throws [ApiException] if unsuccessful.
-  Future<List<Asset>> getAlbumAssets(String albumId) async {
+  Future<List<Asset>> getAlbumAssets(Album album) async {
     _expectEndpointSet();
 
     final body = await _get(
-      '/api/albums/$albumId',
+      '/api/albums/${album.id}',
       expected: JSON_MAP,
     );
 
@@ -249,7 +251,7 @@ class ApiService {
 
     return assets
         .map((e) => Asset.fromJson(
-              albumId,
+              album.id,
               JsonMap.from(e),
             ))
         .toList();
@@ -271,6 +273,57 @@ class ApiService {
     }
 
     return response.data;
+  }
+
+  /// Gets a list of activity for the selected album.
+  ///
+  /// Throws [ApiException] if unsuccessful.
+  Future<List<Activity>> getActivity(Album album) async {
+    _expectEndpointSet();
+
+    final body = await _get(
+      '/api/activities',
+      queryParameters: {'albumId': album.id},
+      expected: JSON_LIST,
+    );
+
+    return body.mapList((e) => Activity.fromJson(album.id, e));
+  }
+
+  Future<Activity> uploadComment(
+    String comment,
+    String albumId,
+    String assetId,
+  ) {
+    return uploadActivity(albumId, assetId, ActivityType.comment, comment);
+  }
+
+  Future<Activity> uploadLike(
+    String comment,
+    String albumId,
+    String assetId,
+  ) {
+    return uploadActivity(albumId, assetId, ActivityType.like);
+  }
+
+  Future<Activity> uploadActivity(
+    String albumId,
+    String assetId,
+    ActivityType type, [
+    String? comment,
+  ]) async {
+    final response = await _post(
+      '/api/activities',
+      data: {
+        'albumId': albumId,
+        'assetId': assetId,
+        'comment': comment,
+        'type': type.name,
+      },
+      expected: JSON_MAP,
+    );
+
+    return Activity.fromJson(albumId, response);
   }
 
   /// Ensures the server url has been set via a call to [checkAndSetEndpoint]
@@ -308,7 +361,7 @@ class ApiService {
         body.isEmpty ||
         response.statusCode == HttpStatus.noContent) {
       _logger.severe('Unable to extract object from response data. '
-          'No content included with the response');
+          'No content included with the response.');
       throw const ApiException(
           ApiExceptionType.server, 'No content included with response');
     }
@@ -344,9 +397,7 @@ class ApiService {
     if (body == null ||
         body.isEmpty ||
         response.statusCode == HttpStatus.noContent) {
-      //TODO: Should 204 return null to signal data hasn't changed?
-      _logger.severe('Unable to extract object from response data. '
-          'No content included with the response');
+      _logger.info('No content included with the response');
       return [];
     }
 

@@ -9,6 +9,7 @@ part 'asset.g.dart';
 class Asset {
   const Asset({
     required this.id,
+    required this.ownerId,
     required this.albums,
     required this.type,
     required this.createdAt,
@@ -24,6 +25,7 @@ class Asset {
   Id get isarId => Isar.autoIncrement;
 
   final String id;
+  final String ownerId;
 
   /// A list of album ids associated with this asset.
   final List<String> albums;
@@ -43,6 +45,7 @@ class Asset {
     final exif = json['exifInfo'] as Map<String, dynamic>?;
     return Asset(
       id: json['id'],
+      ownerId: json['ownerId'],
       albums: [albumId],
       type: AssetType.fromString(json['type']),
       createdAt: DateTime.parse(json['fileCreatedAt']),
@@ -58,9 +61,11 @@ class Asset {
 
   Asset merge(Asset asset) {
     assert(this == asset);
+    final newAlbums = asset.albums.where((e) => !albums.contains(e));
     return Asset(
       id: id,
-      albums: [...albums, ...asset.albums],
+      ownerId: ownerId,
+      albums: [...newAlbums, ...albums],
       type: type,
       createdAt: createdAt,
       fileName: fileName,
@@ -110,5 +115,31 @@ enum AssetType {
     return AssetType.values.firstWhere(
       (e) => e.name == value.toLowerCase(),
     );
+  }
+}
+
+extension AssetListSorter on List<Asset> {
+  List<Asset> sorted() {
+    return [...this]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  void merge(List<Asset> assets) {
+    if (isEmpty) {
+      addAll(assets);
+      return;
+    }
+    final a = this;
+    for (var asset in assets) {
+      final ind = a.indexWhere((ass) => ass.id == asset.id);
+      if (ind == -1) {
+        a.add(asset);
+      } else {
+        a[ind] = a[ind].merge(asset);
+      }
+    }
+  }
+
+  List<Asset> merged(List<Asset> assets) {
+    return [...this]..merge(assets);
   }
 }

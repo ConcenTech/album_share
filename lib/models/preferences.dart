@@ -17,6 +17,7 @@ class Preferences {
     this.maxExtent = 90,
     this.dynamicLayout = true,
     this.loopVideos = false,
+    this.backgroundSync,
   });
 
   static const id = 0;
@@ -53,6 +54,11 @@ class Preferences {
 
   final bool loopVideos;
 
+  /// If the background sync is enabled.
+  ///
+  /// null if not yet set by the user.
+  final bool? backgroundSync;
+
   Preferences copyWith({
     ThemeMode? theme,
     int? syncFrequency,
@@ -63,6 +69,7 @@ class Preferences {
     int? maxExtent,
     bool? dynamicLayout,
     bool? loopVideos,
+    bool? backgroundSync,
   }) {
     return Preferences(
       theme: theme ?? this.theme,
@@ -74,6 +81,7 @@ class Preferences {
       maxExtent: maxExtent ?? this.maxExtent,
       dynamicLayout: dynamicLayout ?? this.dynamicLayout,
       loopVideos: loopVideos ?? this.loopVideos,
+      backgroundSync: backgroundSync ?? this.backgroundSync,
     );
   }
 }

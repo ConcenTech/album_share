@@ -3,10 +3,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:math';
 
-import 'package:album_share/core/components/scaffold/app_scaffold.dart';
-import 'package:album_share/core/utils/extension_methods.dart';
-import 'package:album_share/screens/asset_viewer/asset_viewer_screen_state.dart';
-import 'package:album_share/services/providers/app_bar_listener.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +10,11 @@ import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../core/components/app_snackbar.dart';
+import '../../core/components/scaffold/app_scaffold.dart';
+import '../../core/utils/extension_methods.dart';
 import '../../models/asset.dart';
+import '../../screens/asset_viewer/asset_viewer_screen_state.dart';
+import '../../services/providers/app_bar_listener.dart';
 import '../extensions/build_context_extensions.dart';
 import '../extensions/collection_extensions.dart';
 import '../providers/haptic_feedback.provider.dart';
@@ -217,6 +217,11 @@ class ImmichAssetGridViewState extends ConsumerState<ImmichAssetGridView> {
 
     void saveIndex() {
       _indexInView = firstInView.index;
+    }
+
+    if (firstInView.index == _indexInView &&
+        firstInView.itemLeadingEdge == _indexInViewOffset) {
+      return;
     }
 
     if (firstInView.index > _indexInView) {

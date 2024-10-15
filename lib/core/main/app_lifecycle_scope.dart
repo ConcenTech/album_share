@@ -45,7 +45,9 @@ class _AppLifecycleScopeState extends State<AppLifecycleScope>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    SchedulerBinding.instance.addPostFrameCallback((_) => initWindow());
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      initWindow();
+    });
   }
 
   @override

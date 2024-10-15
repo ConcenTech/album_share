@@ -24,17 +24,17 @@ class PreferencesService extends StateNotifier<Preferences> {
     _db.setPreferences(preferences);
   }
 
-  void setValue({
-    bool? dynamicLayout,
-    bool? enableHapticFeedback,
-    GroupAssetsBy? groupBy,
-    bool? loadOriginal,
-    bool? loadPreview,
-    ThemeMode? theme,
-    int? syncFrequency,
-    int? maxExtent,
-    bool? loopVideos,
-  }) {
+  void setValue(
+      {bool? dynamicLayout,
+      bool? enableHapticFeedback,
+      GroupAssetsBy? groupBy,
+      bool? loadOriginal,
+      bool? loadPreview,
+      ThemeMode? theme,
+      int? syncFrequency,
+      int? maxExtent,
+      bool? loopVideos,
+      bool? backgroundSync}) {
     set(state.copyWith(
       dynamicLayout: dynamicLayout,
       enableHapticFeedback: enableHapticFeedback,
@@ -45,6 +45,7 @@ class PreferencesService extends StateNotifier<Preferences> {
       syncFrequency: syncFrequency,
       theme: theme,
       loopVideos: loopVideos,
+      backgroundSync: backgroundSync,
     ));
   }
 }

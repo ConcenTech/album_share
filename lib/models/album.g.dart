@@ -51,6 +51,12 @@ const AlbumSchema = CollectionSchema(
       id: 6,
       name: r'thumbnailId',
       type: IsarType.string,
+    ),
+    r'users': PropertySchema(
+      id: 7,
+      name: r'users',
+      type: IsarType.objectList,
+      target: r'UserDetail',
     )
   },
   estimateSize: _albumEstimateSize,
@@ -60,11 +66,11 @@ const AlbumSchema = CollectionSchema(
   idName: r'isarId',
   indexes: {},
   links: {},
-  embeddedSchemas: {},
+  embeddedSchemas: {r'UserDetail': UserDetailSchema},
   getId: _albumGetId,
   getLinks: _albumGetLinks,
   attach: _albumAttach,
-  version: '3.1.0+1',
+  version: '3.1.8',
 );
 
 int _albumEstimateSize(
@@ -77,6 +83,14 @@ int _albumEstimateSize(
   bytesCount += 3 + object.id.length * 3;
   bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.thumbnailId.length * 3;
+  bytesCount += 3 + object.users.length * 3;
+  {
+    final offsets = allOffsets[UserDetail]!;
+    for (var i = 0; i < object.users.length; i++) {
+      final value = object.users[i];
+      bytesCount += UserDetailSchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
   return bytesCount;
 }
 
@@ -93,6 +107,12 @@ void _albumSerialize(
   writer.writeDateTime(offsets[4], object.lastUpdated);
   writer.writeString(offsets[5], object.name);
   writer.writeString(offsets[6], object.thumbnailId);
+  writer.writeObjectList<UserDetail>(
+    offsets[7],
+    allOffsets,
+    UserDetailSchema.serialize,
+    object.users,
+  );
 }
 
 Album _albumDeserialize(
@@ -108,6 +128,13 @@ Album _albumDeserialize(
     lastUpdated: reader.readDateTime(offsets[4]),
     name: reader.readString(offsets[5]),
     thumbnailId: reader.readString(offsets[6]),
+    users: reader.readObjectList<UserDetail>(
+          offsets[7],
+          UserDetailSchema.deserialize,
+          allOffsets,
+          UserDetail(),
+        ) ??
+        [],
   );
   return object;
 }
@@ -133,6 +160,14 @@ P _albumDeserializeProp<P>(
       return (reader.readString(offset)) as P;
     case 6:
       return (reader.readString(offset)) as P;
+    case 7:
+      return (reader.readObjectList<UserDetail>(
+            offset,
+            UserDetailSchema.deserialize,
+            allOffsets,
+            UserDetail(),
+          ) ??
+          []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -906,9 +941,100 @@ extension AlbumQueryFilter on QueryBuilder<Album, Album, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Album, Album, QAfterFilterCondition> usersLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'users',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Album, Album, QAfterFilterCondition> usersIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'users',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Album, Album, QAfterFilterCondition> usersIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'users',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Album, Album, QAfterFilterCondition> usersLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'users',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Album, Album, QAfterFilterCondition> usersLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'users',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Album, Album, QAfterFilterCondition> usersLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'users',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
 }
 
-extension AlbumQueryObject on QueryBuilder<Album, Album, QFilterCondition> {}
+extension AlbumQueryObject on QueryBuilder<Album, Album, QFilterCondition> {
+  QueryBuilder<Album, Album, QAfterFilterCondition> usersElement(
+      FilterQuery<UserDetail> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'users');
+    });
+  }
+}
 
 extension AlbumQueryLinks on QueryBuilder<Album, Album, QFilterCondition> {}
 
@@ -1190,6 +1316,12 @@ extension AlbumQueryProperty on QueryBuilder<Album, Album, QQueryProperty> {
   QueryBuilder<Album, String, QQueryOperations> thumbnailIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'thumbnailId');
+    });
+  }
+
+  QueryBuilder<Album, List<UserDetail>, QQueryOperations> usersProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'users');
     });
   }
 }

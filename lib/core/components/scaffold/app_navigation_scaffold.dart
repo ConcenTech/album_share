@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../navigation_bar/cupertino_navigation_bar.dart';
 import '../navigation_bar/material_navigation_bar.dart';
+import '../sidebar/app_sidebar.dart';
 import 'app_scaffold.dart';
 
 const _kSizeForSideAppBar = 500;
@@ -9,17 +10,24 @@ const kSideAppBarMinWidth = 72.0;
 
 class AppNavigationScaffold extends StatefulWidget {
   const AppNavigationScaffold({
+    required this.id,
     required this.screens,
     this.titleBarIcons = const [],
     this.showBackButton = true,
+    this.sidebar,
     super.key,
   });
+
+  /// A unique id for each page.
+  final String id;
 
   final List<NavigationBarItem> screens;
 
   final List<Widget> titleBarIcons;
 
   final bool showBackButton;
+
+  final AppSidebar? sidebar;
 
   @override
   State<AppNavigationScaffold> createState() => _AppNavigationScaffoldState();
@@ -111,10 +119,12 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
     );
 
     return AppScaffold(
+      id: widget.id,
       showTitleBar: true,
       titleBarIcons: widget.titleBarIcons,
       showBackButton: widget.showBackButton,
       bottomNavigationBar: bottomNavigationBar,
+      sidebar: widget.sidebar,
       body: sideNavigationBar == null
           ? body
           : Row(

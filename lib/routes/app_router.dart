@@ -22,7 +22,9 @@ class AppRouter {
   final AuthService _auth;
 
   final key = GlobalKey();
-  final navigatorKey = GlobalKey<NavigatorState>();
+  static final _navigatorKey = GlobalKey<NavigatorState>();
+
+  GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
   Future<String?> _authRedirect(bool authRequired) async {
     final authenticated = await _auth.checkAuthStatus();
@@ -40,7 +42,7 @@ class AppRouter {
 
   GoRouter routerConfig({List<NavigatorObserver>? observers}) => GoRouter(
         routes: routes,
-        navigatorKey: navigatorKey,
+        navigatorKey: _navigatorKey,
         restorationScopeId: 'router_config_scope',
         observers: observers,
       );
@@ -80,8 +82,8 @@ class AppRouter {
         ),
       ];
 
-  static void to(String route, BuildContext context, [Object? extra]) =>
-      GoRouter.of(context)
+  static void to(String route, BuildContext? context, [Object? extra]) =>
+      GoRouter.of(context ?? _navigatorKey.currentContext!)
           .push(route.startsWith('/') ? route : '/$route', extra: extra);
 
   static void back(BuildContext context) {
@@ -92,6 +94,8 @@ class AppRouter {
     }
   }
 
+  static void toNotificationAssetViewer(AssetViewerScreenState viewerState) =>
+      to(_kAssetViewerRoute, null, viewerState);
   static void toLibrary(BuildContext context) =>
       GoRouter.of(context).go(_kLibraryRoute);
   static void toPreferences(BuildContext context) =>

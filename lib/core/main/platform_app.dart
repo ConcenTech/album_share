@@ -7,6 +7,9 @@ import 'package:go_router/go_router.dart';
 import '../components/focus_remover.dart';
 import '../utils/app_localisations.dart';
 
+final GlobalKey<ScaffoldMessengerState> snackbarKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 class PlatformApp extends StatelessWidget {
   const PlatformApp.router({
     required this.title,
@@ -62,22 +65,26 @@ class PlatformApp extends StatelessWidget {
           builder: builder,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          scaffoldMessengerKey: snackbarKey,
         );
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
-        return CupertinoApp.router(
-          title: title,
-          theme: CupertinoThemeData(
-              brightness: switch (mode) {
-            ThemeMode.system =>
-              SchedulerBinding.instance.platformDispatcher.platformBrightness,
-            ThemeMode.light => Brightness.light,
-            ThemeMode.dark => Brightness.dark,
-          }),
-          routerConfig: routerConfig,
-          builder: builder,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+        return ScaffoldMessenger(
+          key: snackbarKey,
+          child: CupertinoApp.router(
+            title: title,
+            theme: CupertinoThemeData(
+                brightness: switch (mode) {
+              ThemeMode.system =>
+                SchedulerBinding.instance.platformDispatcher.platformBrightness,
+              ThemeMode.light => Brightness.light,
+              ThemeMode.dark => Brightness.dark,
+            }),
+            routerConfig: routerConfig,
+            builder: builder,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
         );
     }
   }

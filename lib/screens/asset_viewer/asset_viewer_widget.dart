@@ -13,6 +13,7 @@ import '../../immich/extensions/build_context_extensions.dart';
 import '../../immich/photo_view/photo_view.dart';
 import '../../immich/photo_view/photo_view_gallery.dart';
 import '../../immich/providers/haptic_feedback.provider.dart';
+import '../../models/asset.dart';
 import '../../routes/app_router.dart';
 import '../../services/preferences/preferences_providers.dart';
 import '../../services/providers/app_bar_listener.dart';
@@ -23,10 +24,13 @@ import 'video_viewer/asset_video_viewer.dart';
 class AssetViewerWidget extends ConsumerStatefulWidget {
   const AssetViewerWidget({
     required this.viewerState,
+    this.onChanged,
     super.key,
   });
 
   final AssetViewerScreenState viewerState;
+
+  final void Function(Asset asset)? onChanged;
 
   @override
   ConsumerState<AssetViewerWidget> createState() => _AssetViewerWidgetState();
@@ -212,6 +216,8 @@ class _AssetViewerWidgetState extends ConsumerState<AssetViewerWidget> {
           await Future.delayed(const Duration(milliseconds: 400));
           // Then precache the next image
           unawaited(precacheNextAsset(next, renderList));
+          // Notify callback
+          widget.onChanged?.call(renderList.loadAsset(index));
         },
         builder: (context, index) {
           final asset = renderList.loadAsset(index);

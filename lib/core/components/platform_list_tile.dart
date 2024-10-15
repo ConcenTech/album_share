@@ -12,6 +12,7 @@ class PlatformSwitchListTile extends StatelessWidget {
     this.isThreeLine = false,
     required this.value,
     required this.onChanged,
+    this.contentPadding,
     super.key,
   });
 
@@ -19,16 +20,18 @@ class PlatformSwitchListTile extends StatelessWidget {
   final Widget? subtitle;
   final bool isThreeLine;
   final bool value;
-  final void Function(bool v) onChanged;
+  final void Function(bool v)? onChanged;
+  final EdgeInsetsGeometry? contentPadding;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
+      enabled: onChanged != null,
       title: title,
       subtitle: subtitle,
       isThreeLine: isThreeLine,
-      onTap: () => onChanged(!value),
+      onTap: onChanged == null ? null : () => onChanged!(!value),
       trailing: Transform.scale(
         scale: forPlatform(desktop: () => 0.8, mobile: () => 1.0),
         child: Switch.adaptive(
@@ -39,6 +42,7 @@ class PlatformSwitchListTile extends StatelessWidget {
               : null,
         ),
       ),
+      contentPadding: contentPadding,
     );
   }
 }

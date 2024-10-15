@@ -25,7 +25,7 @@ abstract class LibraryProviders {
   });
 
   static final renderList =
-      FutureProvider.autoDispose.family<RenderList, List<Asset>>(
+      Provider.autoDispose.family<RenderList, List<Asset>>(
     (ref, assets) {
       final groupBy = ref.watch(PreferencesProviders.groupBy);
       return RenderList.fromAssets(assets, groupBy);

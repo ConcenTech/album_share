@@ -88,17 +88,15 @@ class _DesktopVideoPlayerControlsState
     super.dispose();
   }
 
-  void onHover() {
-    mount = true; // setState called below
-    _updateVisibility(true);
-    _timer?.cancel();
-    _timer = Timer(
-      _theme(context).controlsHoverDuration,
-      () => _updateVisibility(false),
-    );
+  void onTap() {
+    if (visible) {
+      hideControls();
+    } else {
+      showControls();
+    }
   }
 
-  void onEnter() {
+  void showControls() {
     mount = true; // setState called below.
     _updateVisibility(true);
     _timer?.cancel();
@@ -108,7 +106,7 @@ class _DesktopVideoPlayerControlsState
     );
   }
 
-  void onExit() {
+  void hideControls() {
     _updateVisibility(false);
     _timer?.cancel();
   }
@@ -231,10 +229,8 @@ class _DesktopVideoPlayerControlsState
                         }
                       }
                     : null,
-                child: MouseRegion(
-                  onHover: (_) => onHover(),
-                  onEnter: (_) => onEnter(),
-                  onExit: (_) => onExit(),
+                child: GestureDetector(
+                  onTap: onTap,
                   child: Stack(
                     children: [
                       AnimatedOpacity(

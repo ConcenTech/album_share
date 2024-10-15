@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../utils/app_localisations.dart';
-import 'dialog_buttons.dart';
+import 'app_dialog.dart';
 
 Future<bool> showConfirmationDialog({
   required BuildContext context,
@@ -27,21 +27,17 @@ class _ConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
-    return SimpleDialog(
-      title: Text(locale.areYouSure),
-      contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-      children: [
-        message == null ? const SizedBox(height: 5) : Text(message!),
-        DialogButtons(
-          onConfirm: () => _confirm(context),
-          onCancel: () => _cancel(context),
-          confirmText: locale.signOut,
-          confirmStyle: FilledButton.styleFrom(
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-          ),
-        ),
-      ],
+
+    return AppDialog(
+      title: locale.areYouSure,
+      onConfirm: () => _confirm(context),
+      onCancel: () => _cancel(context),
+      confirmText: locale.signOut,
+      confirmStyle: FilledButton.styleFrom(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+      ),
+      child: message == null ? const SizedBox(height: 5) : Text(message!),
     );
   }
 }

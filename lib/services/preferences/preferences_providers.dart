@@ -35,4 +35,7 @@ abstract class PreferencesProviders {
   static final dynamicLayout = Provider.autoDispose<bool>(
     (ref) => ref.watch(service.select((p) => p.dynamicLayout)),
   );
+
+  static final backgroundSync = Provider.autoDispose<bool?>(
+      (ref) => ref.watch(service.select((p) => p.backgroundSync)));
 }

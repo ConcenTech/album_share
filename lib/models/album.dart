@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 
 import '../core/utils/db_utils.dart';
 import 'json_map.dart';
+import 'user_detail.dart';
 
 part 'album.g.dart';
 
@@ -14,10 +15,13 @@ class Album {
     required this.thumbnailId,
     required this.isActivityEnabled,
     required this.lastUpdated,
+    required this.users,
   });
 
+  static int isarIdFromId(String id) => fastHash(id);
+
   /// Used only for offline storage
-  Id get isarId => fastHash(id);
+  Id get isarId => isarIdFromId(id);
 
   final String id;
   final String name;
@@ -30,15 +34,26 @@ class Album {
   /// If likes and comments are on for this album.
   final bool isActivityEnabled;
 
+  /// All users that have access to this album.
+  final List<UserDetail> users;
+
   factory Album.fromJson(JsonMap json) {
     return Album(
       id: json['id'],
-      name: json['albumName'],
+      name: parseAlbumName(json['albumName']),
       description: json['description'],
       thumbnailId: json['albumThumbnailAssetId'],
       isActivityEnabled: json['isActivityEnabled'],
       lastUpdated: DateTime.parse(json['updatedAt']),
+      users: List<JsonMap>.from(json['albumUsers'])
+          .map((e) => UserDetail.fromJson(e['user']))
+          .toList(),
     );
+  }
+
+  static String parseAlbumName(String name) {
+    final regExp = RegExp(r'\[[^\]]*\]');
+    return name.replaceAll(regExp, '').replaceAll('  ', ' ').trim();
   }
 
   @override
@@ -62,4 +77,3 @@ class Album {
     return other is Album && other.id == id;
   }
 }
-

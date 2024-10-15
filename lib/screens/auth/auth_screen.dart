@@ -9,9 +9,12 @@ import 'login_widget.dart';
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
 
+  static const id = 'auth_screen';
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      id: id,
       showTitleBar: false,
       body: Center(
         child: ConstrainedBox(

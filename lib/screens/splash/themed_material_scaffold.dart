@@ -10,6 +10,8 @@ class ThemedMaterialScaffold extends StatelessWidget {
 
   final Widget child;
 
+  static const id = 'splash';
+
   @override
   Widget build(BuildContext context) {
     return PlatformApp.splash(
@@ -19,8 +21,10 @@ class ThemedMaterialScaffold extends StatelessWidget {
       darkTheme: AppTheme.dark(),
       mode: ThemeMode.system,
       child: AppScaffold(
+        id: id,
         showTitleBar: false,
         body: child,
+        isSplash: true,
       ),
     );
   }

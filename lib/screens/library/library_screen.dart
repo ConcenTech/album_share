@@ -1,30 +1,67 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:octo_image/octo_image.dart';
 
 import '../../core/components/scaffold/app_navigation_scaffold.dart';
 import '../../core/components/scaffold/app_scaffold.dart';
+import '../../core/components/sidebar/notifications_sidebar.dart';
+import '../../core/components/titlebar_buttons/notification_button.dart';
 import '../../core/components/titlebar_buttons/preferences_button.dart';
 import '../../core/components/titlebar_buttons/refresh_button.dart';
+import '../../core/dialogs/background_sync_dialog.dart';
 import '../../core/utils/app_localisations.dart';
 import '../../core/utils/platform_utils.dart';
-import '../../immich/asset_grid/immich_asset_grid_view.dart';
 import '../../immich/asset_grid/immich_thumbnail.dart';
 import '../../models/album.dart';
 import '../../routes/app_router.dart';
-import '../../services/foreground/foreground_service_provider.dart';
+import '../../services/database/database_service.dart';
 import '../../services/library/library_providers.dart';
 import '../../services/preferences/preferences_providers.dart';
+import '../../services/sync/background_sync_service.dart';
+import '../../services/sync/foreground_sync_service_provider.dart';
+import 'library_scroll_view.dart';
 
-class LibraryScreen extends StatelessWidget {
+class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
+
+  static const id = 'library_screen';
+
+  @override
+  State<LibraryScreen> createState() => _LibraryScreenState();
+}
+
+class _LibraryScreenState extends State<LibraryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _getBackgroundPermissions();
+  }
+
+  void _getBackgroundPermissions() async {
+    if (!BackgroundSyncService.isSupportedPlatform()) {
+      return;
+    }
+    final prefs = await DatabaseService.instance.getPreferences();
+    if (prefs?.backgroundSync == null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        showBackgroundSyncDialog(context);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return AppNavigationScaffold(
+      id: LibraryScreen.id,
       showBackButton: false,
-      titleBarIcons: const [MaybeRefreshButton(), PreferencesButton()],
+      sidebar: const NotificationSidebar(),
+      titleBarIcons: const [
+        MaybeRefreshButton(),
+        PreferencesButton(),
+        NotificationButton(LibraryScreen.id),
+      ],
       screens: [
         NavigationBarItem(
           builder: (_) => const _AllAssetsScreen(),
@@ -51,17 +88,13 @@ class LibraryScreen extends StatelessWidget {
 }
 
 class _AllAssetsScreen extends StatelessWidget {
-  const _AllAssetsScreen({super.key});
-
-  Future<void> _refresh(WidgetRef ref) {
-    return ref.read(foregroundServiceProvider.notifier).update();
-  }
+  const _AllAssetsScreen();
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Consumer(builder: (context, ref, child) {
-        final syncService = ref.watch(foregroundServiceProvider);
+        final syncService = ref.watch(foregroundSyncServiceProvider);
 
         if (syncService.firstRun && !syncService.assets) {
           return const BuildingLibraryWidget();
@@ -75,40 +108,10 @@ class _AllAssetsScreen extends StatelessWidget {
             final dynamicLayout = ref.watch(PreferencesProviders.dynamicLayout);
             final renderList = ref.watch(LibraryProviders.renderList(assets));
 
-            return renderList.when(
-              data: (renderList) {
-                return Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: ScrollConfiguration(
-                    // Remove default scroll bar
-                    behavior: ScrollConfiguration.of(context)
-                        .copyWith(scrollbars: false),
-                    child: ImmichAssetGridView(
-                      alwaysVisibleScrollThumb: forPlatform(
-                        desktop: () => true,
-                        mobile: () => false,
-                      ),
-                      dynamicLayout: dynamicLayout,
-                      showStack: true,
-                      renderList: renderList,
-                      assetMaxExtent: maxExtent,
-                      onRefresh: platformValue(
-                        desktop: null,
-                        mobile: () => _refresh(ref),
-                      ),
-                      onTap: (state) {
-                        AppRouter.toAssetViewer(context, state);
-                      },
-                    ),
-                  ),
-                );
-              },
-              error: (e, _) => Text('$e'),
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              skipLoadingOnReload: true,
-              skipLoadingOnRefresh: true,
+            return LibraryScrollView(
+              maxExtent: maxExtent,
+              dynamicLayout: dynamicLayout,
+              renderList: renderList,
             );
           },
           error: (e, _) {
@@ -126,7 +129,7 @@ class _AllAssetsScreen extends StatelessWidget {
 }
 
 class _AlbumsScreen extends ConsumerWidget {
-  const _AlbumsScreen({super.key});
+  const _AlbumsScreen();
 
   void _onTap(BuildContext context, Album album) {
     AppRouter.toAlbum(context, album);
@@ -134,7 +137,7 @@ class _AlbumsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final syncService = ref.watch(foregroundServiceProvider);
+    final syncService = ref.watch(foregroundSyncServiceProvider);
 
     if (syncService.firstRun && !syncService.assets) {
       return const BuildingLibraryWidget();

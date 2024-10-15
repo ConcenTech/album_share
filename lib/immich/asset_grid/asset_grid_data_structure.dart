@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
 
 import '../../core/utils/app_localisations.dart';
@@ -65,18 +62,10 @@ enum GroupAssetsBy {
 
 class RenderList {
   final List<RenderAssetGridElement> elements;
-  final List<Asset>? allAssets;
-  final QueryBuilder<Asset, Asset, QAfterSortBy>? query;
+  final List<Asset> allAssets;
   final int totalAssets;
 
-  /// reference to batch of assets loaded from DB with offset [_bufOffset]
-  List<Asset> _buf = [];
-
-  /// global offset of assets in [_buf]
-  int _bufOffset = 0;
-
-  RenderList(this.elements, this.query, this.allAssets)
-      : totalAssets = allAssets?.length ?? query!.countSync();
+  RenderList(this.elements, this.allAssets) : totalAssets = allAssets.length;
 
   bool get isEmpty => totalAssets == 0;
 
@@ -86,95 +75,28 @@ class RenderList {
     assert(offset >= 0);
     assert(count > 0);
     assert(offset + count <= totalAssets);
-    if (allAssets != null) {
-      // if we already loaded all assets (e.g. from search result)
-      // simply return the requested slice of that array
-      return allAssets!.slice(offset, offset + count);
-    } else if (query != null) {
-      // general case: we have the query to load assets via offset from the DB on demand
-      if (offset < _bufOffset || offset + count > _bufOffset + _buf.length) {
-        // the requested slice (offset:offset+count) is not contained in the cache buffer `_buf`
-        // thus, fill the buffer with a new batch of assets that at least contains the requested
-        // assets and some more
-
-        final bool forward = _bufOffset < offset;
-        // if the requested offset is greater than the cached offset, the user scrolls forward "down"
-        const batchSize = 256;
-        const oppositeSize = 64;
-
-        // make sure to load a meaningful amount of data (and not only the requested slice)
-        // otherwise, each call to [loadAssets] would result in DB call trashing performance
-        // fills small requests to [batchSize], adds some legroom into the opposite scroll direction for large requests
-        final len = max(batchSize, count + oppositeSize);
-        // when scrolling forward, start shortly before the requested offset...
-        // when scrolling backward, end shortly after the requested offset...
-        // ... to guard against the user scrolling in the other direction
-        // a tiny bit resulting in a another required load from the DB
-        final start = max(
-          0,
-          forward
-              ? offset - oppositeSize
-              : (len > batchSize ? offset : offset + count - len),
-        );
-        // load the calculated batch (start:start+len) from the DB and put it into the buffer
-        _buf = query!.offset(start).limit(len).findAllSync();
-        _bufOffset = start;
-      }
-      assert(_bufOffset <= offset);
-      assert(_bufOffset + _buf.length >= offset + count);
-      // return the requested slice from the buffer (we made sure before that the assets are loaded!)
-      return _buf.slice(offset - _bufOffset, offset - _bufOffset + count);
-    }
-    throw Exception("RenderList has neither assets nor query");
+    return allAssets.slice(offset, offset + count);
   }
 
   /// Returns the requested asset either from cached buffer or directly from the database
   Asset loadAsset(int index) {
-    if (allAssets != null) {
-      // all assets are already loaded (e.g. from search result)
-      return allAssets![index];
-    } else if (query != null) {
-      // general case: we have the DB query to load asset(s) on demand
-      if (index >= _bufOffset && index < _bufOffset + _buf.length) {
-        // lucky case: the requested asset is already cached in the buffer!
-        return _buf[index - _bufOffset];
-      }
-      // request the asset from the database (not changing the buffer!)
-      final asset = query!.offset(index).findFirstSync();
-      if (asset == null) {
-        throw Exception(
-          "Asset at index $index does no longer exist in database",
-        );
-      }
-      return asset;
-    }
-    throw Exception("RenderList has neither assets nor query");
+    return allAssets[index];
   }
 
-  static Future<RenderList> fromQuery(
-    QueryBuilder<Asset, Asset, QAfterSortBy> query,
+  static RenderList _buildRenderList(
+    List<Asset> assets,
     GroupAssetsBy groupBy,
-  ) =>
-      _buildRenderList(null, query, groupBy);
-
-  static Future<RenderList> _buildRenderList(
-    List<Asset>? assets,
-    QueryBuilder<Asset, Asset, QAfterSortBy>? query,
-    GroupAssetsBy groupBy,
-  ) async {
+  ) {
     final List<RenderAssetGridElement> elements = [];
 
-    const pageSize = 50000;
     const sectionSize = 60; // divides evenly by 2,3,4,5,6
 
     if (groupBy == GroupAssetsBy.none) {
-      final int total = assets?.length ?? query!.countSync();
+      final int total = assets.length;
       for (int i = 0; i < total; i += sectionSize) {
-        final date = assets != null
-            ? assets[i].createdAt
-            : await query!.offset(i).createdAtProperty().findFirst();
+        final date = assets[i].createdAt;
+
         final int count = i + sectionSize > total ? total - i : sectionSize;
-        if (date == null) break;
         elements.add(
           RenderAssetGridElement(
             RenderAssetGridElementType.assets,
@@ -185,7 +107,7 @@ class RenderList {
           ),
         );
       }
-      return RenderList(elements, query, assets);
+      return RenderList(elements, assets);
     }
 
     final formatSameYear =
@@ -284,60 +206,47 @@ class RenderList {
     }
 
     DateTime? prevDate;
-    while (true) {
-      // this iterates all assets (only their createdAt property) in batches
-      // memory usage is okay, however runtime is linear with number of assets
-      final dates = assets != null
-          ? assets.map((a) => a.createdAt)
-          : await query!
-              .offset(offset)
-              .limit(pageSize)
-              .createdAtProperty()
-              .findAll();
-      int i = 0;
-      for (final date in dates) {
-        final d = DateTime(
-          date.year,
-          date.month,
-          groupBy == GroupAssetsBy.month ? 1 : date.day,
-        );
-        current ??= d;
-        if (current != d) {
-          addElems(current, prevDate);
-          last = current;
-          current = d;
-          lastOffset = offset + i;
-          count = 0;
-        }
-        prevDate = date;
-        count++;
-        i++;
-      }
+    final dates = assets.map((a) => a.createdAt);
 
-      if (assets != null || dates.length != pageSize) break;
-      offset += pageSize;
+    int i = 0;
+    for (final date in dates) {
+      final d = DateTime(
+        date.year,
+        date.month,
+        groupBy == GroupAssetsBy.month ? 1 : date.day,
+      );
+      current ??= d;
+      if (current != d) {
+        addElems(current, prevDate);
+        last = current;
+        current = d;
+        lastOffset = offset + i;
+        count = 0;
+      }
+      prevDate = date;
+      count++;
+      i++;
     }
+
     if (count > 0 && current != null) {
       addElems(current, prevDate);
       mergeMonth();
     }
     assert(elements.every((e) => e.count <= sectionSize), "too large section");
-    return RenderList(elements, query, assets);
+    return RenderList(elements, assets);
   }
 
-  static RenderList empty() => RenderList([], null, []);
+  static RenderList empty() => RenderList([], []);
 
-  static Future<RenderList> fromAssets(
+  static RenderList fromAssets(
     List<Asset> assets,
     GroupAssetsBy groupBy,
   ) =>
-      _buildRenderList(assets, null, groupBy);
+      _buildRenderList(assets, groupBy);
 
   /// Deletes an asset from the render list and clears the buffer
   /// This is only a workaround for deleted images still appearing in the gallery
   void deleteAsset(Asset deleteAsset) {
-    allAssets?.remove(deleteAsset);
-    _buf.clear();
-    _bufOffset = 0;
+    allAssets.remove(deleteAsset);
   }
 }

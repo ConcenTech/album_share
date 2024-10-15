@@ -19,6 +19,26 @@ T forPlatform<T>({
   }
 }
 
+void ifDesktop(VoidCallback callback) {
+  switch (defaultTargetPlatform) {
+    case TargetPlatform.linux:
+    case TargetPlatform.macOS:
+    case TargetPlatform.windows:
+      return callback();
+    default:
+  }
+}
+
+void ifMobile(VoidCallback callback) {
+  switch (defaultTargetPlatform) {
+    case TargetPlatform.android:
+    case TargetPlatform.iOS:
+    case TargetPlatform.fuchsia:
+      return callback();
+    default:
+  }
+}
+
 T? platformValue<T>({
   required T? desktop,
   required T? mobile,

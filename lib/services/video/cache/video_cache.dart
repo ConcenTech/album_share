@@ -1,9 +1,9 @@
-import 'video_cache_manager.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../../../models/asset.dart';
 import '../../../models/progress_event.dart';
 import '../../database/database_service.dart';
+import 'video_cache_manager.dart';
 
 Future<void> precacheVideo(Asset asset) {
   return VideoCache.precacheVideo(

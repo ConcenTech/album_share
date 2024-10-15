@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../services/auth/auth_providers.dart';
-import '../../services/foreground/foreground_service_provider.dart';
+import '../../services/sync/foreground_sync_service_provider.dart';
 
 class AuthListener extends ConsumerWidget {
   const AuthListener({
@@ -18,7 +18,7 @@ class AuthListener extends ConsumerWidget {
 
     user.whenData((u) {
       if (u != null) {
-        ref.watch(foregroundServiceProvider);
+        ref.watch(foregroundSyncServiceProvider);
       }
     });
 

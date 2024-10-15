@@ -6,19 +6,20 @@ import '../../models/endpoint.dart';
 import '../../models/user.dart';
 import '../api/api_service.dart';
 import '../database/database_service.dart';
+import '../sync/background_sync_service.dart';
 
 class AuthService {
-  AuthService(this._db, this._api) {
+  AuthService(this._db, this._api, this._backgroundSync) {
     _init();
   }
-
   final DatabaseService _db;
   final ApiService _api;
+  final BackgroundSyncService _backgroundSync;
 
   late final StreamController<User?> _currentUserStream;
 
   void _init() {
-    _currentUserStream = StreamController(
+    _currentUserStream = StreamController.broadcast(
       onListen: _startAuthStream,
     );
   }
@@ -50,13 +51,18 @@ class AuthService {
   }
 
   Future<bool> checkAuthStatus() async {
+    final userExists = await _db.userExists();
+    if (!userExists) {
+      return false;
+    }
+
     try {
       return await _api.validateAuthToken();
     } on ApiException catch (e) {
       // User previously logged in, currently offline so assume authenticated still.
       // This avoids redirect to login screen when offline.
       if (e.type == ApiExceptionType.timeout) {
-        return await _db.userExists();
+        return userExists;
       }
       return false;
     }
@@ -72,7 +78,7 @@ class AuthService {
     // we need to ensure its the same user logging back in.
     final oldUser = await _db.getUser();
     if (oldUser != null && oldUser != user) {
-      await _db.clear();
+      await _clearUserData();
     }
 
     // Save to offline db.
@@ -82,14 +88,20 @@ class AuthService {
     return user;
   }
 
+  Future<void> _clearUserData() async {
+    await _db.clear();
+    await RemoteImageCacheManager().emptyCache();
+    await ThumbnailImageCacheManager().emptyCache();
+  }
+
   Future<bool> logout() async {
     final loggedOut = await _api.logout();
 
     if (loggedOut) {
       // Remove user from offline db
-      await _db.clear();
-      await RemoteImageCacheManager().emptyCache();
-      await ThumbnailImageCacheManager().emptyCache();
+      await _clearUserData();
+      // Stop background events from firing.
+      _backgroundSync.unregister();
       // Emit new event to user stream.
       _currentUserStream.add(null);
     }

@@ -1,7 +1,9 @@
+import 'package:album_share/models/user_detail.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../core/utils/extension_methods.dart';
+import '../../models/activity.dart';
 import '../../models/album.dart';
 import '../../models/asset.dart';
 import '../../models/asset_group.dart';
@@ -76,10 +78,15 @@ class DatabaseService {
         AssetSchema,
         PreferencesSchema,
         LogSchema,
+        ActivitySchema,
       ], directory: dir.path);
     } catch (e) {
       throw DatabaseException('Failed to open the database.', 'init', '$e');
     }
+  }
+
+  Future<void> close() async {
+    await _isar?.close();
   }
 
   /// Removes all data from the offline database.
@@ -92,6 +99,7 @@ class DatabaseService {
         await _db.albums.clear();
         await _db.assets.clear();
         await _db.preferences.clear();
+        await _db.activity.clear();
         if (endpoint) {
           await _db.endpoints.clear();
         }
@@ -168,11 +176,23 @@ class DatabaseService {
     return _writeTxn(() => _db.users.put(user), 'setUser');
   }
 
-  Future<List<Album>> getAlbums() {
+  Future<List<Album>> allAlbums() {
     return _readTxn(
       () => _db.albums.where().anyIsarId().findAll(),
-      'getAlbums',
+      'allAlbums',
     );
+  }
+
+  Future<List<Album>> albums(List<String> ids) async {
+    final isarIds = ids.mapList(Album.isarIdFromId);
+
+    final albums = await _readTxn(
+      () => _db.albums.getAll(isarIds),
+      'albums',
+    );
+
+    // Remove null entries
+    return albums.whereType<Album>().toList();
   }
 
   Future<void> setAlbums(List<Album> albums) {
@@ -199,6 +219,27 @@ class DatabaseService {
               .sortByCreatedAtDesc()
               .findAll(),
       'getAssets',
+    );
+  }
+
+  /// Retrieves an asset using it's id.
+  ///
+  /// Returns null if no matching asset found.
+  Future<Asset?> asset({String id = '', Id isarId = Isar.autoIncrement}) async {
+    assert(
+      id.isNotEmpty || isarId != Isar.autoIncrement,
+      'Either id or isarId must be set',
+    );
+    assert(
+      !(id.isNotEmpty && isarId != Isar.autoIncrement),
+      'Cannot set both id and isarId.',
+    );
+
+    return _readTxn(
+      () => id.isEmpty
+          ? _db.assets.get(isarId)
+          : _db.assets.filter().idEqualTo(id).findFirst(),
+      'asset',
     );
   }
 
@@ -357,6 +398,113 @@ class DatabaseService {
     return _writeTxnSync(
       () => _db.logs.where().limit(count).deleteAllSync(),
       'deleteLogs',
+    );
+  }
+
+  /// Retrieves a list of activity.
+  ///
+  /// If album is not null, all activity for the selected album is returned.
+  ///
+  /// If asset is not null, all activity for the selected asset is returned.
+  ///
+  /// Otherwise, all activity is returned.
+  Future<List<Activity>> getActivity({Asset? asset, Album? album}) async {
+    return _readTxn(
+      () {
+        return _db.activity
+            .filter()
+            .optional(
+              asset != null,
+              (q) => q.assetIdEqualTo(asset!.id),
+            )
+            .optional(
+              album != null,
+              (q) => q.albumIdEqualTo(album!.id),
+            )
+            .sortByCreatedAtDesc()
+            .findAll();
+      },
+      'getActivity',
+    );
+  }
+
+  /// Listens to a list of activity.
+  ///
+  /// If asset is not null, all activity for the selected asset is returned.
+  ///
+  /// Otherwise, all activity is returned.
+  Stream<List<Activity>> activityStream(
+      [({Asset asset, Album album})? record]) {
+    return _readTxnSync(
+      () => _db.activity
+          .filter()
+          .optional(
+            record != null,
+            (q) => q
+                .assetIdEqualTo(record!.asset.id)
+                .and()
+                .albumIdEqualTo(record.album.id),
+          )
+          .sortByCreatedAtDesc()
+          .watch(fireImmediately: true),
+      'activityStream',
+    );
+  }
+
+  /// Listens to a list of activity filtering out any events linked
+  /// to this user.
+  Stream<List<Activity>> activityStreamForUser(User user) {
+    return _readTxnSync(
+      () => _db.activity
+          .filter()
+          .user((q) => q.not().idContains(user.id))
+          .sortByCreatedAtDesc()
+          .watch(fireImmediately: true),
+      'activityStreamForUser',
+    );
+  }
+
+  /// Listens to a count of activity.
+  ///
+  /// If asset is not null, only activity for the selected asset is counted.
+  ///
+  /// Otherwise, all activity is counted.
+  Stream<int> activityCountStream([Asset? asset]) {
+    return _readTxnSync(
+      () => _db.activity
+          .filter()
+          .optional(asset != null, (q) => q.assetIdEqualTo(asset!.id))
+          .watchLazy()
+          .map((_) => _activityCountSync(asset)),
+      'activityCountStream',
+    );
+  }
+
+  int _activityCountSync([Asset? asset]) {
+    return _readTxnSync(
+      () => _db.activity
+          .filter()
+          .optional(asset != null, (q) => q.assetIdEqualTo(asset!.id))
+          .countSync(),
+      '_activityCountSync',
+    );
+  }
+
+  /// Replaces all the activity in the database.
+  Future<void> setActivity(List<Activity> activity) async {
+    return _writeTxn(
+      () async {
+        await _db.activity.clear();
+        await _db.activity.putAll(activity);
+      },
+      'setActivity',
+    );
+  }
+
+  Future<void> addActivity(Activity activity) async {
+    return _writeTxn(
+      () => _db.activity.put(activity),
+      'addActivity',
     );
   }
 }

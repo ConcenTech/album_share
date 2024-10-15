@@ -1,6 +1,6 @@
-import '../../photo_view.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../photo_view.dart';
 import '../core/photo_view_core.dart';
 import '../utils/photo_view_utils.dart';
 
