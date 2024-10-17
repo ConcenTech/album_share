@@ -47,3 +47,4 @@ app.*.map.json
 .cookies
 # Signing key
 upload-key.jks
+api.http
