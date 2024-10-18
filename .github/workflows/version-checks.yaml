@@ -1,9 +1,13 @@
 name: Verify version & release notes have been updated
 
 on:
-  push:
+  pull_request:
+    types: 
+      - opened
+      - edited
     paths:
-      - "/nonexistant"
+      - 'lib/**'
+      - 'video_player/lib/**'
 
 jobs:
   verify-version:
@@ -22,10 +26,6 @@ jobs:
             CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: List files
-        id: list-files
-        run: ls -lah
-
       - name: Parse pubspec.yaml
         id: yaml-version
         uses: pietrobolcato/action-read-yaml@1.0.0
@@ -39,18 +39,21 @@ jobs:
       - name: Fetch previous tag
         id: tag-version
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:  
+          fallback: 0.0.1
 
       - name: Display tag version
         run: |
           echo "${{ steps.tag-version.outputs.tag }}"
-
-      - name: "Setup Dart environment"
-        uses: dart-lang/setup-dart@v1
-
-      - name: Install Dart dependencies
+    
+      - uses: dart-lang/setup-dart@v1
+      - name: Verify version increase
+        id: version-up
         run: |
           cd version_check
           dart pub get
+          dart run version_check/bin/version_check.dart -p "${{  steps.tag-version.outputs.tag  }}" -n "${{  steps.yaml-version.outputs.data  }}"
 
-      - name: Compare versions
-        run: dart run version_check/bin/version_check.dart -p "${{  steps.tag-version.outputs.tag  }}" -n "${{  steps.yaml-version.outputs.data  }}"
+
+
+  
