@@ -89,7 +89,7 @@ class ApiService {
 
     try {
       final body = await _get(
-        '/api/server-info/features',
+        '/api/server/features',
         expected: JSON_MAP,
       );
 
@@ -109,7 +109,7 @@ class ApiService {
   Future<bool> _isEndpointAvailable(String serverUrl) async {
     try {
       await _dio.get(
-        '$serverUrl/api/server-info/ping',
+        '$serverUrl/api/server/ping',
         options: Options(
           headers: {'Accepts': _applicationJson},
           sendTimeout: const Duration(seconds: 5),
