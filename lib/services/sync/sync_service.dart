@@ -177,7 +177,7 @@ class SyncService extends StateNotifier<SyncState> {
       }
 
       final name = userMap[asset.ownerId] ?? 'unknown';
-      final count = map[name] ?? AssetCount();
+      final count = map[name] ??= AssetCount();
 
       switch (asset.type) {
         case AssetType.image:
@@ -219,7 +219,6 @@ class SyncService extends StateNotifier<SyncState> {
     }
 
     if (newActivity.isNotEmpty) {
-      _logger.info('Sending activity notification');
       _notifyActivity(newActivity);
     }
 
@@ -275,13 +274,14 @@ class SyncService extends StateNotifier<SyncState> {
         continue;
       }
 
-      final count = map[event.user.name] ?? ActivityCount();
+      final count = map[event.user.name] ??= ActivityCount();
       // TODO: Should we separate asset types?
       // This would involve looking up each asset in the db.
       // Maybe only do this if there is only a small number of activity.
       switch (event.type) {
         case ActivityType.like:
           count.otherLikes++;
+          break;
         case ActivityType.comment:
           count.otherComments++;
           break;
@@ -298,6 +298,8 @@ class SyncService extends StateNotifier<SyncState> {
     for (var entry in map.entries) {
       entry.value.describe(buf, entry.key, locale);
     }
+
+    _logger.info('Sending activity notification');
 
     await _notifications.activity(
       title: locale.newActivityNotification,
