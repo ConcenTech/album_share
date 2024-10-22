@@ -12,7 +12,8 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     outputs:
-      tag: v${{ steps.yaml-version.outputs['version'] }}
+
+      version: ${{ steps.yaml-version.outputs['version'] }}
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +38,13 @@ jobs:
     steps:
       
       - uses: actions/checkout@v4
+
+      - name: Inject build number
+        uses: rmeneely/update-yaml@v1
+        with:
+          infile: pubspec.yaml
+          varlist: version=${{ needs.create-release.outputs.version }}+${{ github.run_id }}
+
 
       - name: Setup the Java environment
         uses: actions/setup-java@v4
@@ -71,13 +79,13 @@ jobs:
           ls -lah
 
       - name: Rename bundle
-        run: mv build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/album_share-${{ needs.create-release.outputs.tag }}-android.aab
+        run: mv build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/album_share-${{ needs.create-release.outputs.version }}-android.aab
 
       - name: Create symbols archive
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: "zip"
-          filename: album_share-${{ needs.create-release.outputs.tag }}-android-symbols.zip
+          filename: album_share-${{ needs.create-release.outputs.version }}-android-symbols.zip
           directory: build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
 
       - name: Add files to release
@@ -86,10 +94,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
             draft: true
-            tag_name: ${{ needs.create-release.outputs.tag }}
+            tag_name: v${{ needs.create-release.outputs.version }}
             files: |
-              **/album_share-${{ needs.create-release.outputs.tag }}-android-symbols.zip
-              **/album_share-${{ needs.create-release.outputs.tag }}-android.aab
+              **/album_share-${{ needs.create-release.outputs.version }}-android-symbols.zip
+              **/album_share-${{ needs.create-release.outputs.version }}-android.aab
   
   build_linux:
     runs-on: ubuntu-latest
@@ -117,7 +125,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: "zip"
-          filename: album_share-${{ needs.create-release.outputs.tag }}-linux.zip
+          filename: album_share-${{ needs.create-release.outputs.version }}-linux.zip
           directory: build/linux/x64/release/bundle
 
       - name: Add archive to release
@@ -126,9 +134,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           draft: true
-          tag_name: ${{ needs.create-release.outputs.tag }}
+          tag_name: v${{ needs.create-release.outputs.version }}
           files: |
-            **/album_share-${{ needs.create-release.outputs.tag }}-linux.zip
+            **/album_share-${{ needs.create-release.outputs.version }}-linux.zip
 
   # build_windows:
   #   runs-on: windows-latest
