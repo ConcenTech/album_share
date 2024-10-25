@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/components/app_snackbar.dart';
 import '../../core/utils/app_localisations.dart';
 import '../../core/utils/validators.dart';
+import '../../models/user.dart';
 import '../../services/api/api_service.dart';
 import '../../services/auth/auth_providers.dart';
 
@@ -15,7 +16,7 @@ class LoginWidget extends ConsumerStatefulWidget {
   });
 
   final VoidCallback onBack;
-  final VoidCallback onLoginComplete;
+  final void Function(User user) onLoginComplete;
 
   @override
   ConsumerState<LoginWidget> createState() => _LoginWidgetState();
@@ -42,7 +43,7 @@ class _LoginWidgetState extends ConsumerState<LoginWidget> {
     await ref
         .read(AuthProviders.service)
         .login(_email, _password)
-        .then((_) => widget.onLoginComplete())
+        .then(widget.onLoginComplete)
         .onError((ApiException e, _) => _onError(e.message));
   }
 
