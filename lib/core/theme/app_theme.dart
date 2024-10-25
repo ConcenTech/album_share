@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:system_theme/system_theme.dart';
 
 class AppTheme {
-  static ThemeData light() {
+  static Future<void> ensureInitialized() async {
+    SystemTheme.fallbackColor = Colors.purple;
+    await SystemTheme.accentColor.load();
+  }
+
+  static Color systemThemeColour() {
+    return SystemTheme.accentColor.accent;
+  }
+
+  static ThemeData base(Brightness brightness) {
     final base = ThemeData.from(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.purple,
-        brightness: Brightness.light,
+        seedColor: systemThemeColour(),
+        brightness: brightness,
       ),
     );
 
@@ -19,22 +29,9 @@ class AppTheme {
     );
   }
 
-  static ThemeData dark() {
-    final base = ThemeData.from(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.purple,
-        brightness: Brightness.dark,
-      ),
-    );
+  static ThemeData light() => base(Brightness.light);
 
-    return base.copyWith(
-      appBarTheme: base.appBarTheme.copyWith(
-        systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
-          statusBarColor: Colors.transparent,
-        ),
-      ),
-    );
-  }
+  static ThemeData dark() => base(Brightness.dark);
 
   ThemeData themeFromBrightness(Brightness brightness) {
     return switch (brightness) {
