@@ -30,11 +30,9 @@ class Validators {
     [
       RequiredValidator(errorText: AppLocale.instance.current.required),
       MinLengthValidator(
-        6,
+        8,
         errorText: AppLocale.instance.current.invalidPasswordLengthError,
       ),
-      PatternValidator(r'(?=.*?[#?!@$%^&*-=])',
-          errorText: AppLocale.instance.current.invalidPasswordError),
     ],
   ).call;
 
@@ -45,6 +43,19 @@ class Validators {
 
   static final optionalEmail =
       EmailValidator(errorText: AppLocale.instance.current.invalidEmailError);
+
+  static String? newPassword(String current, String? replacement) {
+    if (replacement == null) {
+      return AppLocale.instance.current.required;
+    }
+    if (replacement.length < 8) {
+      return AppLocale.instance.current.invalidPasswordLengthError;
+    }
+    if (current == replacement) {
+      return AppLocale.instance.current.passwordSameAsOldError;
+    }
+    return null;
+  }
 
   static String? passwordMatch(
       {required String? value1, required String? value2}) {
