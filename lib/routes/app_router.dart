@@ -15,6 +15,7 @@ const _kLoginRoute = '/login';
 const _kPreferencesRoute = 'preferences';
 const _kAssetViewerRoute = 'assets';
 const _kAlbumRote = 'album';
+const _kChangePasswordRoute = 'reset-password';
 
 class AppRouter {
   AppRouter(this._auth);
@@ -26,8 +27,18 @@ class AppRouter {
 
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
-  Future<String?> _authRedirect(bool authRequired) async {
+  Future<String?> _authRedirect(
+    bool authRequired, [
+    bool isPasswordRoute = false,
+  ]) async {
     final authenticated = await _auth.checkAuthStatus();
+
+    if (authenticated && !isPasswordRoute) {
+      final user = await _auth.currentUser();
+      if (user!.shouldChangePassword) {
+        return '/$_kChangePasswordRoute';
+      }
+    }
 
     if (authenticated && !authRequired) {
       return _kLibraryRoute;
@@ -59,6 +70,13 @@ class AppRouter {
     builder: (_, __) => const PreferencesScreen(),
   );
 
+  final _changePasswordRoute = GoRoute(
+    path: _kChangePasswordRoute,
+    builder: (_, __) => const AuthScreen(
+      passwordChange: true,
+    ),
+  );
+
   late final _albumRoute = GoRoute(
       path: _kAlbumRote,
       builder: (_, state) => AlbumScreen(album: state.extra as Album),
@@ -73,6 +91,7 @@ class AppRouter {
             _assetViewerRoute,
             _preferencesRoute,
             _albumRoute,
+            _changePasswordRoute,
           ],
         ),
         GoRoute(
@@ -96,8 +115,7 @@ class AppRouter {
 
   static void toNotificationAssetViewer(AssetViewerScreenState viewerState) =>
       to(_kAssetViewerRoute, null, viewerState);
-  static void toLibrary(BuildContext context) =>
-      GoRouter.of(context).go(_kLibraryRoute);
+  static void toLibrary(BuildContext context) => to(_kLibraryRoute, context);
   static void toPreferences(BuildContext context) =>
       to(_kPreferencesRoute, context);
   static void toLogin(BuildContext context) => to(_kLoginRoute, context);
@@ -108,4 +126,6 @@ class AppRouter {
     AssetViewerScreenState viewerState,
   ) =>
       to(_kAssetViewerRoute, context, viewerState);
+  static void toChangePassword(BuildContext context) =>
+      to(_kChangePasswordRoute, context);
 }
