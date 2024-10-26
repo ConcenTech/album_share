@@ -29,8 +29,8 @@ class User {
   factory User.fromJson(JsonMap json, [String? token]) {
     return User(
       token: token ?? json['accessToken'],
-      id: json['userId'],
-      email: json['userEmail'],
+      id: json['userId'] ?? json['id'],
+      email: json['userEmail'] ?? json['email'],
       name: json['name'],
       shouldChangePassword: json['shouldChangePassword'],
     );
@@ -38,7 +38,7 @@ class User {
 
   @override
   int get hashCode => id.hashCode;
-  
+
   @override
   bool operator ==(Object other) {
     return other is User && other.id == id;

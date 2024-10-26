@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:album_share/core/utils/extension_methods.dart';
-import 'package:album_share/models/activity.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
+import '../../core/utils/extension_methods.dart';
+import '../../models/activity.dart';
 import '../../models/album.dart';
 import '../../models/asset.dart';
 import '../../models/endpoint.dart';
@@ -161,7 +161,7 @@ class ApiService {
       return body['authStatus'];
     } on DioException catch (e, s) {
       _logger.severe('Unable to validate endpoint token', e, s);
-      throw ApiException.fromDioException(e);
+      throw ApiException.fromDioException(e, s);
     }
   }
 
@@ -176,14 +176,76 @@ class ApiService {
       expected: JSON_MAP,
     );
 
-    // Access token is not returned in the response.
-    // However, because the user is authenticated the access token can be found in the request cookies.
+    return User.fromJson(body, await _currentUserToken());
+  }
+
+  /// Updates the name, email or password of the currently authenticated user.
+  ///
+  /// Throws[ApiException] if unsuccessful
+  Future<User> updateUser({
+    String? name,
+    String? email,
+    String? password,
+  }) async {
+    _expectEndpointSet();
+
+    assert(name != null || email != null || password != null);
+
+    // The change password endpoint doesn't update shouldChangePassword
+    final body = await _put(
+      '/api/users/me',
+      expected: JSON_MAP,
+      data: {
+        if (name != null) 'name': name,
+        if (email != null) 'email': email,
+        if (password != null) 'password': password,
+      },
+      headers: {
+        'Accept': _applicationJson,
+        'Content-Type': _applicationJson,
+      },
+    );
+
+    return User.fromJson(body, await _currentUserToken());
+  }
+
+  /// Changes the password for the current authenticated user.
+  ///
+  /// Use in combination with [updateUser] as [User.shouldChangePassword] is
+  /// not updated when calling [changePassword].
+  ///
+  /// Throws[ApiException] if unsuccessful
+  Future<bool> changePassword(String password, String newPassword) async {
+    _expectEndpointSet();
+
+    // The change password endpoint doesn't update shouldChangePassword
+    final body = await _post(
+      '/api/auth/change-password',
+      expected: JSON_MAP,
+      data: {
+        'password': password,
+        'newPassword': newPassword,
+      },
+      headers: {
+        'Accept': _applicationJson,
+        'Content-Type': _applicationJson,
+      },
+    );
+
+    return body.containsKey('id');
+  }
+
+  /// Access token is not always returned in the user object
+  ///
+  /// However, if the user is authenticated, the access token can be found in
+  /// the request cookies.
+  Future<String> _currentUserToken() async {
     final cookies =
         await _cookieJar.loadForRequest(Uri.parse(_dio.options.baseUrl));
-    final token =
-        cookies.firstWhere((e) => e.name == 'immich_access_token').value;
 
-    return User.fromJson(body, token);
+    return cookies
+        .firstWhere((cookie) => cookie.name == 'immich_access_token')
+        .value;
   }
 
   /// Logs out the current user.
@@ -200,25 +262,6 @@ class ApiService {
     );
 
     return body['successful'] as bool;
-  }
-
-  /// Changes the password of the current user.
-  ///
-  /// Throws [ApiException] if unsuccessful.
-  Future<void> changePassword(String password, String newPassword) async {
-    _expectEndpointSet();
-
-    await _post(
-      '/api/auth/change-password',
-      data: {
-        "password": password,
-        "newPassword": newPassword,
-      },
-      headers: {
-        'Content-Type': _applicationJson,
-      },
-      expected: JSON_MAP,
-    );
   }
 
   /// Retrieves a list of all albums shared with this user.
@@ -428,8 +471,7 @@ class ApiService {
           ? await _extractObjectFromResponse(response) as T
           : await _extractObjectListFromResponse(response) as T;
     } on DioException catch (e, s) {
-      _logger.severe('Unexpected DioException', e, s);
-      throw ApiException.fromDioException(e);
+      throw ApiException.fromDioException(e, s);
     }
   }
 
@@ -457,25 +499,70 @@ class ApiService {
           ? await _extractObjectFromResponse(response) as T
           : await _extractObjectListFromResponse(response) as T;
     } on DioException catch (e, s) {
-      // Unable to reach endpoint.
-      _logger.severe('Unexpected DioException', e, s);
+      throw ApiException.fromDioException(e, s);
+    }
+  }
 
-      throw ApiException.fromDioException(e);
+  /// Sends a put request with the supplied data.
+  ///
+  /// Returns the response data as a [String]
+  ///
+  /// Throws [ApiException] if unsuccessful.
+  Future<T> _put<T>(
+    String endpoint, {
+    JsonMap? data,
+    Map<String, String>? headers,
+    required T expected,
+  }) async {
+    assert(expected is JsonMap || expected is List<JsonMap>);
+
+    try {
+      final response = await _dio.put(
+        endpoint,
+        data: data,
+        options: Options(headers: headers),
+      );
+
+      return expected is JsonMap?
+          ? await _extractObjectFromResponse(response) as T
+          : await _extractObjectListFromResponse(response) as T;
+    } on DioException catch (e, s) {
+      throw ApiException.fromDioException(e, s);
     }
   }
 }
 
 class ApiException implements Exception {
-  const ApiException(this.type, this.debugMessage);
+  const ApiException(this.type, this.message);
 
-  ApiException.fromDioException(DioException e)
-      : type = ApiExceptionType.fromDioException(e),
-        debugMessage = e.message ?? 'An unknown error occurred.';
+  // ApiException.fromDioException(DioException e)
+  //     : type = ApiExceptionType.fromDioException(e),
+  //       debugMessage = e.message ?? 'An unknown error occurred.';
+  factory ApiException.fromDioException(DioException e, StackTrace s) {
+    String? error;
+    if (e.response?.data is JsonMap &&
+        (e.response!.data as JsonMap).containsKey('message')) {
+      error = e.response!.data['message'];
+    }
 
+    _logger.severe(
+      'API request failed.',
+      error == null ? e : e.response!.data,
+      s,
+    );
+
+    final type = ApiExceptionType.fromDioException(e);
+
+    return ApiException(
+      type,
+      error ?? _messageFromType(type),
+    );
+  }
+
+  final String message;
   final ApiExceptionType type;
-  final String debugMessage;
 
-  String get message {
+  static String _messageFromType(ApiExceptionType type) {
     return switch (type) {
       ApiExceptionType.client => 'There was an error processing the request.',
       ApiExceptionType.server => 'There was an error processing the response.',

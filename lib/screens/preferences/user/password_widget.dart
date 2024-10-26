@@ -1,3 +1,4 @@
+import 'package:album_share/routes/app_router.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/utils/app_localisations.dart';
@@ -10,10 +11,10 @@ class PasswordWidget extends StatelessWidget {
     return ListTile(
       title: Text(AppLocalizations.of(context)!.changePassword),
       trailing: IconButton(
-        onPressed: () {},
+        onPressed: () => AppRouter.toChangePassword(context),
         icon: const Icon(Icons.chevron_right),
       ),
-      onTap: () {},
+      onTap: () => AppRouter.toChangePassword(context),
     );
   }
 }

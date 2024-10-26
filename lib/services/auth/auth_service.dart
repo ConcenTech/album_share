@@ -114,12 +114,6 @@ class AuthService {
   /// Returns null if not authenticated.
   /// Gets the currently signed in user, or null if not authenticated.
   Future<User?> currentUser() async {
-    // If subscription has been subscribed to,
-    // the data will have already been fetched.
-    if (_currentUserStream.hasListener) {
-      return userChanges().first;
-    }
-
     final authenticated = await checkAuthStatus();
 
     if (!authenticated) {
@@ -136,6 +130,18 @@ class AuthService {
     await _db.setUser(user);
 
     return user;
+  }
+
+  Future<bool> changePassword(String password, String newPassword) async {
+    final passwordChanged = await _api.changePassword(password, newPassword);
+
+    if (passwordChanged) {
+      final user = await _api.updateUser(password: newPassword);
+      await _db.setUser(user);
+      _currentUserStream.add(user);
+    }
+
+    return passwordChanged;
   }
 
   /// A stream of events for the current user.

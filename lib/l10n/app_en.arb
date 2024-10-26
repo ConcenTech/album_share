@@ -26,23 +26,24 @@
     "@invalidValueError": {
         "description": "The user passed an invalid value into an integer text field so it could not be parsed"
     },
-    "invalidPasswordLengthError": "Password must be at least 6 digits",
+    "invalidPasswordLengthError": "Invalid password",
     "@invalidPasswordLengthError": {
-        "description": "The user entered a password that was less than 6 digits long"
-    },
-    "invalidPasswordError": "Passwords must have at least one special character",
-    "@invalidPasswordError": {
-        "description": "The user entered a password without any special characters."
+        "description": "The user entered a password that was less than 8 digits long"
     },
     "invalidPasswordMatchError": "Passwords must match",
     "@invalidPasswordMatchError": {
         "description": "The user entered two passwords that were not the same"
+    },
+    "passwordSameAsOldError" : "New password cannot be the same as the old password",
+    "@passwordSameAsOldError": {
+        "description": "The user tried to use the same password on the change password form"
     },
     "invalidEmailError": "Please enter a valid email",
     "serverUrl": "Server url",
     "next": "Next",
     "email": "Email",
     "password": "Password",
+    "newPassword": "New password",
     "back": "Back",
     "login": "login",
     "buildingLibrary": "Please wait. Building library",
