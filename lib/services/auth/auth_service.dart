@@ -132,11 +132,16 @@ class AuthService {
     return user;
   }
 
-  Future<void> changePassword(String password) async {
-    final user = await _api.changePassword(password);
+  Future<bool> changePassword(String password, String newPassword) async {
+    final passwordChanged = await _api.changePassword(password, newPassword);
 
-    await _db.setUser(user);
-    _currentUserStream.add(user);
+    if (passwordChanged) {
+      final user = await _api.updateUser(password: newPassword);
+      await _db.setUser(user);
+      _currentUserStream.add(user);
+    }
+
+    return passwordChanged;
   }
 
   /// A stream of events for the current user.

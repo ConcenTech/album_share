@@ -1,10 +1,10 @@
-import 'package:album_share/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/components/app_snackbar.dart';
 import '../../core/utils/app_localisations.dart';
 import '../../core/utils/validators.dart';
+import '../../routes/app_router.dart';
 import '../../services/api/api_service.dart';
 import '../../services/auth/auth_providers.dart';
 
@@ -76,7 +76,7 @@ class _LoginWidgetState extends ConsumerState<ChangePasswordWidget> {
 
     await ref
         .read(AuthProviders.service)
-        .changePassword(_newPassword)
+        .changePassword(_password, _newPassword)
         .then((_) => widget.onComplete())
         .onError((ApiException e, _) => _onError(e.message));
   }
