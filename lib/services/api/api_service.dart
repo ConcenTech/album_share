@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:album_share/core/utils/extension_methods.dart';
-import 'package:album_share/models/activity.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
+import '../../core/utils/extension_methods.dart';
+import '../../models/activity.dart';
 import '../../models/album.dart';
 import '../../models/asset.dart';
 import '../../models/endpoint.dart';
@@ -179,18 +179,26 @@ class ApiService {
     return User.fromJson(body, await _currentUserToken());
   }
 
-  /// Changes the password for the current authenticated user.
+  /// Updates the name, email or password of the currently authenticated user.
   ///
   /// Throws[ApiException] if unsuccessful
-  Future<User> changePassword(String password) async {
+  Future<User> updateUser({
+    String? name,
+    String? email,
+    String? password,
+  }) async {
     _expectEndpointSet();
+
+    assert(name != null || email != null || password != null);
 
     // The change password endpoint doesn't update shouldChangePassword
     final body = await _put(
       '/api/users/me',
       expected: JSON_MAP,
       data: {
-        'password': password,
+        if (name != null) 'name': name,
+        if (email != null) 'email': email,
+        if (password != null) 'password': password,
       },
       headers: {
         'Accept': _applicationJson,
@@ -199,6 +207,32 @@ class ApiService {
     );
 
     return User.fromJson(body, await _currentUserToken());
+  }
+
+  /// Changes the password for the current authenticated user.
+  ///
+  /// Use in combination with [updateUser] as [User.shouldChangePassword] is
+  /// not updated when calling [changePassword].
+  ///
+  /// Throws[ApiException] if unsuccessful
+  Future<bool> changePassword(String password, String newPassword) async {
+    _expectEndpointSet();
+
+    // The change password endpoint doesn't update shouldChangePassword
+    final body = await _post(
+      '/api/auth/change-password',
+      expected: JSON_MAP,
+      data: {
+        'password': password,
+        'newPassword': newPassword,
+      },
+      headers: {
+        'Accept': _applicationJson,
+        'Content-Type': _applicationJson,
+      },
+    );
+
+    return body.containsKey('id');
   }
 
   /// Access token is not always returned in the user object
