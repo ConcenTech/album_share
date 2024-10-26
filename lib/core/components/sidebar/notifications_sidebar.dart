@@ -27,7 +27,7 @@ class NotificationSidebar extends AppSidebar {
     final provider = ref.watch(ActivityProviders.notifications);
     final theme = Theme.of(context);
     return Drawer(
-      backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.5),
+      backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.9),
       width: AppSidebar.width,
       child: provider.when(
         data: (a) {

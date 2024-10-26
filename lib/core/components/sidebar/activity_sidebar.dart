@@ -28,7 +28,7 @@ class ActivitySidebar extends AppSidebar {
     return Drawer(
       width: AppSidebar.width,
       backgroundColor:
-          Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
+          Theme.of(context).scaffoldBackgroundColor.withOpacity(0.9),
       child: SafeArea(
         top: false,
         child: Consumer(
