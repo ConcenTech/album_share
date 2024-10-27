@@ -73,7 +73,7 @@ Now, when the user attempts to navigate back, the image scale is first reset the
 - Pop called twice when asset swiped down.
 
 
-[0.2.1]: https://github.com/ConcenTech/album_share/compare/main...0.2.1
-[0.3.0]: https://github.com/ConcenTech/album_share/compare/0.2.1...0.3.0
-[0.3.2]: https://github.com/ConcenTech/album_share/compare/0.3.0...0.3.2
-[0.3.3]: https://github.com/ConcenTech/album_share/compare/0.3.2...0.3.3
+[0.2.1]: https://github.com/ConcenTech/album_share/compare/main...v0.2.1
+[0.3.0]: https://github.com/ConcenTech/album_share/compare/v0.2.1...v0.3.0
+[0.3.2]: https://github.com/ConcenTech/album_share/compare/v0.3.0...v0.3.2
+[0.3.3]: https://github.com/ConcenTech/album_share/compare/v0.3.2...v0.3.3
