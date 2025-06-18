@@ -1,4 +1,4 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart' as al;
+import 'package:album_share/l10n/app_localizations.dart' as al;
 
 /// Convenience typedef.
 ///

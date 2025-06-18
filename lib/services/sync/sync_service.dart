@@ -33,6 +33,7 @@ class SyncService extends StateNotifier<SyncState> {
 
   static SyncState _getInitialState(DatabaseService db) {
     final haveAssets = db.haveAssetsSync();
+    // final tod = TimeOfDay(hour: hour, minute: minute)
     return SyncState(!haveAssets);
   }
 

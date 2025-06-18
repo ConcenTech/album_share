@@ -17,31 +17,31 @@ class HapticNotifier extends StateNotifier<void> {
   bool _hapticFeedbackEnabled() =>
       _ref.read(PreferencesProviders.service).enableHapticFeedback;
 
-  selectionClick() {
+  void selectionClick() {
     if (_hapticFeedbackEnabled()) {
       HapticFeedback.selectionClick();
     }
   }
 
-  lightImpact() {
+  void lightImpact() {
     if (_hapticFeedbackEnabled()) {
       HapticFeedback.lightImpact();
     }
   }
 
-  mediumImpact() {
+  void mediumImpact() {
     if (_hapticFeedbackEnabled()) {
       HapticFeedback.mediumImpact();
     }
   }
 
-  heavyImpact() {
+  void heavyImpact() {
     if (_hapticFeedbackEnabled()) {
       HapticFeedback.heavyImpact();
     }
   }
 
-  vibrate() {
+  void vibrate() {
     if (_hapticFeedbackEnabled()) {
       HapticFeedback.vibrate();
     }
