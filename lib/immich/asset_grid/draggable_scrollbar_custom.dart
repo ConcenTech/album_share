@@ -86,7 +86,7 @@ class DraggableScrollbar extends StatefulWidget {
   @override
   DraggableScrollbarState createState() => DraggableScrollbarState();
 
-  static buildScrollThumbAndLabel({
+  static Widget buildScrollThumbAndLabel({
     required Widget scrollThumb,
     required Color backgroundColor,
     required Animation<double>? thumbAnimation,
@@ -317,7 +317,7 @@ class DraggableScrollbarState extends State<DraggableScrollbar>
   // scroll bar has received notification that it's view was scrolled
   // so it should also changes his position
   // but only if it isn't dragged
-  changePosition(ScrollNotification notification) {
+  void changePosition(ScrollNotification notification) {
     if (_isDragInProcess) {
       return;
     }

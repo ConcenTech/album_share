@@ -16,7 +16,7 @@ final _logger = Logger('BackgroundNotificationsService');
 
 @pragma('vm:entry-point')
 void _onReceive(int id, String? title, String? body, String? payload) {
-  print('Clicked on notification');
+  // print('Clicked on notification');
 }
 
 abstract class BackgroundNotificationsService extends NotificationsService {

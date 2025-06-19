@@ -105,7 +105,7 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
     // package:screen_brightness
     Future.microtask(() async {
       try {
-        await ScreenBrightness().resetScreenBrightness();
+        await ScreenBrightness().resetApplicationScreenBrightness();
       } catch (_) {}
     });
     // --------------------------------------------------
@@ -146,9 +146,10 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
     // package:volume_controller
     Future.microtask(() async {
       try {
-        VolumeController().showSystemUI = false;
-        _volumeValue = await VolumeController().getVolume();
-        VolumeController().listener((value) {
+        final vc = VolumeController.instance;
+        vc.showSystemUI = false;
+        _volumeValue = await vc.getVolume();
+        vc.addListener((value) {
           if (mounted && !_volumeInterceptEventStream) {
             setState(() {
               _volumeValue = value;
@@ -162,8 +163,8 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
     // package:screen_brightness
     Future.microtask(() async {
       try {
-        _brightnessValue = await ScreenBrightness().current;
-        ScreenBrightness().onCurrentBrightnessChanged.listen((value) {
+        _brightnessValue = await ScreenBrightness().application;
+        ScreenBrightness().onApplicationScreenBrightnessChanged.listen((value) {
           if (mounted) {
             setState(() {
               _brightnessValue = value;
@@ -179,7 +180,7 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
     // --------------------------------------------------
     // package:volume_controller
     try {
-      VolumeController().setVolume(value);
+      VolumeController.instance.setVolume(value);
     } catch (_) {}
     setState(() {
       _volumeValue = value;
@@ -202,7 +203,7 @@ class _MobileVideoPlayerControlsState extends State<MobileVideoPlayerControls> {
     // --------------------------------------------------
     // package:screen_brightness
     try {
-      await ScreenBrightness().setScreenBrightness(value);
+      await ScreenBrightness().setApplicationScreenBrightness(value);
     } catch (_) {}
     setState(() {
       _brightnessIndicator = true;
