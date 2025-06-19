@@ -55,7 +55,7 @@ class MobileScaffold extends ConsumerWidget {
 
     final appBarColor =
         (theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface)
-            .withOpacity(0.7);
+            .withValues(alpha: 0.7);
 
     void closeSidebar() =>
         ref.read(sidebarListenerProvider(id).notifier).close();

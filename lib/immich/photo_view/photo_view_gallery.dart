@@ -1,5 +1,3 @@
-library photo_view_gallery;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 

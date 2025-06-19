@@ -25,7 +25,7 @@ class MaterialBottomNavigationBar extends StatelessWidget {
       child: NavigationBar(
         backgroundColor:
             (theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface)
-                .withOpacity(0.6),
+                .withValues(alpha: 0.6),
         selectedIndex: index,
         onDestinationSelected: onDestinationSelected,
         destinations: items.mapList(
@@ -58,7 +58,7 @@ class MaterialSideNavigationBar extends StatelessWidget {
     return NavigationRail(
       backgroundColor:
           (theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface)
-              .withOpacity(0.6),
+              .withValues(alpha: 0.6),
       selectedIndex: index,
       onDestinationSelected: onDestinationSelected,
       destinations: items.mapList(

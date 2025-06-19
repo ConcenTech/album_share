@@ -41,7 +41,7 @@ class DesktopWindowTitlebar extends StatelessWidget {
 
     return ColoredBox(
       color: (theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface)
-          .withOpacity(0.6),
+          .withValues(alpha: 0.6),
       child: Row(
         children: [
           Expanded(

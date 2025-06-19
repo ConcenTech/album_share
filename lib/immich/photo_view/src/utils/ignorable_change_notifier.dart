@@ -29,12 +29,12 @@ class IgnorableChangeNotifier extends ChangeNotifier {
     return super.hasListeners || (_ignorableListeners?.isNotEmpty ?? false);
   }
 
-  void addIgnorableListener(listener) {
+  void addIgnorableListener(void Function() listener) {
     assert(_debugAssertNotDisposed());
     _ignorableListeners!.add(listener);
   }
 
-  void removeIgnorableListener(listener) {
+  void removeIgnorableListener(void Function() listener) {
     assert(_debugAssertNotDisposed());
     _ignorableListeners!.remove(listener);
   }

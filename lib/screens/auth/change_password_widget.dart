@@ -166,7 +166,6 @@ class _LoginWidgetState extends ConsumerState<ChangePasswordWidget> {
                       Text(_mustChangePassword ? locale.signOut : locale.back),
                 ),
                 FilledButton(
-                  iconAlignment: IconAlignment.end,
                   onPressed: _loading ? null : _submit,
                   child: Text(
                     locale.save,

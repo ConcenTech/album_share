@@ -1,5 +1,3 @@
-library photo_view;
-
 import 'package:flutter/material.dart';
 
 import 'src/controller/photo_view_controller.dart';
@@ -600,8 +598,6 @@ PhotoViewScaleState defaultScaleStateCycle(PhotoViewScaleState actual) {
       return PhotoViewScaleState.initial;
     case PhotoViewScaleState.zoomedIn:
     case PhotoViewScaleState.zoomedOut:
-      return PhotoViewScaleState.initial;
-    default:
       return PhotoViewScaleState.initial;
   }
 }
