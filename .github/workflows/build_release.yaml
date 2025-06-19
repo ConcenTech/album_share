@@ -43,7 +43,7 @@ jobs:
         uses: rmeneely/update-yaml@v1
         with:
           infile: pubspec.yaml
-          varlist: version=${{ needs.create-release.outputs.version }}+${{ github.run_id }}
+          varlist: version=${{ needs.create-release.outputs.version }}+${{ github.run_number }}
 
 
       - name: Setup the Java environment
