@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.3.4] - 19/07/2025
+
+### Changed
+- Upgraded packages to latest versions
+- Upgraded flutter to latest stable version
+
 ## [0.3.3] - 25/10/2024
 
 ### Added
@@ -77,3 +83,4 @@ Now, when the user attempts to navigate back, the image scale is first reset the
 [0.3.0]: https://github.com/ConcenTech/album_share/compare/v0.2.1...v0.3.0
 [0.3.2]: https://github.com/ConcenTech/album_share/compare/v0.3.0...v0.3.2
 [0.3.3]: https://github.com/ConcenTech/album_share/compare/v0.3.2...v0.3.3
+[0.3.4]: https://github.com/ConcenTech/album_share/compare/v0.3.3...v0.3.4
