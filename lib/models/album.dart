@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../core/utils/db_utils.dart';
 import 'json_map.dart';

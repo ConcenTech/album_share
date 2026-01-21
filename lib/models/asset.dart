@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../core/utils/extension_methods.dart';
 import 'json_map.dart';

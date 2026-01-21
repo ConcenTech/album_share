@@ -1,5 +1,5 @@
 import 'package:humanizer/humanizer.dart' show ApproximateTimeExtensions;
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../core/utils/app_localisations.dart';
 import '../core/utils/db_utils.dart';
