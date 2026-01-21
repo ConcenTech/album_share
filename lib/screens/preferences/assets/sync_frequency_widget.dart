@@ -20,10 +20,10 @@ class SyncFrequencyWidget extends StatelessWidget {
       title: Text(locale.syncFrequency),
       subtitle: Text(locale.syncFrequencyDescription),
       trailing: SizedBox(
-        width: 140,
+        width: 150,
         // height: 60
         child: DropdownButtonFormField(
-          value: Duration(seconds: value),
+          initialValue: Duration(seconds: value),
           items: [
             DropdownMenuItem(
               value: const Duration(minutes: 5),
