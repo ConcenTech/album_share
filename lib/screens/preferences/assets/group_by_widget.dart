@@ -19,10 +19,10 @@ class GroupByWidget extends StatelessWidget {
     return ListTile(
       title: Text(AppLocalizations.of(context)!.groupBy),
       trailing: SizedBox(
-        width: 90,
+        width: 110,
         // height: 60
         child: DropdownButtonFormField(
-          value: value,
+          initialValue: value,
           items: GroupAssetsBy.values.mapList((e) {
             return DropdownMenuItem(
               value: e,

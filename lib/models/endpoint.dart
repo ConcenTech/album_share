@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 part 'endpoint.g.dart';
 
@@ -9,7 +9,7 @@ class Endpoint {
   // Only one endpoint should be stored in db so id will always be zero.
   static const id = 0;
 
-  final Id isarId = id; 
+  final Id isarId = id;
 
   final String serverUrl;
 

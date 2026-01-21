@@ -37,7 +37,7 @@ class PlatformSwitchListTile extends StatelessWidget {
         child: Switch.adaptive(
           value: value,
           onChanged: onChanged,
-          activeColor: theme.platform == TargetPlatform.macOS
+          activeTrackColor: theme.platform == TargetPlatform.macOS
               ? Theme.of(context).colorScheme.primary
               : null,
         ),

@@ -18,10 +18,10 @@ class ThemeWidget extends StatelessWidget {
     return ListTile(
       title: Text(locale.theme),
       trailing: SizedBox(
-        width: 90,
+        width: 100,
         // height: 60
         child: DropdownButtonFormField(
-          value: value,
+          initialValue: value,
           items: [
             DropdownMenuItem(
               value: ThemeMode.system,
