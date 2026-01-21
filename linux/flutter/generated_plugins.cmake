@@ -3,12 +3,13 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  isar_flutter_libs
+  isar_community_flutter_libs
   media_kit_libs_linux
   media_kit_video
   screen_retriever_linux
   system_theme
   url_launcher_linux
+  volume_controller
   window_manager
 )
 
