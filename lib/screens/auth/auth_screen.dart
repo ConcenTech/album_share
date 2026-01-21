@@ -95,7 +95,7 @@ class _AuthScreenContentState extends State<AuthScreenContent> {
               if (user.shouldChangePassword) {
                 _updateState(_State.changePassword);
               } else {
-                AppRouter.toLibrary(context);
+                AppRouter.replaceToLibrary(context);
               }
             },
           ),

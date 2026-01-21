@@ -105,6 +105,10 @@ class AppRouter {
       GoRouter.of(context ?? _navigatorKey.currentContext!)
           .push(route.startsWith('/') ? route : '/$route', extra: extra);
 
+  static void replace(String route, BuildContext? context, [Object? extra]) =>
+      GoRouter.of(context ?? _navigatorKey.currentContext!)
+          .replace(route.startsWith('/') ? route : '/$route', extra: extra);
+
   static void back(BuildContext context) {
     try {
       Navigator.of(context).maybePop();
@@ -116,6 +120,8 @@ class AppRouter {
   static void toNotificationAssetViewer(AssetViewerScreenState viewerState) =>
       to(_kAssetViewerRoute, null, viewerState);
   static void toLibrary(BuildContext context) => to(_kLibraryRoute, context);
+  static void replaceToLibrary(BuildContext context) =>
+      replace(_kLibraryRoute, context);
   static void toPreferences(BuildContext context) =>
       to(_kPreferencesRoute, context);
   static void toLogin(BuildContext context) => to(_kLoginRoute, context);
