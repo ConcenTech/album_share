@@ -10,7 +10,6 @@ import 'core/main/main_app.dart';
 import 'core/theme/app_theme.dart';
 
 void main() {
-  //
   WidgetsFlutterBinding.ensureInitialized();
   AppTheme.ensureInitialized();
   VideoPlayer.ensureInitialized();
