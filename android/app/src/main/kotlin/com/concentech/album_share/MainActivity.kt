@@ -2,4 +2,4 @@ package com.concentech.album_share
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity()
+class MainActivity : FlutterActivity()
