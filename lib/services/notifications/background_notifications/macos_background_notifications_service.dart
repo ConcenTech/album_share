@@ -36,7 +36,7 @@ class _MacosBackgroundNotificationsService
       _plugin = FlutterLocalNotificationsPlugin()
           .resolvePlatformSpecificImplementation<
               MacOSFlutterLocalNotificationsPlugin>()!;
-      _plugin.initialize(_initialisationSettings);
+      _plugin.initialize(settings: _initialisationSettings);
       _logger.info('Initialised macOS notifications');
     } catch (error, stack) {
       _logger.severe(
@@ -50,9 +50,9 @@ class _MacosBackgroundNotificationsService
   @override
   Future<void> _activity({String? title, required String content}) {
     return _plugin.show(
-      _nextId,
-      title,
-      content,
+      id: _nextId,
+      title: title,
+      body: content,
       notificationDetails: _activityNotificationDetails,
     );
   }
@@ -60,9 +60,9 @@ class _MacosBackgroundNotificationsService
   @override
   Future<void> _assets({String? title, required String content}) {
     return _plugin.show(
-      _nextId,
-      title,
-      content,
+      id: _nextId,
+      title: title,
+      body: content,
       notificationDetails: _assetNotificationDetails,
     );
   }

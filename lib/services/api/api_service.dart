@@ -617,6 +617,7 @@ enum ApiExceptionType {
     return switch (e.type) {
       DioExceptionType.sendTimeout => ApiExceptionType.timeout,
       DioExceptionType.receiveTimeout => ApiExceptionType.timeout,
+      DioExceptionType.transformTimeout => ApiExceptionType.timeout,
       DioExceptionType.connectionTimeout => ApiExceptionType.timeout,
       DioExceptionType.badCertificate => ApiExceptionType.unauthenticated,
       DioExceptionType.badResponse => ApiExceptionType.server,

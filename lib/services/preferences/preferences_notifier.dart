@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../immich/asset_grid/asset_grid_data_structure.dart';
 import '../../models/preferences.dart';

@@ -39,7 +39,7 @@ const EndpointSchema = CollectionSchema(
   getId: _endpointGetId,
   getLinks: _endpointGetLinks,
   attach: _endpointAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _endpointEstimateSize(
