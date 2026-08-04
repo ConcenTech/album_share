@@ -58,7 +58,7 @@ class _AndroidBackgroundNotificationsService
       _plugin.createNotificationChannel(_activityNotificationChannel);
       _plugin.createNotificationChannel(_assetNotificationChannel);
 
-      await _plugin.initialize(_initialisationSettings);
+      await _plugin.initialize(settings: _initialisationSettings);
       _logger.info('Android notifications initialised');
     } catch (error, stack) {
       _logger.severe(
@@ -75,9 +75,9 @@ class _AndroidBackgroundNotificationsService
     required String content,
   }) {
     return _plugin.show(
-      _nextId,
-      title,
-      content,
+      id: _nextId,
+      title: title,
+      body: content,
       notificationDetails: _activityNotificationDetails,
     );
   }
@@ -88,9 +88,9 @@ class _AndroidBackgroundNotificationsService
     required String content,
   }) {
     return _plugin.show(
-      _nextId,
-      title,
-      content,
+      id: _nextId,
+      title: title,
+      body: content,
       notificationDetails: _assetNotificationDetails,
     );
   }

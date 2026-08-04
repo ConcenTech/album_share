@@ -14,7 +14,7 @@ import 'app_sidebar.dart';
 class NotificationSidebar extends AppSidebar {
   const NotificationSidebar({super.key});
 
-  AutoDisposeStreamProvider providerBuilder() {
+  StreamProvider providerBuilder() {
     return ActivityProviders.notifications;
   }
 

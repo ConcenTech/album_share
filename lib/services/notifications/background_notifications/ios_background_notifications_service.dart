@@ -35,7 +35,7 @@ class _IosBackgroundNotificationsService
       _plugin = FlutterLocalNotificationsPlugin()
           .resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin>()!;
-      _plugin.initialize(_initialisationSettings);
+      _plugin.initialize(settings: _initialisationSettings);
       _logger.info('Initialised iOS notifications');
     } catch (error, stack) {
       _logger.severe(
@@ -49,9 +49,9 @@ class _IosBackgroundNotificationsService
   @override
   Future<void> _activity({String? title, required String content}) {
     return _plugin.show(
-      _nextId,
-      title,
-      content,
+      id: _nextId,
+      title: title,
+      body: content,
       notificationDetails: _activityNotificationDetails,
     );
   }
@@ -59,9 +59,9 @@ class _IosBackgroundNotificationsService
   @override
   Future<void> _assets({String? title, required String content}) {
     return _plugin.show(
-      _nextId,
-      title,
-      content,
+      id: _nextId,
+      title: title,
+      body: content,
       notificationDetails: _assetNotificationDetails,
     );
   }
